@@ -403,23 +403,52 @@ class TraviaDataRepository {
   private threads: Record<string, UserMessageThread> = { ...INITIAL_USER_THREADS };
   private customers: Customer[] = [...SHARED_CUSTOMERS];
 
-  // Get all user threads for CRM inbox
-  getAllThreads(): UserMessageThread[] {
-    return Object.values(this.threads);
+  // Get all user threads for CRM inbox (strictly isolated per tenant)
+  getAllThreads(tenantId?: string): UserMessageThread[] {
+    const list = Object.values(this.threads);
+    if (!tenantId) return list;
+    return list.filter(t => t.tenant_id === tenantId || (!t.tenant_id && tenantId === 'a0000000-0000-0000-0000-000000000001'));
   }
 
-  // Get thread by customer ID or thread ID
-  getThread(threadOrCustomerId: string): UserMessageThread | null {
-    if (this.threads[threadOrCustomerId]) {
-      return this.threads[threadOrCustomerId];
+  // Get thread by customer ID or thread ID with tenant verification
+  getThread(threadOrCustomerId: string, tenantId?: string): UserMessageThread | null {
+    let thread = this.threads[threadOrCustomerId];
+    if (!thread) {
+      thread = Object.values(this.threads).find(t => t.customer_id === threadOrCustomerId)!;
     }
-    const found = Object.values(this.threads).find(t => t.customer_id === threadOrCustomerId);
-    return found || null;
+    if (!thread) return null;
+
+    if (tenantId) {
+      const itemTenant = thread.tenant_id || 'a0000000-0000-0000-0000-000000000001';
+      if (itemTenant !== tenantId) return null; // Tenant isolation guaranteed
+    }
+    return thread;
   }
 
-  // Send message to customer thread
-  sendMessage(threadOrCustomerId: string, content: string, senderRole: 'customer' | 'concierge'): Message | null {
-    const thread = this.getThread(threadOrCustomerId);
+  // Create isolated customer thread for new tenant
+  createTenantThread(tenantId: string, customerId: string, customerName: string, tripTitle: string): UserMessageThread {
+    const threadId = `thread-${customerId}`;
+    const newThread: UserMessageThread = {
+      id: threadId,
+      tenant_id: tenantId,
+      customer_id: customerId,
+      customer_name: customerName,
+      customer_country: '🌐',
+      customer_vip: true,
+      trip_title: tripTitle,
+      last_message_at: 'Şimdi',
+      last_message_preview: 'Sohbet kanalı açıldı.',
+      customer_unread_count: 0,
+      staff_unread_count: 0,
+      messages: [],
+    };
+    this.threads[threadId] = newThread;
+    return newThread;
+  }
+
+  // Send message to customer thread with optional tenant verification
+  sendMessage(threadOrCustomerId: string, content: string, senderRole: 'customer' | 'concierge', tenantId?: string): Message | null {
+    const thread = this.getThread(threadOrCustomerId, tenantId);
     if (!thread) return null;
 
     const newMsg: Message = {

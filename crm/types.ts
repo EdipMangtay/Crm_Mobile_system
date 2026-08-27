@@ -3,6 +3,8 @@
  * Mirrors database schema with CRM-specific extensions
  */
 
+export * from '@/shared/types/models';
+
 // ─── Enums ────────────────────────────────────────────────────
 
 export type UserRole = 'customer' | 'owner' | 'admin' | 'sales' | 'concierge' | 'operations' | 'finance' | 'marketing' | 'viewer';

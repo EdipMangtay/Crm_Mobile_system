@@ -7,10 +7,11 @@ import {
   LayoutDashboard, Users, UserPlus, Plane, CalendarCheck, Compass,
   Headphones, MessageCircle, CreditCard, Truck,
   TrendingUp, BarChart3, UsersRound, ListTodo, Settings, LogOut,
-  ChevronLeft, ChevronRight, Sparkles
+  ChevronLeft, ChevronRight, Sparkles, Shield
 } from 'lucide-react';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
+import { useTenant } from '@/lib/tenancy/TenantProvider';
 
 interface NavItem {
   label: string;
@@ -78,6 +79,7 @@ const NAV_GROUPS: NavGroup[] = [
     title: 'SİSTEM',
     items: [
       { label: 'Ayarlar', href: '/crm/settings', icon: Settings },
+      { label: 'Platform Admin', href: '/platform-admin', icon: Shield },
     ],
   },
 ];
@@ -86,6 +88,7 @@ export default function CrmSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
+  const { tenant } = useTenant();
 
   const handleLogout = async () => {
     const supabase = createSupabaseBrowserClient();
@@ -108,17 +111,27 @@ export default function CrmSidebar() {
       <div className="flex items-center h-16 px-4 border-b border-[#C9A66B]/10 shrink-0">
         {!collapsed ? (
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#C9A66B] to-[#E8C77A] flex items-center justify-center">
-              <span className="text-[#05070F] font-serif font-bold text-sm">T</span>
+            <div
+              className="w-8 h-8 rounded-lg flex items-center justify-center font-serif font-bold text-sm text-white shadow-sm"
+              style={{ backgroundColor: tenant.primary_color }}
+            >
+              {tenant.display_name.slice(0, 1)}
             </div>
             <div>
-              <p className="text-[#F5F1E8] font-serif text-sm tracking-[0.1em] leading-none">TRAVIA</p>
-              <p className="text-[#C9A66B] text-[9px] tracking-[0.2em] uppercase mt-0.5">Ultimate CRM</p>
+              <p className="text-[#F5F1E8] font-serif text-sm tracking-[0.1em] leading-none truncate max-w-[140px]">
+                {tenant.display_name.toUpperCase()}
+              </p>
+              <p className="text-[#C9A66B] text-[9px] font-mono tracking-[0.15em] leading-none mt-1">
+                {tenant.default_currency} · TRAVEL OS
+              </p>
             </div>
           </div>
         ) : (
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#C9A66B] to-[#E8C77A] flex items-center justify-center mx-auto">
-            <span className="text-[#05070F] font-serif font-bold text-sm">T</span>
+          <div
+            className="w-8 h-8 rounded-lg flex items-center justify-center mx-auto text-white font-serif font-bold text-sm"
+            style={{ backgroundColor: tenant.primary_color }}
+          >
+            {tenant.display_name.slice(0, 1)}
           </div>
         )}
       </div>

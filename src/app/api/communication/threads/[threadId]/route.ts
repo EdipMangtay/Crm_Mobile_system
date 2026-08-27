@@ -1,22 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { traviaData } from '@/shared/data/traviaData';
+import { tenantRegistry } from '@/lib/tenancy/tenantContext';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ threadId: string }> }
 ) {
   const { threadId } = await params;
-  const thread = traviaData.getThread(threadId);
+  const host = request.headers.get('host') || 'localhost';
+  const tenantHeader = request.headers.get('x-tenant-id');
+  const tenant = tenantHeader
+    ? tenantRegistry.getTenantById(tenantHeader)
+    : tenantRegistry.resolveTenantFromHost(host);
+
+  const thread = traviaData.getThread(threadId, tenant.id);
 
   if (!thread) {
     return NextResponse.json(
-      { error: 'Thread not found' },
+      { error: 'Thread not found or forbidden for this tenant' },
       { status: 404 }
     );
   }
 
   return NextResponse.json({
     success: true,
+    tenant_id: tenant.id,
     thread,
   });
 }
@@ -27,6 +35,12 @@ export async function POST(
 ) {
   try {
     const { threadId } = await params;
+    const host = request.headers.get('host') || 'localhost';
+    const tenantHeader = request.headers.get('x-tenant-id');
+    const tenant = tenantHeader
+      ? tenantRegistry.getTenantById(tenantHeader)
+      : tenantRegistry.resolveTenantFromHost(host);
+
     const body = await request.json();
     const { content, senderRole } = body;
 
@@ -40,18 +54,20 @@ export async function POST(
     const message = traviaData.sendMessage(
       threadId,
       content,
-      senderRole === 'customer' ? 'customer' : 'concierge'
+      senderRole === 'customer' ? 'customer' : 'concierge',
+      tenant.id
     );
 
     if (!message) {
       return NextResponse.json(
-        { error: 'Thread not found' },
+        { error: 'Thread not found or forbidden for this tenant' },
         { status: 404 }
       );
     }
 
     return NextResponse.json({
       success: true,
+      tenant_id: tenant.id,
       message,
     });
   } catch (error) {

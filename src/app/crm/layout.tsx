@@ -5,6 +5,8 @@ import CrmSidebar from '@/components/crm/shell/Sidebar';
 import CrmHeader from '@/components/crm/shell/Header';
 import CommandPalette from '@/components/crm/shell/CommandPalette';
 
+import { TenantProvider } from '@/lib/tenancy/TenantProvider';
+
 export default function CrmLayout({ children }: { children: React.ReactNode }) {
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
 
@@ -24,15 +26,17 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#05070F]">
-      <CrmSidebar />
-      <div className="ml-[240px] min-h-screen flex flex-col">
-        <CrmHeader onOpenCommandPalette={openCommandPalette} />
-        <main className="flex-1 p-6 overflow-x-hidden">
-          {children}
-        </main>
+    <TenantProvider>
+      <div className="min-h-screen bg-[#05070F]">
+        <CrmSidebar />
+        <div className="ml-[240px] min-h-screen flex flex-col">
+          <CrmHeader onOpenCommandPalette={openCommandPalette} />
+          <main className="flex-1 p-6 overflow-x-hidden">
+            {children}
+          </main>
+        </div>
+        <CommandPalette open={commandPaletteOpen} onClose={closeCommandPalette} />
       </div>
-      <CommandPalette open={commandPaletteOpen} onClose={closeCommandPalette} />
-    </div>
+    </TenantProvider>
   );
 }

@@ -3,6 +3,67 @@
  * PRD: "ONE CUSTOMER · ONE DATABASE · MULTIPLE INTERFACES"
  */
 
+export type TenantStatus = 'trial' | 'active' | 'past_due' | 'restricted' | 'suspended' | 'cancelled';
+export type TenantPlan = 'starter' | 'professional' | 'premium' | 'enterprise' | 'founding_partner';
+export type TenantMemberRole = 'owner' | 'admin' | 'sales' | 'concierge' | 'operations' | 'finance' | 'marketing' | 'viewer';
+export type PlatformRole = 'platform_owner' | 'platform_admin' | 'platform_support';
+
+export interface TenantSettings {
+  contact_phone?: string;
+  whatsapp?: string;
+  support_email?: string;
+  bank_name?: string;
+  iban?: string;
+  swift_bic?: string;
+  address?: string;
+  invoice_prefix?: string;
+}
+
+export interface TenantFeatures {
+  CRM: boolean;
+  MOBILE_APP: boolean;
+  CUSTOMER_PORTAL: boolean;
+  CONCIERGE: boolean;
+  AI_COPILOT: boolean;
+  PAYMENTS: boolean;
+  SUPPLIER_MANAGEMENT: boolean;
+  WHITE_LABEL: boolean;
+  CUSTOM_DOMAIN?: boolean;
+}
+
+export interface Tenant {
+  id: string;
+  slug: string;
+  legal_name: string;
+  display_name: string;
+  status: TenantStatus;
+  plan: TenantPlan;
+  timezone: string;
+  default_currency: string;
+  default_language: string;
+  logo_url?: string;
+  favicon_url?: string;
+  primary_color: string;
+  secondary_color: string;
+  domain?: string;
+  crm_domain?: string;
+  customer_domain?: string;
+  settings: TenantSettings;
+  features: TenantFeatures;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TenantMembership {
+  id: string;
+  user_id: string;
+  tenant_id: string;
+  role: TenantMemberRole;
+  status: 'active' | 'invited' | 'suspended';
+  created_at: string;
+  tenant?: Tenant;
+}
+
 export type UserRole = 'customer' | 'owner' | 'admin' | 'sales' | 'concierge' | 'operations' | 'finance' | 'marketing' | 'viewer';
 export type TripStatus = 'upcoming' | 'active' | 'completed' | 'cancelled';
 export type BookingStatus = 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled' | 'issue';
@@ -116,6 +177,7 @@ export interface Message {
 
 export interface UserMessageThread {
   id: string;
+  tenant_id?: string;
   customer_id: string;
   customer_name: string;
   customer_country: string;
