@@ -186,4 +186,10 @@ export interface ExperienceItem {
   cover_image_url?: string;
   duration?: string;
   highlights: string[];
+  price_label?: string;
+  inclusions?: string[];
+  dress_code?: string;
+  meeting_point?: string;
+  vip_perks?: string[];
+  gallery_images?: string[];
 }
