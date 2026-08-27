@@ -419,7 +419,7 @@ class TraviaDataRepository {
 
   // Send message to customer thread
   sendMessage(threadOrCustomerId: string, content: string, senderRole: 'customer' | 'concierge'): Message | null {
-    let thread = this.getThread(threadOrCustomerId);
+    const thread = this.getThread(threadOrCustomerId);
     if (!thread) return null;
 
     const newMsg: Message = {

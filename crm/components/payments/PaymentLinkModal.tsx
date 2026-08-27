@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { CreditCard, Copy, Check, QrCode, X, Sparkles, MessageCircle, ExternalLink } from 'lucide-react';
+import { CreditCard, Copy, Check, QrCode, X, MessageCircle } from 'lucide-react';
 import { formatCurrency } from '@/types/crm';
 
 interface PaymentLinkModalProps {
@@ -20,7 +20,7 @@ export default function PaymentLinkModal({
   description = 'Kalan Bakiye Tahsilatı — Travia Dubai Premium Couple',
 }: PaymentLinkModalProps) {
   const [copied, setCopied] = useState(false);
-  const payId = `TRV-${Math.floor(100000 + Math.random() * 900000)}`;
+  const payId = 'TRV-784219';
   const paymentUrl = `https://pay.traviadubai.com/checkout/${payId}`;
 
   if (!isOpen) return null;

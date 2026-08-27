@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard, Users, UserPlus, Plane, CalendarCheck, Compass,
-  Headphones, MessageCircle, ClipboardList, CreditCard, Truck,
+  Headphones, MessageCircle, CreditCard, Truck,
   TrendingUp, BarChart3, UsersRound, ListTodo, Settings, LogOut,
   ChevronLeft, ChevronRight, Sparkles
 } from 'lucide-react';

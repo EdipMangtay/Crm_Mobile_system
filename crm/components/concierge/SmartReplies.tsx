@@ -1,6 +1,6 @@
 'use client';
 
-import { Sparkles, Utensils, Ship, Car, Shield, CreditCard } from 'lucide-react';
+import { Sparkles, Utensils, Ship, Car, CreditCard } from 'lucide-react';
 
 interface SmartRepliesProps {
   customerName: string;
@@ -34,7 +34,7 @@ export default function SmartReplies({ customerName, onSelectReply }: SmartRepli
     {
       label: 'Tahsilat / Ödeme Linki',
       icon: CreditCard,
-      text: `${firstName} Bey/Hanım, rezervasyon kaporanız için güvenli ödeme bağlantınızı buradan iletiyoruz: https://pay.traviadubai.com/checkout/TRV-${Date.now().toString().slice(-6)}. Dilediğiniz kredi kartı ile 3D Secure güvencesiyle tamamlayabilirsiniz.`,
+      text: `${firstName} Bey/Hanım, rezervasyon kaporanız için güvenli ödeme bağlantınızı buradan iletiyoruz: https://pay.traviadubai.com/checkout/TRV-892104. Dilediğiniz kredi kartı ile 3D Secure güvencesiyle tamamlayabilirsiniz.`,
     },
   ];
 

@@ -93,7 +93,7 @@ function LoginForm() {
             Personel Girişi
           </h2>
           <p className="text-xs text-[#F5F1E8]/40 text-center mb-6">
-            Travia CRM'e erişmek için giriş yapın
+            Travia CRM&apos;e erişmek için giriş yapın
           </p>
 
           {error && (

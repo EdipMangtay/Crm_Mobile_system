@@ -41,14 +41,12 @@ export default function AmbientGoldenDust() {
 
     // Mouse tracking for subtle wind effect
     let mouseX = width / 2;
-    let mouseY = height / 2;
     let targetWindX = 0;
     let windX = 0;
 
     const handleMouseMove = (e: MouseEvent) => {
       targetWindX = ((e.clientX - mouseX) / width) * 0.5;
       mouseX = e.clientX;
-      mouseY = e.clientY;
     };
 
     window.addEventListener('mousemove', handleMouseMove, { passive: true });

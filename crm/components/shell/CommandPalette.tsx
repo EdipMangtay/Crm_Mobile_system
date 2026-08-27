@@ -36,17 +36,14 @@ interface CommandPaletteProps {
 
 export default function CommandPalette({ open, onClose }: CommandPaletteProps) {
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<SearchResult[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Focus input when opened
   useEffect(() => {
     if (open) {
-      setTimeout(() => inputRef.current?.focus(), 100);
-      setQuery('');
-      setResults([]);
-      setSelectedIndex(0);
+      const timer = setTimeout(() => inputRef.current?.focus(), 100);
+      return () => clearTimeout(timer);
     }
   }, [open]);
 
@@ -56,9 +53,6 @@ export default function CommandPalette({ open, onClose }: CommandPaletteProps) {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
         if (open) onClose();
-        else {
-          // This is handled by parent
-        }
       }
       if (e.key === 'Escape' && open) {
         onClose();
@@ -68,26 +62,21 @@ export default function CommandPalette({ open, onClose }: CommandPaletteProps) {
     return () => window.removeEventListener('keydown', handler);
   }, [open, onClose]);
 
-  // Simulated search — in production this queries Supabase
-  useEffect(() => {
-    if (!query.trim()) {
-      setResults([]);
-      return;
-    }
+  // Demo search results — derived synchronously
+  const rawDemoResults: SearchResult[] = [
+    { type: 'customer', id: '1', title: 'Edip Mangtay', subtitle: 'TR · VIP · Atlantis The Royal', href: '/crm/customers/d0000000-0000-0000-0000-000000000001' },
+    { type: 'customer', id: '2', title: 'Ahmet Yılmaz', subtitle: 'TR · Family · Burj Al Arab', href: '/crm/customers/d0000000-0000-0000-0000-000000000002' },
+    { type: 'lead', id: '1', title: 'Marcus Vance', subtitle: 'Awaiting Proposal · 85.000 AED', href: '/crm/leads/1' },
+    { type: 'trip', id: '1', title: 'Travia Dubai — Premium Couple', subtitle: 'Atlantis The Royal · 12-17 Sep', href: '/crm/trips/1' },
+    { type: 'booking', id: '1', title: 'VIP Chauffeur — Mercedes V-Class', subtitle: 'DXB → Atlantis · 12 Sep 10:30', href: '/crm/bookings' },
+  ];
 
-    // Demo search results
-    const rawDemoResults: SearchResult[] = [
-      { type: 'customer', id: '1', title: 'Edip Mangtay', subtitle: 'TR · VIP · Atlantis The Royal', href: '/crm/customers/d0000000-0000-0000-0000-000000000001' },
-      { type: 'customer', id: '2', title: 'Ahmet Yılmaz', subtitle: 'TR · Family · Burj Al Arab', href: '/crm/customers/2' },
-      { type: 'trip', id: '3', title: 'Travia Dubai — Premium Couple', subtitle: '12-17 Eylül 2026 · 18,500 AED', href: '/crm/trips/f0000000-0000-0000-0000-000000000001' },
-      { type: 'booking', id: '4', title: 'VIP Airport Transfer', subtitle: '12 Eylül · Mercedes V-Class', href: '/crm/bookings' },
-      { type: 'booking', id: '5', title: 'Private Superyacht Cruise', subtitle: '13 Eylül · Dubai Marina', href: '/crm/bookings' },
-    ];
-    const demoResults = rawDemoResults.filter(r => r.title.toLowerCase().includes(query.toLowerCase()) || r.subtitle.toLowerCase().includes(query.toLowerCase()));
-
-    setResults(demoResults);
-    setSelectedIndex(0);
-  }, [query]);
+  const results = query.trim()
+    ? rawDemoResults.filter(
+        r => r.title.toLowerCase().includes(query.toLowerCase()) ||
+             r.subtitle.toLowerCase().includes(query.toLowerCase())
+      )
+    : [];
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowDown') {

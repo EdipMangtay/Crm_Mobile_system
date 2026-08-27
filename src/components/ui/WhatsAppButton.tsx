@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { MessageCircle, X, Sparkles, Send } from 'lucide-react';
+import { MessageCircle, X, Send } from 'lucide-react';
 
 export default function WhatsAppButton() {
   const [isOpen, setIsOpen] = useState(false);

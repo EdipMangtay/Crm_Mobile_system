@@ -3,6 +3,7 @@
  * Generates and downloads CSV files on client side without external libraries
  */
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function exportToCsv<T extends Record<string, any>>(
   filename: string,
   data: T[],

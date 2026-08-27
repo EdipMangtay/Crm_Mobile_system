@@ -121,10 +121,7 @@ function InteractiveParticleCloud({ count }: { count: number }) {
     [count]
   );
 
-  const positions = useMemo(() => new Float32Array(initials), [initials]);
-  const velocities = useMemo(() => new Float32Array(count * 3), [count]);
-
-  const startTime = useRef(Date.now());
+  const velocitiesRef = useRef<Float32Array | null>(null);
   const mouseWorld = useRef(new THREE.Vector3(999, 999, 0));
   const scrollRef = useRef(0);
 
@@ -157,15 +154,23 @@ function InteractiveParticleCloud({ count }: { count: number }) {
   useFrame((state, delta) => {
     if (!pointsRef.current) return;
 
-    const elapsed = (Date.now() - startTime.current) / 1000;
+    const geometry = pointsRef.current.geometry;
+    const posAttr = geometry.getAttribute('position') as THREE.BufferAttribute;
+    if (!posAttr) return;
+
+    if (!velocitiesRef.current || velocitiesRef.current.length !== count * 3) {
+      velocitiesRef.current = new Float32Array(count * 3);
+    }
+    const velocities = velocitiesRef.current;
+    const positions = posAttr.array as Float32Array;
+
+    const elapsed = state.clock.getElapsedTime();
     // Initial dramatic 3.2s assemble curve
     const assembleT = Math.min(1, elapsed / 3.2);
     const easeAssemble = 1 - Math.pow(1 - assembleT, 3.8); // Ultra smooth elastic settle
 
     const scrollDisperse = scrollRef.current; // 0 at top, > 0 on scroll
     const mouse = mouseWorld.current;
-    const geometry = pointsRef.current.geometry;
-    const posAttr = geometry.getAttribute('position');
 
     for (let i = 0; i < count; i++) {
       const idx = i * 3;
@@ -224,7 +229,6 @@ function InteractiveParticleCloud({ count }: { count: number }) {
       positions[idx + 2] += (destZ - positions[idx + 2]) * 0.08 + velocities[idx + 2];
     }
 
-    (posAttr as THREE.BufferAttribute).set(positions);
     posAttr.needsUpdate = true;
 
     // Slow majestic camera pan
@@ -234,7 +238,7 @@ function InteractiveParticleCloud({ count }: { count: number }) {
   return (
     <points ref={pointsRef}>
       <bufferGeometry>
-        <bufferAttribute attach="attributes-position" args={[positions, 3]} count={count} />
+        <bufferAttribute attach="attributes-position" args={[new Float32Array(initials), 3]} count={count} />
         <bufferAttribute attach="attributes-color" args={[colors, 3]} count={count} />
       </bufferGeometry>
       <pointsMaterial

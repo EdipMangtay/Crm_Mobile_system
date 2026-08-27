@@ -1,6 +1,6 @@
 'use client';
 
-import { Printer, Download, X, Sparkles, Check, Building, Calendar, Users, MapPin } from 'lucide-react';
+import { Printer, X, Sparkles } from 'lucide-react';
 import { formatCurrency } from '@/types/crm';
 
 interface ProposalModalProps {
@@ -69,8 +69,8 @@ export default function ProposalModal({ isOpen, onClose, tripData }: ProposalMod
             </div>
             <div className="text-right">
               <span className="text-[10px] font-mono uppercase text-[#F5F1E8]/30 print:text-gray-500">Teklif / Ref No</span>
-              <p className="text-sm font-mono font-bold text-[#C9A66B]">TRV-VIP-{Date.now().toString().slice(-6)}</p>
-              <p className="text-xs text-[#F5F1E8]/40 print:text-gray-600 mt-1">Tarih: {new Date().toLocaleDateString('tr-TR')}</p>
+              <p className="text-sm font-mono font-bold text-[#C9A66B]">TRV-VIP-2026-0812</p>
+              <p className="text-xs text-[#F5F1E8]/40 print:text-gray-600 mt-1">Tarih: 27.08.2026</p>
             </div>
           </div>
 
