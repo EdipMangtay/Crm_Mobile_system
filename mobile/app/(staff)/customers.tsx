@@ -21,7 +21,7 @@ import Button from '../../src/components/ui/Button';
 
 export default function StaffCustomersScreen() {
   const router = useRouter();
-  const { staffCustomers } = useTraviaStore();
+  const { staffCustomers, setActiveCustomer } = useTraviaStore();
   const [selectedCustomer, setSelectedCustomer] = useState<StaffCustomerItem | null>(null);
 
   return (
@@ -119,6 +119,7 @@ export default function StaffCustomersScreen() {
                   variant="gold"
                   size="md"
                   onPress={() => {
+                    setActiveCustomer(selectedCustomer.customerId);
                     setSelectedCustomer(null);
                     router.push('/(staff)/messages');
                   }}

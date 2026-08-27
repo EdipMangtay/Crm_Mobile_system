@@ -20,7 +20,7 @@ import MessageBubble from '../../src/components/chat/MessageBubble';
 import ChatInput from '../../src/components/chat/ChatInput';
 
 export default function StaffMessagesScreen() {
-  const { messages, sendStaffMessage, markStaffMessagesAsRead } = useTraviaStore();
+  const { messages, sendStaffMessage, markStaffMessagesAsRead, customer, trip } = useTraviaStore();
   const flatListRef = useRef<FlatList>(null);
 
   useEffect(() => {
@@ -42,11 +42,11 @@ export default function StaffMessagesScreen() {
         <View style={styles.contextHeader}>
           <View style={styles.contextTopRow}>
             <View>
-              <Text style={styles.customerName}>Edip Mangtay</Text>
-              <Text style={styles.tripMeta}>Trip: 12–17 Eyl · Atlantis The Royal</Text>
+              <Text style={styles.customerName}>{customer.first_name} {customer.last_name}</Text>
+              <Text style={styles.tripMeta}>Trip: {trip.nights} Gece · {trip.hotel_name || 'Dubai'}</Text>
             </View>
             <View style={styles.locationBadge}>
-              <Text style={styles.locationText}>Dubai'de</Text>
+              <Text style={styles.locationText}>{customer.country === 'TR' ? "Dubai'de" : customer.country}</Text>
             </View>
           </View>
 

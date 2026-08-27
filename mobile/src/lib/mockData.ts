@@ -28,8 +28,33 @@ export const mockCustomer: Customer = {
   whatsapp: '+905320000000',
   country: 'TR',
   preferred_language: 'tr',
-  tags: ['VIP', 'Couple', 'Booked', 'Luxury'],
+export const mockCustomerAhmet: Customer = {
+  id: 'd0000000-0000-0000-0000-000000000002',
+  company_id: 'a0000000-0000-0000-0000-000000000001',
+  first_name: 'Ahmet',
+  last_name: 'Yılmaz',
+  email: 'ahmet.demo@travia.internal',
+  phone: '+90 533 111 2233',
+  whatsapp: '+905331112233',
+  country: 'TR',
+  preferred_language: 'tr',
+  tags: ['Family', 'Luxury', 'Booked'],
 };
+
+export const mockCustomerCanan: Customer = {
+  id: 'd0000000-0000-0000-0000-000000000003',
+  company_id: 'a0000000-0000-0000-0000-000000000001',
+  first_name: 'Canan',
+  last_name: 'Özdemir',
+  email: 'canan.demo@travia.internal',
+  phone: '+90 534 444 5566',
+  whatsapp: '+905344445566',
+  country: 'TR',
+  preferred_language: 'tr',
+  tags: ['VIP', 'Solo', 'Active'],
+};
+
+export const mockCustomersList = [mockCustomer, mockCustomerAhmet, mockCustomerCanan];
 
 export const mockTrip: Trip = {
   id: 'f0000000-0000-0000-0000-000000000001',
@@ -313,53 +338,165 @@ export const mockItineraryDays: ItineraryDay[] = [
   },
 ];
 
-export const mockMessages: Message[] = [
-  {
-    id: 'msg-1',
-    thread_id: 'thread-1',
-    sender_role: 'customer',
-    type: 'text',
-    content: 'Bu akşam güzel bir steakhouse ayarlayabilir miyiz?',
-    status: 'read',
-    created_at: '2026-08-27T17:10:00Z',
-  },
-  {
-    id: 'msg-2',
-    thread_id: 'thread-1',
-    sender_role: 'concierge',
-    type: 'text',
-    content: 'Elbette Edip Bey. Size üç premium seçenek hazırlıyorum: Nusr-Et, Carna ve Nobu Dubai.',
-    status: 'read',
-    created_at: '2026-08-27T17:12:00Z',
-  },
-  {
-    id: 'msg-3',
-    thread_id: 'thread-1',
-    sender_role: 'concierge',
-    type: 'system',
-    content: 'Yeni Talep Oluşturuldu: Fine Dining · Nobu Dubai (Bu Akşam 20:30)',
-    status: 'read',
-    created_at: '2026-08-27T17:15:00Z',
-  },
-  {
-    id: 'msg-4',
-    thread_id: 'thread-1',
-    sender_role: 'concierge',
-    type: 'text',
-    content: 'Nobu Dubai için 20:30 rezervasyonunuzu onayladık. Masanız terasta Burj Al Arab manzaralıdır.',
-    status: 'read',
-    created_at: '2026-08-27T17:20:00Z',
-  },
-  {
-    id: 'msg-5',
-    thread_id: 'thread-1',
-    sender_role: 'concierge',
-    type: 'system',
-    content: 'Rezervasyon Onaylandı: Nobu Dubai · 20:30 (2 Kişi)',
-    status: 'read',
-    created_at: '2026-08-27T17:21:00Z',
-  },
-];
+export const mockUserThreads: Record<string, Message[]> = {
+  // 1. EDIP MANGTAY THREAD
+  'd0000000-0000-0000-0000-000000000001': [
+    {
+      id: 'msg-edip-1',
+      thread_id: 'thread-edip',
+      sender_role: 'customer',
+      type: 'text',
+      content: 'Bu akşam güzel bir steakhouse veya fine dining ayarlayabilir miyiz?',
+      status: 'read',
+      created_at: '2026-08-27T17:10:00Z',
+    },
+    {
+      id: 'msg-edip-2',
+      thread_id: 'thread-edip',
+      sender_role: 'concierge',
+      type: 'text',
+      content: 'Elbette Edip Bey. Size üç imza seçenek hazırladık: Nusr-Et, Carna by Dario Cecchini ve Nobu Dubai.',
+      status: 'read',
+      created_at: '2026-08-27T17:12:00Z',
+    },
+    {
+      id: 'msg-edip-3',
+      thread_id: 'thread-edip',
+      sender_role: 'concierge',
+      type: 'system',
+      content: 'Yeni Talep Oluşturuldu: Fine Dining · Nobu Dubai (Bu Akşam 20:30)',
+      status: 'read',
+      created_at: '2026-08-27T17:15:00Z',
+    },
+    {
+      id: 'msg-edip-4',
+      thread_id: 'thread-edip',
+      sender_role: 'concierge',
+      type: 'text',
+      content: 'Nobu Dubai için 20:30 rezervasyonunuz onaylandı. Masanız terasta Burj Al Arab manzaralıdır.',
+      status: 'read',
+      created_at: '2026-08-27T17:20:00Z',
+    },
+    {
+      id: 'msg-edip-5',
+      thread_id: 'thread-edip',
+      sender_role: 'concierge',
+      type: 'system',
+      content: 'Rezervasyon Onaylandı: Nobu Dubai · 20:30 (2 Kişi)',
+      status: 'read',
+      created_at: '2026-08-27T17:21:00Z',
+    },
+    {
+      id: 'msg-edip-6',
+      thread_id: 'thread-edip',
+      sender_role: 'customer',
+      type: 'text',
+      content: 'Harika, çok teşekkürler! Nobu için dress code nedir?',
+      status: 'read',
+      created_at: '2026-08-27T17:25:00Z',
+    },
+    {
+      id: 'msg-edip-7',
+      thread_id: 'thread-edip',
+      sender_role: 'concierge',
+      type: 'text',
+      content: 'Elegant Chic / Akşam Şıklığı tavsiye ediyoruz. Erkekler için ceket veya gömlek yeterlidir. 🥂',
+      status: 'read',
+      created_at: '2026-08-27T17:26:00Z',
+    },
+  ],
+
+  // 2. AHMET YILMAZ THREAD
+  'd0000000-0000-0000-0000-000000000002': [
+    {
+      id: 'msg-ahmet-1',
+      thread_id: 'thread-ahmet',
+      sender_role: 'customer',
+      type: 'text',
+      content: 'Merhaba, 16 Eylül çöl safarisi için 8 ve 11 yaşındaki çocuklarımız da gelebilir mi? Çocuklar için uygun mudur?',
+      status: 'read',
+      created_at: '2026-08-27T16:30:00Z',
+    },
+    {
+      id: 'msg-ahmet-2',
+      thread_id: 'thread-ahmet',
+      sender_role: 'concierge',
+      type: 'text',
+      content: 'Merhaba Ahmet Bey! Kesinlikle uygundur. Çocuklar için yumuşak kum tepelerinde kum kayağı, şahinle hatıra fotoğrafı ve özel çocuk menülü barbekü hazırlıyoruz.',
+      status: 'read',
+      created_at: '2026-08-27T16:35:00Z',
+    },
+    {
+      id: 'msg-ahmet-3',
+      thread_id: 'thread-ahmet',
+      sender_role: 'customer',
+      type: 'text',
+      content: 'Harika bir haber. Ekipmanları da dahil edebilirseniz çok seviniriz.',
+      status: 'read',
+      created_at: '2026-08-27T16:40:00Z',
+    },
+    {
+      id: 'msg-ahmet-4',
+      thread_id: 'thread-ahmet',
+      sender_role: 'concierge',
+      type: 'system',
+      content: 'Talep Güncellendi: Çocuk Kum Kayağı & Şahin Gösterisi Ekipmanları Dahil Edildi',
+      status: 'read',
+      created_at: '2026-08-27T16:42:00Z',
+    },
+    {
+      id: 'msg-ahmet-5',
+      thread_id: 'thread-ahmet',
+      sender_role: 'concierge',
+      type: 'text',
+      content: 'Tüm çocuk kum kayağı ekipmanları ve kasklar Land Cruiser aracımıza ayrıldı.',
+      status: 'read',
+      created_at: '2026-08-27T16:45:00Z',
+    },
+  ],
+
+  // 3. CANAN ÖZDEMİR THREAD
+  'd0000000-0000-0000-0000-000000000003': [
+    {
+      id: 'msg-canan-1',
+      thread_id: 'thread-canan',
+      sender_role: 'customer',
+      type: 'text',
+      content: 'İyi günler, 18 Eylül havalimanı transfer saatimi 2 saat erteleyebilir miyiz? İstanbul uçuşum rötar yaptı.',
+      status: 'read',
+      created_at: '2026-08-27T15:10:00Z',
+    },
+    {
+      id: 'msg-canan-2',
+      thread_id: 'thread-canan',
+      sender_role: 'concierge',
+      type: 'text',
+      content: 'İyi günler Canan Hanım. Uçuş kodunuzu anlık takip ediyoruz. Şoförümüz Khalid ve Mercedes S-Class aracımız yeni iniş saatiniz olan 17:30\'a göre güncellendi.',
+      status: 'read',
+      created_at: '2026-08-27T15:14:00Z',
+    },
+    {
+      id: 'msg-canan-3',
+      thread_id: 'thread-canan',
+      sender_role: 'concierge',
+      type: 'system',
+      content: 'Transfer Saati Güncellendi: 17:30 · DXB Terminal 3 VIP Karşılama',
+      status: 'read',
+      created_at: '2026-08-27T15:15:00Z',
+    },
+    {
+      id: 'msg-canan-4',
+      thread_id: 'thread-canan',
+      sender_role: 'customer',
+      type: 'text',
+      content: 'Çok teşekkür ederim ilginize, harikasınız.',
+      status: 'read',
+      created_at: '2026-08-27T15:20:00Z',
+    },
+  ],
+};
+
+export const mockMessages: Message[] = mockUserThreads['d0000000-0000-0000-0000-000000000001'];
 
 export const mockRequests: CustomerRequest[] = [
   {

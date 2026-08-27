@@ -23,10 +23,14 @@ import {
 import {
   mockTrip,
   mockCustomer,
+  mockCustomerAhmet,
+  mockCustomerCanan,
+  mockCustomersList,
   mockItineraryDays,
   mockBookingTransfer,
   mockBookingYacht,
   mockMessages,
+  mockUserThreads,
   mockRequests,
   mockPayments,
   mockDocuments,
@@ -34,6 +38,7 @@ import {
 
 export interface StaffCustomerItem {
   id: string;
+  customerId: string;
   name: string;
   paxLabel: string;
   dates: string;
@@ -55,117 +60,15 @@ export interface OperationItem {
   driverOrLocation: string;
 }
 
-const initialNotifications: NotificationItem[] = [
-  {
-    id: 'notif-1',
-    type: 'driver_assigned',
-    title: 'Şoför Bilgileriniz Hazır',
-    body: '10:30 transferiniz için araç (Mercedes V-Class) ve şoför (Khalid Ahmed) bilgileri eklendi.',
-    is_read: false,
-    created_at: '2026-08-27T08:00:00Z',
-  },
-  {
-    id: 'notif-2',
-    type: 'booking_confirmed',
-    title: 'Yacht Rezervasyonunuz Onaylandı',
-    body: '13 Eylül · 14:00 Sunset Superyacht turu onaylandı.',
-    is_read: false,
-    created_at: '2026-08-27T07:30:00Z',
-  },
-  {
-    id: 'notif-3',
-    type: 'trip_update',
-    title: 'Yeni Seyahat Güncellemesi',
-    body: 'Atlantis The Royal rezervasyon voucher belgeniz profilinize eklendi.',
-    is_read: true,
-    created_at: '2026-08-26T19:00:00Z',
-  },
-];
-
-const initialStaffCustomers: StaffCustomerItem[] = [
-  {
-    id: 'cust-1',
-    name: 'Edip Mangtay',
-    paxLabel: 'Premium Couple (2 Kişi)',
-    dates: '12 – 17 Eylül',
-    statusText: "Dubai'de",
-    isInsideDubai: true,
-    unreadCount: 1,
-    hotel: 'Atlantis The Royal',
-    outstanding: '13.500 AED',
-  },
-  {
-    id: 'cust-2',
-    name: 'Ahmet Yılmaz',
-    paxLabel: 'Luxury Family (4 Kişi)',
-    dates: '15 – 21 Eylül',
-    statusText: '3 gün kaldı',
-    isInsideDubai: false,
-    unreadCount: 0,
-    hotel: 'Burj Al Arab Jumeirah',
-    outstanding: '0 AED',
-  },
-  {
-    id: 'cust-3',
-    name: 'Canan Özdemir',
-    paxLabel: 'VIP Solo (1 Kişi)',
-    dates: '18 – 23 Eylül',
-    statusText: '6 gün kaldı',
-    isInsideDubai: false,
-    unreadCount: 1,
-    hotel: 'Armani Hotel Dubai',
-    outstanding: '4.200 AED',
-  },
-];
-
-const initialOperations: OperationItem[] = [
-  {
-    id: 'op-1',
-    time: '09:10',
-    type: 'Havalimanı İniş & Karşılama',
-    customerName: 'Ahmet Yılmaz',
-    details: 'Uçuş: TK762 · 4 Kişi',
-    status: 'completed',
-    driverOrLocation: 'DXB Terminal 3',
-  },
-  {
-    id: 'op-2',
-    bookingId: '20000000-0000-0000-0000-000000000001',
-    time: '10:30',
-    type: 'VIP Chauffeur Transfer',
-    customerName: 'Edip Mangtay',
-    details: 'Mercedes V-Class (Dubai X 78219)',
-    status: 'confirmed',
-    driverOrLocation: 'DXB → Atlantis The Royal (Şoför: Khalid)',
-  },
-  {
-    id: 'op-3',
-    bookingId: '20000000-0000-0000-0000-000000000002',
-    time: '14:00',
-    type: 'Özel Süperyat Seyri',
-    customerName: 'Edip Mangtay',
-    details: 'Majesty 56ft Yacht · Şampanya İkramı',
-    status: 'confirmed',
-    driverOrLocation: 'Dubai Marina Yacht Club Pier 7',
-  },
-  {
-    id: 'op-4',
-    time: '20:30',
-    type: 'Nobu Dubai Akşam Yemeği',
-    customerName: 'Edip Mangtay',
-    details: 'Teras Masa · 2 Kişi',
-    status: 'confirmed',
-    driverOrLocation: 'Atlantis The Palm',
-  },
-];
-
 interface TraviaStoreState {
   // Domain entities
+  activeCustomerId: string;
   customer: Customer;
   trip: Trip;
   itineraryDays: ItineraryDay[];
   bookings: Booking[];
   messages: Message[];
+  userThreads: Record<string, Message[]>;
   requests: CustomerRequest[];
   notifications: NotificationItem[];
   documents: DocumentItem[];
@@ -174,6 +77,7 @@ interface TraviaStoreState {
   operations: OperationItem[];
 
   // Real-time Actions
+  setActiveCustomer: (customerId: string) => void;
   sendCustomerMessage: (text: string) => void;
   sendStaffMessage: (text: string) => void;
   createCustomerRequest: (data: {
@@ -196,23 +100,74 @@ interface TraviaStoreState {
 }
 
 export const useTraviaStore = create<TraviaStoreState>((set, get) => ({
+  activeCustomerId: 'd0000000-0000-0000-0000-000000000001',
   customer: mockCustomer,
   trip: mockTrip,
   itineraryDays: mockItineraryDays,
   bookings: [mockBookingTransfer, mockBookingYacht],
-  messages: mockMessages,
+  userThreads: mockUserThreads,
+  messages: mockUserThreads['d0000000-0000-0000-0000-000000000001'] || mockMessages,
   requests: mockRequests,
   notifications: initialNotifications,
   documents: mockDocuments,
   payments: mockPayments,
-  staffCustomers: initialStaffCustomers,
+  staffCustomers: [
+    {
+      id: 'cust-1',
+      customerId: 'd0000000-0000-0000-0000-000000000001',
+      name: 'Edip Mangtay',
+      paxLabel: 'Premium Couple (2 Kişi)',
+      dates: '12 – 17 Eylül',
+      statusText: "Dubai'de",
+      isInsideDubai: true,
+      unreadCount: 1,
+      hotel: 'Atlantis The Royal',
+      outstanding: '13.500 AED',
+    },
+    {
+      id: 'cust-2',
+      customerId: 'd0000000-0000-0000-0000-000000000002',
+      name: 'Ahmet Yılmaz',
+      paxLabel: 'Luxury Family (4 Kişi)',
+      dates: '15 – 21 Eylül',
+      statusText: '3 gün kaldı',
+      isInsideDubai: false,
+      unreadCount: 0,
+      hotel: 'Burj Al Arab Jumeirah',
+      outstanding: '0 AED',
+    },
+    {
+      id: 'cust-3',
+      customerId: 'd0000000-0000-0000-0000-000000000003',
+      name: 'Canan Özdemir',
+      paxLabel: 'VIP Solo (1 Kişi)',
+      dates: '18 – 23 Eylül',
+      statusText: '6 gün kaldı',
+      isInsideDubai: false,
+      unreadCount: 1,
+      hotel: 'Armani Hotel Dubai',
+      outstanding: '4.200 AED',
+    },
+  ],
   operations: initialOperations,
 
-  // ─── Send Customer Message ─────────────────────────────────────
+  // ─── Set Active Customer (User-Based Switching) ───────────────
+  setActiveCustomer: (customerId: string) => {
+    const cust = mockCustomersList.find((c) => c.id === customerId) || mockCustomer;
+    const threadMsgs = get().userThreads[customerId] || [];
+    set({
+      activeCustomerId: customerId,
+      customer: cust,
+      messages: threadMsgs,
+    });
+  },
+
+  // ─── Send Customer Message (Scoped to Active Customer Thread) ─
   sendCustomerMessage: (text: string) => {
+    const { activeCustomerId, userThreads, customer } = get();
     const newMsg: Message = {
       id: `msg-${Date.now()}`,
-      thread_id: 'thread-1',
+      thread_id: `thread-${activeCustomerId}`,
       sender_role: 'customer',
       type: 'text',
       content: text,
@@ -220,44 +175,61 @@ export const useTraviaStore = create<TraviaStoreState>((set, get) => ({
       created_at: new Date().toISOString(),
     };
 
+    const currentThread = userThreads[activeCustomerId] || [];
+    const updatedThread = [...currentThread, newMsg];
+
     set((state) => ({
-      messages: [...state.messages, newMsg],
+      userThreads: {
+        ...state.userThreads,
+        [activeCustomerId]: updatedThread,
+      },
+      messages: updatedThread,
       staffCustomers: state.staffCustomers.map((sc) =>
-        sc.id === 'cust-1' ? { ...sc, unreadCount: sc.unreadCount + 1 } : sc
+        sc.customerId === activeCustomerId ? { ...sc, unreadCount: sc.unreadCount + 1 } : sc
       ),
     }));
 
-    // Realistic concierge auto-response after 1.5s if in demo
+    // Realistic concierge auto-response after 1.5s
     setTimeout(() => {
       const state = get();
-      // Only reply if this was a customer message
       const replyMsg: Message = {
         id: `msg-reply-${Date.now()}`,
-        thread_id: 'thread-1',
+        thread_id: `thread-${activeCustomerId}`,
         sender_role: 'concierge',
         type: 'text',
-        content: 'Talebinizi aldık Edip Bey, concierge ekibimiz derhal ilgileniyor.',
+        content: `Talebinizi aldık ${customer.first_name} Bey/Hanım, concierge ekibimiz derhal ilgileniyor.`,
         status: 'read',
         created_at: new Date().toISOString(),
       };
 
+      const threadNow = state.userThreads[activeCustomerId] || [];
+      const updatedWithReply = [...threadNow, replyMsg];
+
       set({
-        messages: [...state.messages, replyMsg],
+        userThreads: {
+          ...state.userThreads,
+          [activeCustomerId]: updatedWithReply,
+        },
+        messages: updatedWithReply,
       });
     }, 1500);
   },
 
   // ─── Send Staff Message ───────────────────────────────────────
   sendStaffMessage: (text: string) => {
+    const { activeCustomerId, userThreads } = get();
     const newMsg: Message = {
       id: `msg-staff-${Date.now()}`,
-      thread_id: 'thread-1',
+      thread_id: `thread-${activeCustomerId}`,
       sender_role: 'concierge',
       type: 'text',
       content: text,
       status: 'sent',
       created_at: new Date().toISOString(),
     };
+
+    const currentThread = userThreads[activeCustomerId] || [];
+    const updatedThread = [...currentThread, newMsg];
 
     const newNotif: NotificationItem = {
       id: `notif-${Date.now()}`,
@@ -269,7 +241,11 @@ export const useTraviaStore = create<TraviaStoreState>((set, get) => ({
     };
 
     set((state) => ({
-      messages: [...state.messages, newMsg],
+      userThreads: {
+        ...state.userThreads,
+        [activeCustomerId]: updatedThread,
+      },
+      messages: updatedThread,
       notifications: [newNotif, ...state.notifications],
     }));
   },

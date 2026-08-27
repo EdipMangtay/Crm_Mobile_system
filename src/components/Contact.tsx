@@ -30,13 +30,27 @@ export default function Contact() {
     message: '',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({ name: '', phone: '', date: '', serviceType: 'vip-tour', message: '' });
-    }, 5000);
+    setIsSubmitting(true);
+    try {
+      await fetch('/api/website/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+    } catch {
+      // Graceful fallback
+    } finally {
+      setIsSubmitting(false);
+      setSubmitted(true);
+      setTimeout(() => {
+        setSubmitted(false);
+        setFormData({ name: '', phone: '', date: '', serviceType: 'vip-tour', message: '' });
+      }, 5000);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
