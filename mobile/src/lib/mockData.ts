@@ -28,6 +28,9 @@ export const mockCustomer: Customer = {
   whatsapp: '+905320000000',
   country: 'TR',
   preferred_language: 'tr',
+  tags: ['VIP', 'Couple', 'Active'],
+};
+
 export const mockCustomerAhmet: Customer = {
   id: 'd0000000-0000-0000-0000-000000000002',
   company_id: 'a0000000-0000-0000-0000-000000000001',

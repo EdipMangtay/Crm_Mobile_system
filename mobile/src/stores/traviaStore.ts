@@ -99,6 +99,83 @@ interface TraviaStoreState {
   markStaffMessagesAsRead: () => void;
 }
 
+const initialNotifications: NotificationItem[] = [
+  {
+    id: 'notif-1',
+    type: 'concierge_message',
+    title: 'Travia Concierge',
+    body: 'Bu akşam steakhouse rezervasyonu için iki seçenek hazırladık.',
+    is_read: false,
+    created_at: new Date(Date.now() - 2 * 60 * 1000).toISOString(),
+  },
+  {
+    id: 'notif-2',
+    type: 'booking_confirmed',
+    title: 'Yat rezervasyonu onaylandı',
+    body: 'Private Superyacht Sunset Cruise 13 Eylül 14:00 için onaylandı.',
+    is_read: false,
+    created_at: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
+  },
+  {
+    id: 'notif-3',
+    type: 'driver_assigned',
+    title: 'Şoför atandı',
+    body: 'Khalid Ahmed · Mercedes V-Class · DXB Terminal 3 VIP çıkış.',
+    is_read: true,
+    created_at: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+  },
+];
+
+const initialOperations: OperationItem[] = [
+  {
+    id: 'op-1',
+    bookingId: '20000000-0000-0000-0000-000000000001',
+    time: '10:30',
+    type: 'VIP Airport Transfer',
+    customerName: 'Edip Mangtay',
+    details: '2 Kişi · Mercedes V-Class',
+    status: 'confirmed',
+    driverOrLocation: 'DXB T3 → Atlantis The Royal',
+  },
+  {
+    id: 'op-2',
+    bookingId: '20000000-0000-0000-0000-000000000002',
+    time: '14:00',
+    type: 'Private Superyacht',
+    customerName: 'Edip Mangtay',
+    details: '2 Kişi · Sunset Cruise',
+    status: 'confirmed',
+    driverOrLocation: 'Dubai Marina Yacht Club',
+  },
+  {
+    id: 'op-3',
+    time: '20:30',
+    type: 'Nobu Dubai',
+    customerName: 'Edip Mangtay',
+    details: '2 Kişi · Teras rezervasyonu',
+    status: 'confirmed',
+    driverOrLocation: 'Atlantis The Palm',
+  },
+  {
+    id: 'op-4',
+    time: '09:10',
+    type: 'Havalimanı İniş',
+    customerName: 'Ahmet Yılmaz',
+    details: '4 Kişi · TK762',
+    status: 'completed',
+    driverOrLocation: 'DXB Terminal 3',
+  },
+  {
+    id: 'op-5',
+    time: '22:00',
+    type: 'Hotel Check-in',
+    customerName: 'Canan Özdemir',
+    details: '1 Kişi · VIP Solo',
+    status: 'pending',
+    driverOrLocation: 'Armani Hotel Dubai',
+  },
+];
+
 export const useTraviaStore = create<TraviaStoreState>((set, get) => ({
   activeCustomerId: 'd0000000-0000-0000-0000-000000000001',
   customer: mockCustomer,
