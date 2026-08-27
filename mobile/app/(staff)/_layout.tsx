@@ -2,14 +2,23 @@
  * TRAVIA DUBAI — Staff Tab Navigation (PRD §38)
  * 5 Tabs: Ana Sayfa, Müşteriler, Mesajlar, Operasyon, Menü
  */
-import React from 'react';
-import { Tabs } from 'expo-router';
+import React, { useEffect } from 'react';
+import { Tabs, useRouter } from 'expo-router';
 import { StyleSheet, Platform } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { colors } from '../../src/design/tokens';
 import { fontFamily } from '../../src/design/typography';
+import { useAuthStore } from '../../src/stores/authStore';
 
 export default function StaffTabsLayout() {
+  const router = useRouter();
+  const { isAuthenticated, isStaff } = useAuthStore();
+
+  useEffect(() => {
+    if (!isAuthenticated || !isStaff) {
+      router.replace('/(auth)/login');
+    }
+  }, [isAuthenticated, isStaff, router]);
   return (
     <Tabs
       screenOptions={{

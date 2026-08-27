@@ -40,8 +40,8 @@ export default function LoginScreen() {
       return;
     }
 
-    // Direct instant check for user/user and admin/admin
-    if ((u === 'user' && p === 'user') || u.includes('edip') || u === 'user') {
+    // Strict credential checking for demo roles
+    if ((u === 'user' || u === 'edip' || u === 'edip.demo') && (p === 'user' || p === '123456' || p === 'edip123')) {
       useAuthStore.setState({
         isAuthenticated: true,
         isCustomer: true,
@@ -66,7 +66,7 @@ export default function LoginScreen() {
       return;
     }
 
-    if ((u === 'admin' && p === 'admin') || u.includes('efza') || u.includes('staff') || u === 'admin') {
+    if ((u === 'admin' || u === 'efza' || u === 'staff') && (p === 'admin' || p === '123456' || p === 'staff123')) {
       useAuthStore.setState({
         isAuthenticated: true,
         isCustomer: false,

@@ -58,6 +58,7 @@ function LoginForm() {
         return;
       }
 
+      setLoading(false);
       router.push(redirect);
       router.refresh();
     } catch {

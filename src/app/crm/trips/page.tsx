@@ -8,9 +8,9 @@ import { useState } from 'react';
 
 const DEMO_TRIPS = [
   { id: 'f0000000-0000-0000-0000-000000000001', title: 'Travia Dubai — Premium Couple', customer: 'Edip Mangtay', country: 'TR', dates: '12-17 Eyl 2026', nights: 5, pax: 2, hotel: 'Atlantis The Royal', total: 18500, paid: 5000, status: 'upcoming' as const },
-  { id: '2', title: 'Dubai Luxury Family', customer: 'Ahmet Yılmaz', country: 'TR', dates: '15-21 Eyl 2026', nights: 6, pax: 4, hotel: 'Burj Al Arab Jumeirah', total: 42000, paid: 42000, status: 'upcoming' as const },
-  { id: '3', title: 'VIP Solo Retreat', customer: 'Canan Özdemir', country: 'TR', dates: '18-23 Eyl 2026', nights: 5, pax: 1, hotel: 'Armani Hotel Dubai', total: 15000, paid: 10800, status: 'upcoming' as const },
-  { id: '4', title: 'Dubai Business & Leisure', customer: 'Hans Weber', country: 'DE', dates: '01-05 Eki 2026', nights: 4, pax: 2, hotel: 'Address Sky View', total: 24000, paid: 24000, status: 'upcoming' as const },
+  { id: 'f0000000-0000-0000-0000-000000000002', title: 'Dubai Luxury Family', customer: 'Ahmet Yılmaz', country: 'TR', dates: '15-21 Eyl 2026', nights: 6, pax: 4, hotel: 'Burj Al Arab Jumeirah', total: 42000, paid: 42000, status: 'upcoming' as const },
+  { id: 'f0000000-0000-0000-0000-000000000003', title: 'VIP Solo Retreat', customer: 'Canan Özdemir', country: 'TR', dates: '18-23 Eyl 2026', nights: 5, pax: 1, hotel: 'Armani Hotel Dubai', total: 15000, paid: 10800, status: 'upcoming' as const },
+  { id: 'f0000000-0000-0000-0000-000000000004', title: 'Dubai Business & Leisure', customer: 'Hans Weber', country: 'DE', dates: '01-05 Eki 2026', nights: 4, pax: 2, hotel: 'Address Sky View', total: 24000, paid: 24000, status: 'upcoming' as const },
 ];
 
 const STATUS_MAP = {

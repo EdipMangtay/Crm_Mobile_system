@@ -66,9 +66,11 @@ export default function CommandPalette({ open, onClose }: CommandPaletteProps) {
   const rawDemoResults: SearchResult[] = [
     { type: 'customer', id: '1', title: 'Edip Mangtay', subtitle: 'TR · VIP · Atlantis The Royal', href: '/crm/customers/d0000000-0000-0000-0000-000000000001' },
     { type: 'customer', id: '2', title: 'Ahmet Yılmaz', subtitle: 'TR · Family · Burj Al Arab', href: '/crm/customers/d0000000-0000-0000-0000-000000000002' },
-    { type: 'lead', id: '1', title: 'Marcus Vance', subtitle: 'Awaiting Proposal · 85.000 AED', href: '/crm/leads/1' },
-    { type: 'trip', id: '1', title: 'Travia Dubai — Premium Couple', subtitle: 'Atlantis The Royal · 12-17 Sep', href: '/crm/trips/1' },
-    { type: 'booking', id: '1', title: 'VIP Chauffeur — Mercedes V-Class', subtitle: 'DXB → Atlantis · 12 Sep 10:30', href: '/crm/bookings' },
+    { type: 'lead', id: 'l0000000-0000-0000-0000-000000000001', title: 'Stefan Müller', subtitle: 'Nitelikli · 52.000 AED · DE', href: '/crm/leads/l0000000-0000-0000-0000-000000000001' },
+    { type: 'lead', id: 'l0000000-0000-0000-0000-000000000002', title: 'Ayşe Korkmaz', subtitle: 'İletişimde · 18.000 AED · TR', href: '/crm/leads/l0000000-0000-0000-0000-000000000002' },
+    { type: 'trip', id: 'f0000000-0000-0000-0000-000000000001', title: 'Travia Dubai — Premium Couple', subtitle: 'Atlantis The Royal · 12-17 Eyl', href: '/crm/trips/f0000000-0000-0000-0000-000000000001' },
+    { type: 'trip', id: 'f0000000-0000-0000-0000-000000000002', title: 'Dubai Luxury Family', subtitle: 'Burj Al Arab · 15-21 Eyl', href: '/crm/trips/f0000000-0000-0000-0000-000000000002' },
+    { type: 'booking', id: '1', title: 'VIP Chauffeur — Mercedes V-Class', subtitle: 'DXB → Atlantis · 12 Eyl 10:30', href: '/crm/bookings' },
   ];
 
   const results = query.trim()

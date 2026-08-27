@@ -13,7 +13,15 @@ const PAYMENTS = [
   { id: 'pay-3', customer: 'Ahmet Yılmaz', trip: 'Dubai Luxury Family', amount: 42000, method: 'Stripe Kredi Kartı', status: 'received' as const, date: '25 Ağu 2026 11:20', ref: 'TRV-2026-0798' },
   { id: 'pay-4', customer: 'Canan Özdemir', trip: 'VIP Solo Retreat', amount: 10800, method: 'Banka Havalesi', status: 'received' as const, date: '24 Ağu 2026 16:45', ref: 'TRV-2026-0785' },
   { id: 'pay-5', customer: 'Canan Özdemir', trip: 'VIP Solo Retreat', amount: 4200, method: 'Nakit / Havalimanı', status: 'pending' as const, date: '18 Eyl 2026', ref: 'TRV-2026-0786' },
+  { id: 'pay-6', customer: 'Fatma Demir', trip: 'Solo Shopping & Dubai Mall', amount: 3500, method: 'Kredi Kartı', status: 'refunded' as const, date: '23 Ağu 2026 10:15', ref: 'TRV-2026-0770' },
 ];
+
+const PAYMENT_STATUS_MAP: Record<string, { label: string; variant: 'success' | 'warning' | 'error' | 'default' }> = {
+  received: { label: 'Tahsil Edildi', variant: 'success' },
+  pending: { label: 'Bekliyor', variant: 'warning' },
+  refunded: { label: 'İade Edildi', variant: 'error' },
+  cancelled: { label: 'İptal', variant: 'default' },
+};
 
 export default function PaymentsPage() {
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
@@ -89,9 +97,10 @@ export default function PaymentsPage() {
                 <td className="px-4 py-3 text-xs text-[#F5F1E8]/40">{p.date}</td>
                 <td className="px-4 py-3 text-sm font-mono font-semibold text-[#F5F1E8]">{formatCurrency(p.amount)}</td>
                 <td className="px-4 py-3">
-                  <Badge variant={p.status === 'received' ? 'success' : 'warning'}>
-                    {p.status === 'received' ? 'Tahsil Edildi' : 'Bekliyor'}
-                  </Badge>
+                  {(() => {
+                    const stg = PAYMENT_STATUS_MAP[p.status] || { label: p.status, variant: 'default' as const };
+                    return <Badge variant={stg.variant}>{stg.label}</Badge>;
+                  })()}
                 </td>
               </tr>
             ))}

@@ -29,7 +29,7 @@ import TimelineItem from '../../src/components/trip/TimelineItem';
 import StatusBadge from '../../src/components/ui/StatusBadge';
 import Button from '../../src/components/ui/Button';
 import Avatar from '../../src/components/ui/Avatar';
-import { getGreeting } from '../../src/utils/date';
+import { getGreeting, timeUntil } from '../../src/utils/date';
 
 export default function CustomerHomeScreen() {
   const router = useRouter();
@@ -150,7 +150,7 @@ export default function CustomerHomeScreen() {
         {nextBooking && (
           <NextExperienceCard
             booking={nextBooking}
-            countdownText="2 saat 14 dakika sonra"
+            countdownText={nextBooking.start_time ? timeUntil(new Date(), nextBooking.start_time) : timeUntil(trip.start_date)}
             onPressDetail={() => setSelectedBookingModal(nextBooking)}
           />
         )}

@@ -88,7 +88,7 @@ export default function ProfileScreen() {
                 <Feather name="star" size={10} color={colors.gold} />
                 <Text style={styles.userTagText}>VIP MİSAFİR</Text>
               </View>
-              <Text style={styles.userPhone}>+90 532 000 0000</Text>
+              <Text style={styles.userPhone}>{customer.phone || '+90 532 000 0000'}</Text>
             </View>
           </View>
         </View>

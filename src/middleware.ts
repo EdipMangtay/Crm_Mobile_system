@@ -1,6 +1,6 @@
 /**
  * TRAVIA — Next.js Middleware
- * Protects CRM routes with server-side auth
+ * Protects CRM and Platform Admin routes with server-side auth
  * Public website routes pass through untouched
  */
 
@@ -10,13 +10,29 @@ import { createSupabaseMiddlewareClient } from '@/lib/supabase/middleware';
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Protect Platform Admin
+  if (pathname.startsWith('/platform-admin')) {
+    const demoCookie = request.cookies.get('travia_staff_session');
+    const isDev = process.env.NODE_ENV !== 'production';
+
+    // Allow in local dev / demo mode
+    if (demoCookie?.value === 'demo' || isDev) {
+      return NextResponse.next();
+    }
+
+    const loginUrl = new URL('/crm/login', request.url);
+    loginUrl.searchParams.set('error', 'unauthorized');
+    loginUrl.searchParams.set('redirect', pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
   // Only protect CRM routes (except login)
   if (!pathname.startsWith('/crm')) {
     return NextResponse.next();
   }
 
-  // Allow CRM login page and API routes
-  if (pathname === '/crm/login' || pathname.startsWith('/api/')) {
+  // Allow CRM login page
+  if (pathname === '/crm/login') {
     return NextResponse.next();
   }
 
@@ -26,9 +42,10 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // If Supabase credentials are missing or default placeholder, allow demo preview
+  // If Supabase credentials are not set and in development, allow preview
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  if (!supabaseUrl || supabaseUrl.includes('your-project')) {
+  const isDemo = process.env.TRAVIA_DEMO_MODE === 'true' || process.env.NODE_ENV !== 'production';
+  if ((!supabaseUrl || supabaseUrl.includes('your-project')) && isDemo) {
     return NextResponse.next();
   }
 
@@ -61,10 +78,15 @@ export async function middleware(request: NextRequest) {
     return response;
   } catch {
     // If Supabase service unreachable during demo/local dev, allow preview
-    return NextResponse.next();
+    if (isDemo) {
+      return NextResponse.next();
+    }
+    const loginUrl = new URL('/crm/login', request.url);
+    loginUrl.searchParams.set('error', 'service_unavailable');
+    return NextResponse.redirect(loginUrl);
   }
 }
 
 export const config = {
-  matcher: ['/crm/:path*'],
+  matcher: ['/crm/:path*', '/platform-admin/:path*'],
 };

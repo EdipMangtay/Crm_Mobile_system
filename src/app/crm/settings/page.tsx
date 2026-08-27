@@ -3,6 +3,15 @@
 import { Settings, Shield, Bell, Key, Globe, Database } from 'lucide-react';
 
 export default function SettingsPage() {
+  const isSupabaseConfigured = Boolean(
+    typeof process !== 'undefined' &&
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+    !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('your-project')
+  );
+  const supabaseUrlDisplay = isSupabaseConfigured
+    ? process.env.NEXT_PUBLIC_SUPABASE_URL
+    : 'Bağlı Değil (Yerel In-Memory Depo Aktif)';
+
   return (
     <div className="space-y-6 max-w-[1200px]">
       <div>
@@ -23,11 +32,15 @@ export default function SettingsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
             <div className="bg-[#111827]/50 p-3 rounded-xl border border-[#C9A66B]/5">
               <span className="text-[10px] text-[#F5F1E8]/30 font-mono">SUPABASE URL</span>
-              <p className="font-mono text-[#F5F1E8]/80 mt-0.5">https://traviadubai.supabase.co</p>
+              <p className="font-mono text-[#F5F1E8]/80 mt-0.5">{supabaseUrlDisplay}</p>
             </div>
             <div className="bg-[#111827]/50 p-3 rounded-xl border border-[#C9A66B]/5">
               <span className="text-[10px] text-[#F5F1E8]/30 font-mono">DURUM</span>
-              <p className="text-emerald-400 font-semibold mt-0.5">● Canlı Bağlantı Hazır</p>
+              {isSupabaseConfigured ? (
+                <p className="text-emerald-400 font-semibold mt-0.5">● Canlı Supabase Bağlantısı Hazır</p>
+              ) : (
+                <p className="text-amber-400 font-semibold mt-0.5">○ Demo / In-Memory Modu (Çevrimdışı Depo)</p>
+              )}
             </div>
           </div>
         </div>

@@ -34,6 +34,7 @@ import {
   mockRequests,
   mockPayments,
   mockDocuments,
+  mockCustomerDataMap,
 } from '../lib/mockData';
 
 export interface StaffCustomerItem {
@@ -230,11 +231,16 @@ export const useTraviaStore = create<TraviaStoreState>((set, get) => ({
 
   // ─── Set Active Customer (User-Based Switching) ───────────────
   setActiveCustomer: (customerId: string) => {
-    const cust = mockCustomersList.find((c) => c.id === customerId) || mockCustomer;
+    const dataset = mockCustomerDataMap[customerId];
+    const cust = dataset?.customer || mockCustomersList.find((c) => c.id === customerId) || mockCustomer;
     const threadMsgs = get().userThreads[customerId] || [];
     set({
       activeCustomerId: customerId,
       customer: cust,
+      trip: dataset ? dataset.trip : get().trip,
+      payments: dataset ? dataset.payments : get().payments,
+      documents: dataset ? dataset.documents : get().documents,
+      requests: dataset ? dataset.requests : get().requests,
       messages: threadMsgs,
     });
   },
@@ -329,10 +335,11 @@ export const useTraviaStore = create<TraviaStoreState>((set, get) => ({
 
   // ─── Create Customer Request (PRD §26, §27, §31) ──────────────
   createCustomerRequest: (data) => {
+    const { activeCustomerId, customer } = get();
     const newReq: CustomerRequest = {
       id: `req-${Date.now()}`,
       company_id: 'a0000000-0000-0000-0000-000000000001',
-      customer_id: 'd0000000-0000-0000-0000-000000000001',
+      customer_id: activeCustomerId,
       category: data.category,
       status: 'received',
       title: data.title,
@@ -341,13 +348,13 @@ export const useTraviaStore = create<TraviaStoreState>((set, get) => ({
       pax_count: data.pax_count || 2,
       notes: data.notes,
       created_at: new Date().toISOString(),
-      customer_name: 'Edip Mangtay',
+      customer_name: `${customer.first_name} ${customer.last_name}`.trim(),
     };
 
     // 1. Post system card message to chat (PRD §25)
     const systemMsg: Message = {
       id: `sys-${Date.now()}`,
-      thread_id: 'thread-1',
+      thread_id: `thread-${activeCustomerId}`,
       sender_role: 'concierge',
       type: 'system',
       content: `Yeni Talep Oluşturuldu: ${data.title} (${data.date}${data.time ? ' · ' + data.time : ''})`,
@@ -376,7 +383,7 @@ export const useTraviaStore = create<TraviaStoreState>((set, get) => ({
 
   // ─── Approve Request (PRD §43, §61 step 10-12) ───────────────
   approveRequest: (requestId: string) => {
-    const { requests, itineraryDays } = get();
+    const { requests, itineraryDays, trip, activeCustomerId } = get();
     const req = requests.find((r) => r.id === requestId);
     if (!req) return;
 
@@ -385,19 +392,24 @@ export const useTraviaStore = create<TraviaStoreState>((set, get) => ({
       r.id === requestId ? { ...r, status: 'confirmed' as RequestStatus } : r
     );
 
-    // 2. Add as an Itinerary Item to the relevant day (Day 2 or Day 3)
-    const targetDayIndex = req.date?.includes('14')
-      ? 2
-      : req.date?.includes('13')
-      ? 1
-      : 0;
+
+    // 2. Calculate target day index dynamically from trip start date
+    let targetDayIndex = 0;
+    if (req.date && trip.start_date) {
+      const start = new Date(trip.start_date).getTime();
+      const reqDate = new Date(req.date).getTime();
+      const diffDays = Math.round((reqDate - start) / (1000 * 60 * 60 * 24));
+      if (diffDays >= 0 && diffDays < itineraryDays.length) {
+        targetDayIndex = diffDays;
+      }
+    }
 
     const newBookingId = `booking-gen-${Date.now()}`;
     const newBooking: Booking = {
       id: newBookingId,
       company_id: 'a0000000-0000-0000-0000-000000000001',
-      trip_id: 'f0000000-0000-0000-0000-000000000001',
-      customer_id: 'd0000000-0000-0000-0000-000000000001',
+      trip_id: trip.id,
+      customer_id: req.customer_id || activeCustomerId,
       type: (req.category === 'restaurant'
         ? 'restaurant'
         : req.category === 'yacht'
@@ -444,7 +456,7 @@ export const useTraviaStore = create<TraviaStoreState>((set, get) => ({
     // 3. Post system message to chat
     const systemMsg: Message = {
       id: `sys-conf-${Date.now()}`,
-      thread_id: 'thread-1',
+      thread_id: `thread-${req.customer_id || activeCustomerId}`,
       sender_role: 'concierge',
       type: 'system',
       content: `Rezervasyon Onaylandı: ${req.title} · ${req.time || '20:30'}`,
@@ -545,7 +557,7 @@ export const useTraviaStore = create<TraviaStoreState>((set, get) => ({
         m.sender_role === 'customer' ? { ...m, status: 'read' as const } : m
       ),
       staffCustomers: state.staffCustomers.map((sc) =>
-        sc.id === 'cust-1' ? { ...sc, unreadCount: 0 } : sc
+        sc.customerId === state.activeCustomerId ? { ...sc, unreadCount: 0 } : sc
       ),
     }));
   },

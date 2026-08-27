@@ -43,6 +43,11 @@ export default function ChangePasswordScreen() {
     const res = await changePassword(password);
     setLoading(false);
 
+    if (res?.error) {
+      setError('Şifre güncellenirken bir hata oluştu. Lütfen tekrar deneyin.');
+      return;
+    }
+
     useAuthStore.setState({ mustChangePassword: false });
     router.replace('/(customer)');
   };

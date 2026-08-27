@@ -2,14 +2,23 @@
  * TRAVIA DUBAI — Customer Tab Navigation (PRD §13)
  * 5 Tabs: Ana Sayfa, Seyahatim, Concierge (highlighted center), Keşfet, Profil
  */
-import React from 'react';
-import { Tabs } from 'expo-router';
+import React, { useEffect } from 'react';
+import { Tabs, useRouter } from 'expo-router';
 import { View, StyleSheet, Platform } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { colors, radius } from '../../src/design/tokens';
 import { fontFamily, fontSize } from '../../src/design/typography';
+import { useAuthStore } from '../../src/stores/authStore';
 
 export default function CustomerTabsLayout() {
+  const router = useRouter();
+  const { isAuthenticated } = useAuthStore();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.replace('/(auth)/login');
+    }
+  }, [isAuthenticated, router]);
   return (
     <Tabs
       screenOptions={{

@@ -31,25 +31,31 @@ export default function Contact() {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitError(null);
     try {
-      await fetch('/api/website/contact', {
+      const res = await fetch('/api/website/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-    } catch {
-      // Graceful fallback
-    } finally {
-      setIsSubmitting(false);
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Talep iletilemedi. Lütfen bilgilerinizi kontrol edin.');
+      }
       setSubmitted(true);
       setTimeout(() => {
         setSubmitted(false);
         setFormData({ name: '', phone: '', date: '', serviceType: 'vip-tour', message: '' });
       }, 5000);
+    } catch (err: unknown) {
+      setSubmitError(err instanceof Error ? err.message : 'Bağlantı hatası. Lütfen tekrar deneyin.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -142,6 +148,12 @@ export default function Contact() {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                   >
+                    {submitError && (
+                      <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs flex items-center gap-2">
+                        <span>⚠️</span>
+                        <span>{submitError}</span>
+                      </div>
+                    )}
                     <div className="grid sm:grid-cols-2 gap-6">
                       <div>
                         <label htmlFor="contact-name" className="block text-xs font-mono tracking-wider text-gold-400 uppercase mb-2">
@@ -231,10 +243,11 @@ export default function Contact() {
                       <MagneticButton
                         variant="gold"
                         size="lg"
-                        className="w-full py-4 text-base shadow-[0_0_30px_rgba(201,166,107,0.35)]"
+                        disabled={isSubmitting}
+                        className="w-full py-4 text-base shadow-[0_0_30px_rgba(201,166,107,0.35)] disabled:opacity-50"
                       >
                         <Send className="h-4 w-4 mr-2.5 inline" />
-                        VIP Talep Formunu Gönder
+                        {isSubmitting ? 'Talebiniz İletiliyor...' : 'VIP Talep Formunu Gönder'}
                       </MagneticButton>
                     </div>
                   </motion.form>

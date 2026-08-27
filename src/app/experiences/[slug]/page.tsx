@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import { ArrowLeft, Clock, Users, Shield, Sparkles, Check, Phone, MessageCircle } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -111,7 +112,11 @@ export default async function ExperienceDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const experience = EXPERIENCES_DATA[slug] || EXPERIENCES_DATA['yacht-sunset'];
+  const experience = EXPERIENCES_DATA[slug];
+
+  if (!experience) {
+    notFound();
+  }
 
   return (
     <div className="min-h-screen bg-navy-900 text-cream">

@@ -395,6 +395,196 @@ export const INITIAL_USER_THREADS: Record<string, UserMessageThread> = {
   },
 };
 
+export interface SharedLead {
+  id: string;
+  first_name: string;
+  last_name: string;
+  country: string;
+  phone: string;
+  whatsapp?: string;
+  email: string;
+  travel_start_date: string;
+  travel_end_date: string;
+  pax_count: number;
+  travel_type: string;
+  stage: 'new' | 'contacted' | 'qualified' | 'proposal_sent' | 'negotiation' | 'booked' | 'lost';
+  estimated_value: number;
+  budget_range?: string;
+  source: string;
+  utm_campaign?: string;
+  assigned_to: string;
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  lead_score: number;
+  created_at: string;
+  interests: string[];
+  notes?: string;
+}
+
+export const SHARED_LEADS: SharedLead[] = [
+  {
+    id: 'l0000000-0000-0000-0000-000000000001',
+    first_name: 'Stefan',
+    last_name: 'Müller',
+    country: 'DE',
+    phone: '+49 170 123 4567',
+    whatsapp: '+491701234567',
+    email: 'stefan.mueller@luxurytravel.de',
+    travel_start_date: '2026-10-01',
+    travel_end_date: '2026-10-07',
+    pax_count: 6,
+    travel_type: 'VIP Family & Friends',
+    budget_range: '50,000 - 75,000 AED',
+    stage: 'qualified',
+    estimated_value: 52000,
+    source: 'Instagram Ad (Summer Campaign)',
+    utm_campaign: 'dubai_luxury_october',
+    assigned_to: 'Furkan Çelik',
+    priority: 'high',
+    lead_score: 83,
+    interests: ['Superyacht Charter', 'Fine Dining (Nobu/Zuma)', 'Desert Safari Royal Majlis', 'VIP Chauffeur Maybach'],
+    notes: 'Misafir 6 kişilik özel yat ve çöl kampı deneyimi istiyor. Çocuklu aile, 2 çocuk var. Özel şefli villa veya süit konaklama araştırılıyor.',
+    created_at: '2026-08-25T14:30:00Z',
+  },
+  {
+    id: 'l0000000-0000-0000-0000-000000000002',
+    first_name: 'Ayşe',
+    last_name: 'Korkmaz',
+    country: 'TR',
+    phone: '+90 532 987 6543',
+    whatsapp: '+905329876543',
+    email: 'ayse.korkmaz@email.com',
+    travel_start_date: '2026-09-25',
+    travel_end_date: '2026-09-30',
+    pax_count: 2,
+    travel_type: 'Luxury Spa & Retreat',
+    budget_range: '15,000 - 25,000 AED',
+    stage: 'contacted',
+    estimated_value: 18000,
+    source: 'Google Search',
+    assigned_to: 'Efza Yılmaz',
+    priority: 'medium',
+    lead_score: 65,
+    interests: ['Luxury', 'Spa & Wellness', 'Fine Dining'],
+    notes: 'Atlantis The Royal veya Bulgari Resort konaklama tercihi.',
+    created_at: '2026-08-26T11:00:00Z',
+  },
+  {
+    id: 'l0000000-0000-0000-0000-000000000003',
+    first_name: 'James',
+    last_name: 'Wilson',
+    country: 'GB',
+    phone: '+44 7700 900000',
+    whatsapp: '+447700900000',
+    email: 'james.wilson@luxuryuk.co.uk',
+    travel_start_date: '2026-11-15',
+    travel_end_date: '2026-11-22',
+    pax_count: 4,
+    travel_type: 'Supercar & Adventure',
+    budget_range: '30,000 - 50,000 AED',
+    stage: 'qualified',
+    estimated_value: 38000,
+    source: 'Referral',
+    assigned_to: 'Furkan Çelik',
+    priority: 'high',
+    lead_score: 78,
+    interests: ['Desert Safari', 'Supercar Rental', 'Helicopter Tour'],
+    notes: 'Ferrari F8 kiralama ve özel çöl kampı istedi.',
+    created_at: '2026-08-25T16:00:00Z',
+  },
+  {
+    id: 'l0000000-0000-0000-0000-000000000004',
+    first_name: 'Mert',
+    last_name: 'Kaya',
+    country: 'TR',
+    phone: '+90 535 111 2233',
+    whatsapp: '+905351112233',
+    email: 'mert.kaya@email.com',
+    travel_start_date: '2026-10-10',
+    travel_end_date: '2026-10-14',
+    pax_count: 2,
+    travel_type: 'Honeymoon Exclusive',
+    budget_range: '20,000 - 30,000 AED',
+    stage: 'proposal_sent',
+    estimated_value: 22000,
+    source: 'WhatsApp',
+    assigned_to: 'Efza Yılmaz',
+    priority: 'medium',
+    lead_score: 71,
+    interests: ['Honeymoon', 'Beach Club', 'Private Yacht'],
+    notes: 'Teklif PDF olarak gönderildi, balayı karşılama paketi dahil.',
+    created_at: '2026-08-24T09:30:00Z',
+  },
+  {
+    id: 'l0000000-0000-0000-0000-000000000005',
+    first_name: 'Александр',
+    last_name: 'Петrov',
+    country: 'RU',
+    phone: '+7 926 123 4567',
+    whatsapp: '+79261234567',
+    email: 'alex.petrov@vipinvest.ru',
+    travel_start_date: '2026-12-20',
+    travel_end_date: '2027-01-05',
+    pax_count: 3,
+    travel_type: 'UHNW New Year in Dubai',
+    budget_range: '60,000 - 100,000 AED',
+    stage: 'negotiation',
+    estimated_value: 65000,
+    source: 'Instagram',
+    assigned_to: 'Furkan Çelik',
+    priority: 'urgent',
+    lead_score: 91,
+    interests: ['UHNW', 'Yacht New Year Fireworks', 'Helicopter'],
+    notes: 'Yılbaşı gecesi Burj Al Arab açıklarında süperyat havai fişek seyri.',
+    created_at: '2026-08-23T14:15:00Z',
+  },
+  {
+    id: 'l0000000-0000-0000-0000-000000000006',
+    first_name: 'Edip',
+    last_name: 'Mangtay',
+    country: 'TR',
+    phone: '+90 532 000 0000',
+    whatsapp: '+905320000000',
+    email: 'edip@traviadubai.com',
+    travel_start_date: '2026-09-12',
+    travel_end_date: '2026-09-17',
+    pax_count: 2,
+    travel_type: 'VIP Couple Luxury',
+    budget_range: '18,500 AED',
+    stage: 'booked',
+    estimated_value: 18500,
+    source: 'Direct Client',
+    assigned_to: 'Furkan Çelik',
+    priority: 'medium',
+    lead_score: 95,
+    interests: ['VIP', 'Couple', 'Fine Dining', 'Superyacht'],
+    notes: 'Rezervasyon onaylandı, kapora ödendi, seyahat takvimi aktif.',
+    created_at: '2026-08-20T10:00:00Z',
+  },
+  {
+    id: 'l0000000-0000-0000-0000-000000000007',
+    first_name: 'Fatma',
+    last_name: 'Demir',
+    country: 'TR',
+    phone: '+90 533 444 5566',
+    whatsapp: '+905334445566',
+    email: 'fatma.demir@email.com',
+    travel_start_date: '2026-09-20',
+    travel_end_date: '2026-09-24',
+    pax_count: 1,
+    travel_type: 'Solo Shopping & Dubai Mall',
+    budget_range: '10,000 - 15,000 AED',
+    stage: 'lost',
+    estimated_value: 12000,
+    source: 'Google Search',
+    assigned_to: 'Efza Yılmaz',
+    priority: 'low',
+    lead_score: 32,
+    interests: ['Solo', 'Shopping', 'City Tour'],
+    notes: 'Seyahat planını erteledi.',
+    created_at: '2026-08-22T17:00:00Z',
+  },
+];
+
 /**
  * Singleton In-Memory Repository
  * Maintains state across CRM, Mobile API, and SSR during runtime.
@@ -495,9 +685,60 @@ class TraviaDataRepository {
     return this.customers;
   }
 
-  // Get customer by ID
+  // Get customer by ID (supports UUID or short ID)
   getCustomer(id: string): Customer | null {
-    return this.customers.find(c => c.id === id) || null;
+    if (!id) return null;
+    return this.customers.find(c =>
+      c.id === id ||
+      c.id.endsWith(id) ||
+      (id === '1' && c.id.endsWith('0001')) ||
+      (id === '2' && c.id.endsWith('0002')) ||
+      (id === '3' && c.id.endsWith('0003')) ||
+      (id === '4' && c.id.endsWith('0004'))
+    ) || null;
+  }
+
+  // Get lead by ID (supports short ID like '1', '2' or full UUID)
+  getLead(id: string): SharedLead | null {
+    if (!id) return null;
+    return SHARED_LEADS.find(l =>
+      l.id === id ||
+      l.id.endsWith(id) ||
+      l.id.replace('l0000000-0000-0000-0000-00000000000', '') === id ||
+      (id === '1' && l.id.endsWith('0001')) ||
+      (id === '2' && l.id.endsWith('0002')) ||
+      (id === '3' && l.id.endsWith('0003')) ||
+      (id === '4' && l.id.endsWith('0004')) ||
+      (id === '5' && l.id.endsWith('0005')) ||
+      (id === '6' && l.id.endsWith('0006')) ||
+      (id === '7' && l.id.endsWith('0007'))
+    ) || null;
+  }
+
+  // Get all leads
+  getAllLeads(): SharedLead[] {
+    return SHARED_LEADS;
+  }
+
+  // Get trip by ID (supports trip ID, customer ID, or short ID)
+  getTrip(id: string): Trip | null {
+    if (!id) return null;
+    if (SHARED_TRIPS[id]) return SHARED_TRIPS[id];
+    const all = Object.values(SHARED_TRIPS);
+    return all.find(t =>
+      t.id === id ||
+      t.customer_id === id ||
+      t.id.endsWith(id) ||
+      (id === '1' && t.id.endsWith('0001')) ||
+      (id === '2' && t.id.endsWith('0002')) ||
+      (id === '3' && t.id.endsWith('0003')) ||
+      (id === '4' && t.id.endsWith('0004'))
+    ) || null;
+  }
+
+  // Get trip by customer ID
+  getTripByCustomer(customerId: string): Trip | null {
+    return SHARED_TRIPS[customerId] || null;
   }
 }
 

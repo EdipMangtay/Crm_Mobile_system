@@ -91,6 +91,8 @@ export default function CrmSidebar() {
   const { tenant } = useTenant();
 
   const handleLogout = async () => {
+    // Clear demo session cookie if set
+    document.cookie = 'travia_staff_session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     const supabase = createSupabaseBrowserClient();
     await supabase.auth.signOut();
     router.push('/crm/login');

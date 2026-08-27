@@ -729,3 +729,162 @@ export const mockExperiences: ExperienceItem[] = [
   },
 ];
 
+export interface CustomerDataset {
+  customer: Customer;
+  trip: Trip;
+  payments: PaymentItem[];
+  documents: DocumentItem[];
+  requests: CustomerRequest[];
+  itineraryDays: ItineraryDay[];
+  bookings: Booking[];
+}
+
+export const mockCustomerDataMap: Record<string, CustomerDataset> = {
+  'd0000000-0000-0000-0000-000000000001': {
+    customer: mockCustomer,
+    trip: mockTrip,
+    payments: mockPayments,
+    documents: mockDocuments,
+    requests: mockRequests,
+    itineraryDays: mockItineraryDays,
+    bookings: [mockBookingTransfer, mockBookingYacht],
+  },
+  'd0000000-0000-0000-0000-000000000002': {
+    customer: mockCustomerAhmet,
+    trip: {
+      id: 'f0000000-0000-0000-0000-000000000002',
+      company_id: 'a0000000-0000-0000-0000-000000000001',
+      customer_id: 'd0000000-0000-0000-0000-000000000002',
+      title: 'Dubai Luxury Family Holiday',
+      subtitle: 'Burj Al Arab 2-Bedroom Suite & Royal Safari',
+      destination: 'Dubai',
+      start_date: '2026-09-15',
+      end_date: '2026-09-21',
+      nights: 6,
+      pax_count: 4,
+      pax_label: 'Luxury Family (4 Kişi)',
+      status: 'upcoming',
+      hotel_name: 'Burj Al Arab Jumeirah',
+      hotel_address: 'Umm Suqeim 3, Dubai',
+      total_amount: 42000,
+      currency: 'AED',
+      timezone: 'Asia/Dubai',
+    },
+    payments: [
+      {
+        id: 'pay-ahmet-1',
+        trip_id: 'f0000000-0000-0000-0000-000000000002',
+        amount: 42000,
+        currency: 'AED',
+        status: 'received',
+        description: 'Tam Paket Ödemesi (Stripe)',
+        payment_method: 'Stripe Kredi Kartı',
+        paid_at: '2026-08-25T11:20:00Z',
+      },
+    ],
+    documents: [
+      {
+        id: 'doc-ahmet-1',
+        customer_id: 'd0000000-0000-0000-0000-000000000002',
+        type: 'hotel_voucher',
+        title: 'Burj Al Arab 2-Bedroom Suite Voucher',
+        file_url: 'https://traviadubai.com/docs/voucher-burj-family.pdf',
+        file_name: 'voucher-burj-family.pdf',
+        file_size: 1540000,
+        created_at: '2026-08-25T12:00:00Z',
+      },
+    ],
+    requests: [
+      {
+        id: 'req-ahmet-1',
+        company_id: 'a0000000-0000-0000-0000-000000000001',
+        customer_id: 'd0000000-0000-0000-0000-000000000002',
+        category: 'activity',
+        status: 'confirmed',
+        title: 'Wild Wadi Su Parkı Özel Kabana',
+        date: '2026-09-17',
+        time: '11:00',
+        pax_count: 4,
+        notes: 'Çocuklar için gölge kabana ve meyve tabağı ikramı.',
+        created_at: '2026-08-26T10:00:00Z',
+        customer_name: 'Ahmet Yılmaz',
+      },
+    ],
+    itineraryDays: mockItineraryDays,
+    bookings: [mockBookingTransfer, mockBookingYacht],
+  },
+  'd0000000-0000-0000-0000-000000000003': {
+    customer: mockCustomerCanan,
+    trip: {
+      id: 'f0000000-0000-0000-0000-000000000003',
+      company_id: 'a0000000-0000-0000-0000-000000000001',
+      customer_id: 'd0000000-0000-0000-0000-000000000003',
+      title: 'VIP Solo Retreat & Wellness',
+      subtitle: 'Armani Hotel Dubai & Helicopter Tour',
+      destination: 'Dubai',
+      start_date: '2026-09-18',
+      end_date: '2026-09-23',
+      nights: 5,
+      pax_count: 1,
+      pax_label: 'VIP Solo (1 Kişi)',
+      status: 'upcoming',
+      hotel_name: 'Armani Hotel Dubai',
+      hotel_address: 'Burj Khalifa, Downtown Dubai',
+      total_amount: 15000,
+      currency: 'AED',
+      timezone: 'Asia/Dubai',
+    },
+    payments: [
+      {
+        id: 'pay-canan-1',
+        trip_id: 'f0000000-0000-0000-0000-000000000003',
+        amount: 10800,
+        currency: 'AED',
+        status: 'received',
+        description: 'Kapora Tahsilatı',
+        payment_method: 'Banka Havalesi',
+        paid_at: '2026-08-24T16:45:00Z',
+      },
+      {
+        id: 'pay-canan-2',
+        trip_id: 'f0000000-0000-0000-0000-000000000003',
+        amount: 4200,
+        currency: 'AED',
+        status: 'pending',
+        description: 'Kalan Bakiye (Havalimanında Tahsil)',
+        payment_method: 'Nakit / Kart',
+      },
+    ],
+    documents: [
+      {
+        id: 'doc-canan-1',
+        customer_id: 'd0000000-0000-0000-0000-000000000003',
+        type: 'hotel_voucher',
+        title: 'Armani Hotel Dubai Classic Suite Voucher',
+        file_url: 'https://traviadubai.com/docs/voucher-armani.pdf',
+        file_name: 'voucher-armani.pdf',
+        file_size: 1120000,
+        created_at: '2026-08-24T17:00:00Z',
+      },
+    ],
+    requests: [
+      {
+        id: 'req-canan-1',
+        company_id: 'a0000000-0000-0000-0000-000000000001',
+        customer_id: 'd0000000-0000-0000-0000-000000000003',
+        category: 'activity',
+        status: 'confirmed',
+        title: 'Armani/Spa Özel Terapi Rezervasyonu',
+        date: '2026-09-19',
+        time: '16:00',
+        pax_count: 1,
+        notes: 'Aromaterapi ve sauna kullanımı dahil.',
+        created_at: '2026-08-25T14:00:00Z',
+        customer_name: 'Canan Özdemir',
+      },
+    ],
+    itineraryDays: mockItineraryDays,
+    bookings: [mockBookingTransfer, mockBookingYacht],
+  },
+};
+

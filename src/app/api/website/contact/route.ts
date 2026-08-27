@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { leadService } from '@/lib/services/leadService';
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,12 +18,25 @@ export async function POST(request: NextRequest) {
     const firstName = nameParts[0] || 'Misafir';
     const lastName = nameParts.slice(1).join(' ') || '';
 
+    // Always register into domain leadService so it appears in CRM Leads
+    await leadService.createLead(
+      {
+        first_name: firstName,
+        last_name: lastName,
+        email: `${firstName.toLowerCase().replace(/[^a-z0-9]/g, '')}@website.lead`,
+        phone,
+        source: 'Website Contact Form',
+        notes: `Hizmet: ${serviceType || 'vip-tour'} | Tarih: ${date || '-'} | Mesaj: ${message || '-'}`,
+      },
+      'a0000000-0000-0000-0000-000000000001'
+    );
+
     // Check if Supabase is configured
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     if (supabaseUrl && !supabaseUrl.includes('your-project')) {
       try {
         const supabase = await createSupabaseServerClient();
-        await supabase.from('leads').insert({
+        const { error: insertError } = await supabase.from('leads').insert({
           first_name: firstName,
           last_name: lastName,
           phone: phone,
@@ -35,8 +49,20 @@ export async function POST(request: NextRequest) {
           priority: 'high',
           lead_score: 75,
         });
+
+        if (insertError) {
+          console.error('Supabase lead insert error:', insertError);
+          return NextResponse.json(
+            { error: 'Veritabanı kayıt hatası: ' + insertError.message },
+            { status: 500 }
+          );
+        }
       } catch (dbError) {
-        console.warn('Supabase lead insert notice:', dbError);
+        console.error('Supabase connection error:', dbError);
+        return NextResponse.json(
+          { error: 'Veritabanı bağlantısı kurulamadı.' },
+          { status: 500 }
+        );
       }
     }
 

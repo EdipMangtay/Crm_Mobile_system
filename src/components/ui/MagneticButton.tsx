@@ -11,6 +11,8 @@ interface MagneticButtonProps {
   target?: string;
   variant?: 'gold' | 'outline' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
+  disabled?: boolean;
+  type?: 'button' | 'submit' | 'reset';
 }
 
 export default function MagneticButton({
@@ -21,6 +23,8 @@ export default function MagneticButton({
   target,
   variant = 'gold',
   size = 'md',
+  disabled = false,
+  type = 'button',
 }: MagneticButtonProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -80,5 +84,9 @@ export default function MagneticButton({
     );
   }
 
-  return content;
+  return (
+    <button type={type} disabled={disabled} className="border-0 bg-transparent p-0 cursor-pointer disabled:cursor-not-allowed">
+      {content}
+    </button>
+  );
 }

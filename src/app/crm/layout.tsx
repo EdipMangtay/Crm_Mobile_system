@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { usePathname } from 'next/navigation';
 import CrmSidebar from '@/components/crm/shell/Sidebar';
 import CrmHeader from '@/components/crm/shell/Header';
 import CommandPalette from '@/components/crm/shell/CommandPalette';
@@ -8,6 +9,7 @@ import CommandPalette from '@/components/crm/shell/CommandPalette';
 import { TenantProvider } from '@/lib/tenancy/TenantProvider';
 
 export default function CrmLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
 
   const openCommandPalette = useCallback(() => setCommandPaletteOpen(true), []);
@@ -24,6 +26,11 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, []);
+
+  // Isolate login screen from CRM shell
+  if (pathname === '/crm/login') {
+    return <TenantProvider>{children}</TenantProvider>;
+  }
 
   return (
     <TenantProvider>

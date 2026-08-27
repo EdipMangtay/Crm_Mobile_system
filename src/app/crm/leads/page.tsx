@@ -8,36 +8,9 @@ import { exportToCsv } from '@/crm/utils/exportCsv';
 import { LEAD_STAGES, COUNTRY_FLAGS, formatCurrency } from '@/types/crm';
 import type { LeadStage, LeadPriority } from '@/types/crm';
 
-// ─── Demo Data ───────────────────────────────────────────────
-interface DemoLead {
-  id: string;
-  first_name: string;
-  last_name: string;
-  country: string;
-  phone: string;
-  email: string;
-  travel_start_date: string;
-  travel_end_date: string;
-  pax_count: number;
-  stage: LeadStage;
-  estimated_value: number;
-  source: string;
-  assigned_to: string;
-  priority: LeadPriority;
-  lead_score: number;
-  created_at: string;
-  interests: string[];
-}
+import { SHARED_LEADS } from '@/../shared/data/traviaData';
 
-const DEMO_LEADS: DemoLead[] = [
-  { id: '1', first_name: 'Stefan', last_name: 'Müller', country: 'DE', phone: '+49 170 123 4567', email: 'stefan@email.de', travel_start_date: '2026-10-01', travel_end_date: '2026-10-07', pax_count: 6, stage: 'new', estimated_value: 52000, source: 'Instagram', assigned_to: 'Furkan', priority: 'high', lead_score: 83, created_at: '2026-08-27', interests: ['Yacht', 'Fine Dining'] },
-  { id: '2', first_name: 'Ayşe', last_name: 'Korkmaz', country: 'TR', phone: '+90 532 987 6543', email: 'ayse@email.com', travel_start_date: '2026-09-25', travel_end_date: '2026-09-30', pax_count: 2, stage: 'contacted', estimated_value: 18000, source: 'Google', assigned_to: 'Efza', priority: 'medium', lead_score: 65, created_at: '2026-08-26', interests: ['Luxury', 'Spa'] },
-  { id: '3', first_name: 'James', last_name: 'Wilson', country: 'GB', phone: '+44 7700 900000', email: 'james@email.co.uk', travel_start_date: '2026-11-15', travel_end_date: '2026-11-22', pax_count: 4, stage: 'qualified', estimated_value: 38000, source: 'Referral', assigned_to: 'Furkan', priority: 'high', lead_score: 78, created_at: '2026-08-25', interests: ['Desert Safari', 'Supercar'] },
-  { id: '4', first_name: 'Mert', last_name: 'Kaya', country: 'TR', phone: '+90 535 111 2233', email: 'mert@email.com', travel_start_date: '2026-10-10', travel_end_date: '2026-10-14', pax_count: 2, stage: 'proposal_sent', estimated_value: 22000, source: 'WhatsApp', assigned_to: 'Efza', priority: 'medium', lead_score: 71, created_at: '2026-08-24', interests: ['Honeymoon', 'Beach Club'] },
-  { id: '5', first_name: 'Александр', last_name: 'Петров', country: 'RU', phone: '+7 926 123 4567', email: 'alex@email.ru', travel_start_date: '2026-12-20', travel_end_date: '2027-01-05', pax_count: 3, stage: 'negotiation', estimated_value: 65000, source: 'Instagram', assigned_to: 'Furkan', priority: 'urgent', lead_score: 91, created_at: '2026-08-23', interests: ['UHNW', 'Yacht', 'Helicopter'] },
-  { id: '6', first_name: 'Edip', last_name: 'Mangtay', country: 'TR', phone: '+90 532 000 0000', email: 'edip@email.com', travel_start_date: '2026-09-12', travel_end_date: '2026-09-17', pax_count: 2, stage: 'booked', estimated_value: 18500, source: 'Direct', assigned_to: 'Furkan', priority: 'medium', lead_score: 95, created_at: '2026-08-20', interests: ['VIP', 'Couple', 'Fine Dining'] },
-  { id: '7', first_name: 'Fatma', last_name: 'Demir', country: 'TR', phone: '+90 533 444 5566', email: 'fatma@email.com', travel_start_date: '2026-09-20', travel_end_date: '2026-09-24', pax_count: 1, stage: 'lost', estimated_value: 12000, source: 'Google', assigned_to: 'Efza', priority: 'low', lead_score: 32, created_at: '2026-08-22', interests: ['Solo', 'Shopping'] },
-];
+const DEMO_LEADS = SHARED_LEADS;
 
 const STAGE_BADGE_MAP: Record<LeadStage, 'info' | 'default' | 'success' | 'warning' | 'gold' | 'error'> = {
   new: 'info',
