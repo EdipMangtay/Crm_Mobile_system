@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Search, Phone, MessageCircle, User, Paperclip, Image, CheckCheck, Sparkles } from 'lucide-react';
 import Badge from '@/components/crm/ui/Badge';
+import SmartReplies from '@/crm/components/concierge/SmartReplies';
 import { INITIAL_USER_THREADS } from '@/shared/data/traviaData';
 import { UserMessageThread, Message } from '@/shared/types/models';
 
@@ -216,6 +217,12 @@ export default function ConciergeView() {
           })}
           <div ref={messagesEndRef} />
         </div>
+
+        {/* AI Concierge Copilot Smart Replies */}
+        <SmartReplies
+          customerName={activeThread.customer_name}
+          onSelectReply={(replyText) => setMessageInput(replyText)}
+        />
 
         {/* Staff Reply Box for this specific customer */}
         <div className="p-4 border-t border-[#C9A66B]/10 bg-[#0B0F1A]/80 backdrop-blur-md">

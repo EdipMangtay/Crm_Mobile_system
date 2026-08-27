@@ -13,6 +13,8 @@ import Contact from '@/components/Contact';
 import Footer from '@/components/Footer';
 import CustomCursor from '@/components/ui/CustomCursor';
 import AmbientGoldenDust from '@/components/ui/AmbientGoldenDust';
+import TripPlannerWizard from '@/components/planner/TripPlannerWizard';
+import WhatsAppButton from '@/components/ui/WhatsAppButton';
 
 export default function Home() {
   // Initialize cinematic smooth scrolling
@@ -35,11 +37,15 @@ export default function Home() {
         <BrandStats />
         <About />
         <Services />
+        <TripPlannerWizard />
         <Process />
         <FAQ />
         <Gallery />
         <Contact />
       </main>
+
+      {/* Floating Concierge WhatsApp Widget */}
+      <WhatsAppButton />
 
       {/* Footer */}
       <Footer />

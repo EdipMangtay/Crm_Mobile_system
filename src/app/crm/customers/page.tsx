@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Search, Plus, Filter, ArrowUpDown } from 'lucide-react';
+import { Search, Plus, Filter, ArrowUpDown, Download } from 'lucide-react';
 import Badge from '@/components/crm/ui/Badge';
+import { exportToCsv } from '@/crm/utils/exportCsv';
 import { COUNTRY_FLAGS, formatCurrency } from '@/types/crm';
 
 const DEMO_CUSTOMERS = [
@@ -30,6 +31,21 @@ export default function CustomersPage() {
           <p className="text-xs text-[#F5F1E8]/30 mt-0.5">{DEMO_CUSTOMERS.length} müşteri · Toplam LTV: {formatCurrency(DEMO_CUSTOMERS.reduce((s, c) => s + c.lifetime_value, 0))}</p>
         </div>
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => exportToCsv('travia_customers', DEMO_CUSTOMERS, [
+              { header: 'Ad', key: 'first_name' },
+              { header: 'Soyad', key: 'last_name' },
+              { header: 'Ülke', key: 'country' },
+              { header: 'E-posta', key: 'email' },
+              { header: 'Telefon', key: 'phone' },
+              { header: 'Gezi Sayısı', key: 'trips' },
+              { header: 'Yaşam Boyu Değer (AED)', key: 'lifetime_value' },
+              { header: 'Portföy Yöneticisi', key: 'assigned' },
+            ])}
+            className="px-3 py-1.5 text-xs rounded-lg bg-[#111827] border border-[#C9A66B]/15 text-[#F5F1E8]/60 hover:text-[#F5F1E8] transition-all flex items-center gap-1.5"
+          >
+            <Download className="w-3 h-3" /> Excel / CSV
+          </button>
           <button className="px-3 py-1.5 text-xs rounded-lg bg-[#111827] border border-[#C9A66B]/10 text-[#F5F1E8]/40 hover:text-[#F5F1E8]/60 transition-colors flex items-center gap-1.5">
             <Filter className="w-3 h-3" /> Filtre
           </button>

@@ -30,6 +30,9 @@ export default function ProfileScreen() {
   const router = useRouter();
   const { profile, signOut } = useAuthStore();
   const {
+    customer,
+    activeCustomerId,
+    setActiveCustomer,
     trip,
     documents,
     payments,
@@ -40,7 +43,7 @@ export default function ProfileScreen() {
 
   const [activeModal, setActiveModal] = useState<ActiveSection>('none');
 
-  const fullName = profile ? `${profile.first_name} ${profile.last_name}` : 'Edip Mangtay';
+  const fullName = `${customer.first_name} ${customer.last_name}`;
   const unreadNotifs = notifications.filter((n) => !n.is_read).length;
 
   const totalAmount = trip.total_amount || 18500;
@@ -87,6 +90,41 @@ export default function ProfileScreen() {
               </View>
               <Text style={styles.userPhone}>+90 532 000 0000</Text>
             </View>
+          </View>
+        </View>
+
+        {/* Multi-Customer Demo Switcher */}
+        <View style={{ marginBottom: spacing.lg }}>
+          <Text style={{ fontFamily: fontFamily.sans.bold, fontSize: 9, letterSpacing: 1.5, color: colors.gold, marginBottom: spacing.xs }}>
+            DEMO MİSAFİR PROFİLİ SEÇİMİ
+          </Text>
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            {[
+              { id: 'd0000000-0000-0000-0000-000000000001', label: 'Edip M. (VIP)' },
+              { id: 'd0000000-0000-0000-0000-000000000002', label: 'Ahmet Y. (Aile)' },
+              { id: 'd0000000-0000-0000-0000-000000000003', label: 'Canan Ö. (Solo)' },
+            ].map((c) => (
+              <Pressable
+                key={c.id}
+                onPress={() => setActiveCustomer(c.id)}
+                style={{
+                  paddingVertical: 7,
+                  paddingHorizontal: 12,
+                  borderRadius: radius.md,
+                  borderWidth: 1,
+                  backgroundColor: activeCustomerId === c.id ? 'rgba(201, 166, 107, 0.2)' : colors.surfaceElevated,
+                  borderColor: activeCustomerId === c.id ? colors.gold : colors.borderActive,
+                }}
+              >
+                <Text style={{
+                  fontFamily: fontFamily.sans.semiBold,
+                  fontSize: 11,
+                  color: activeCustomerId === c.id ? colors.gold : colors.textSecondary,
+                }}>
+                  {c.label}
+                </Text>
+              </Pressable>
+            ))}
           </View>
         </View>
 

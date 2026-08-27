@@ -8,6 +8,7 @@ import {
   Key, Share2, Printer
 } from 'lucide-react';
 import Badge from '@/components/crm/ui/Badge';
+import ProposalModal from '@/crm/components/proposal/ProposalModal';
 import { formatCurrency } from '@/types/crm';
 
 const DEMO_TRIP = {
@@ -65,6 +66,7 @@ const ITINERARY_DAYS = [
 
 export default function TripDetailPage() {
   const [selectedDay, setSelectedDay] = useState(1);
+  const [isProposalOpen, setIsProposalOpen] = useState(false);
 
   return (
     <div className="space-y-5 max-w-[1400px]">
@@ -88,8 +90,11 @@ export default function TripDetailPage() {
 
           {/* Quick Actions */}
           <div className="flex items-center gap-2">
-            <button className="px-3 py-2 rounded-xl bg-[#111827] border border-[#C9A66B]/15 text-xs text-[#F5F1E8]/60 hover:text-[#F5F1E8] transition-all flex items-center gap-1.5">
-              <Printer className="w-3.5 h-3.5" /> Voucher Yazdır
+            <button
+              onClick={() => setIsProposalOpen(true)}
+              className="px-3 py-2 rounded-xl bg-gradient-to-r from-[#C9A66B]/20 to-[#C9A66B]/10 border border-[#C9A66B]/30 text-xs text-[#E8C77A] font-medium hover:bg-[#C9A66B]/25 transition-all flex items-center gap-1.5 shadow-[0_0_15px_rgba(201,166,107,0.15)]"
+            >
+              <Printer className="w-3.5 h-3.5 text-[#C9A66B]" /> Teklif & Voucher PDF
             </button>
             <button className="px-3 py-2 rounded-xl bg-[#111827] border border-[#C9A66B]/15 text-xs text-[#F5F1E8]/60 hover:text-[#F5F1E8] transition-all flex items-center gap-1.5">
               <Key className="w-3.5 h-3.5" /> Mobil Giriş Kodu
@@ -176,6 +181,27 @@ export default function TripDetailPage() {
           </div>
         ))}
       </div>
+
+      {/* Proposal & Printable Voucher Modal */}
+      <ProposalModal
+        isOpen={isProposalOpen}
+        onClose={() => setIsProposalOpen(false)}
+        tripData={{
+          customerName: DEMO_TRIP.customer_name,
+          title: DEMO_TRIP.title,
+          dates: `${DEMO_TRIP.start_date} – ${DEMO_TRIP.end_date}`,
+          nights: DEMO_TRIP.nights,
+          pax: DEMO_TRIP.pax_count,
+          hotel: DEMO_TRIP.hotel_name,
+          totalAmount: DEMO_TRIP.total_amount,
+          itinerary: ITINERARY_DAYS.map(d => ({
+            day: d.day,
+            date: d.date,
+            title: d.title,
+            items: d.items.map(i => `${i.time} — ${i.title} (${i.desc})`),
+          })),
+        }}
+      />
     </div>
   );
 }

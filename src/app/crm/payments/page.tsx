@@ -1,7 +1,10 @@
 'use client';
 
-import { DollarSign, TrendingUp, CreditCard, ArrowDownRight, ArrowUpRight, Download, Filter } from 'lucide-react';
+import { useState } from 'react';
+import { DollarSign, TrendingUp, CreditCard, ArrowDownRight, ArrowUpRight, Download, Filter, Plus } from 'lucide-react';
 import Badge from '@/components/crm/ui/Badge';
+import PaymentLinkModal from '@/crm/components/payments/PaymentLinkModal';
+import { exportToCsv } from '@/crm/utils/exportCsv';
 import { formatCurrency } from '@/types/crm';
 
 const PAYMENTS = [
@@ -13,6 +16,8 @@ const PAYMENTS = [
 ];
 
 export default function PaymentsPage() {
+  const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
+
   return (
     <div className="space-y-5 max-w-[1600px]">
       <div className="flex items-center justify-between">
@@ -20,9 +25,28 @@ export default function PaymentsPage() {
           <h1 className="text-xl font-semibold text-[#F5F1E8] tracking-tight">Finans & Ödemeler (Payments Ledger)</h1>
           <p className="text-xs text-[#F5F1E8]/30 mt-0.5">Gelir tahsilatları, bekleyen bakiyeler ve kaporalar</p>
         </div>
-        <button className="px-3 py-1.5 text-xs rounded-lg bg-[#111827] border border-[#C9A66B]/15 text-[#F5F1E8]/60 hover:text-[#F5F1E8] transition-all flex items-center gap-1.5">
-          <Download className="w-3.5 h-3.5" /> Finans Raporu (CSV)
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => exportToCsv('travia_payments', PAYMENTS, [
+              { header: 'Referans', key: 'ref' },
+              { header: 'Müşteri', key: 'customer' },
+              { header: 'Paket / Gezi', key: 'trip' },
+              { header: 'Ödeme Yöntemi', key: 'method' },
+              { header: 'Tarih', key: 'date' },
+              { header: 'Tutar (AED)', key: 'amount' },
+              { header: 'Durum', key: 'status' },
+            ])}
+            className="px-3 py-1.5 text-xs rounded-lg bg-[#111827] border border-[#C9A66B]/15 text-[#F5F1E8]/60 hover:text-[#F5F1E8] transition-all flex items-center gap-1.5"
+          >
+            <Download className="w-3.5 h-3.5" /> Finans Raporu (CSV)
+          </button>
+          <button
+            onClick={() => setIsLinkModalOpen(true)}
+            className="px-3.5 py-1.5 text-xs rounded-lg bg-gradient-to-r from-[#C9A66B] to-[#E8C77A] text-[#05070F] font-semibold flex items-center gap-1.5 hover:opacity-90 shadow-[0_0_15px_rgba(201,166,107,0.2)]"
+          >
+            <Plus className="w-3.5 h-3.5" /> Ödeme Linki Üret
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
@@ -74,6 +98,15 @@ export default function PaymentsPage() {
           </tbody>
         </table>
       </div>
+
+      {/* Payment Link Generator Modal */}
+      <PaymentLinkModal
+        isOpen={isLinkModalOpen}
+        onClose={() => setIsLinkModalOpen(false)}
+        customerName="Edip Mangtay"
+        amount={13500}
+        description="Kalan Bakiye Tahsilatı — Travia Dubai Premium Couple"
+      />
     </div>
   );
 }

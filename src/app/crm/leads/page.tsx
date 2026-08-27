@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Plus, Filter, LayoutGrid, List, Table2, Search, Phone, Mail, Calendar, Users, DollarSign, ArrowRight, GripVertical } from 'lucide-react';
+import { Plus, Filter, LayoutGrid, List, Table2, Search, Phone, Mail, Calendar, Users, DollarSign, ArrowRight, GripVertical, Download } from 'lucide-react';
 import Badge from '@/components/crm/ui/Badge';
+import { exportToCsv } from '@/crm/utils/exportCsv';
 import { LEAD_STAGES, COUNTRY_FLAGS, formatCurrency } from '@/types/crm';
 import type { LeadStage, LeadPriority } from '@/types/crm';
 
@@ -75,6 +76,22 @@ export default function LeadsPage() {
           <p className="text-xs text-[#F5F1E8]/30 mt-0.5">{DEMO_LEADS.length} lead · Pipeline değeri: {formatCurrency(DEMO_LEADS.reduce((s, l) => s + l.estimated_value, 0))}</p>
         </div>
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => exportToCsv('travia_leads', DEMO_LEADS, [
+              { header: 'Ad', key: 'first_name' },
+              { header: 'Soyad', key: 'last_name' },
+              { header: 'Ülke', key: 'country' },
+              { header: 'Telefon', key: 'phone' },
+              { header: 'E-posta', key: 'email' },
+              { header: 'Aşama', key: 'stage' },
+              { header: 'Değer (AED)', key: 'estimated_value' },
+              { header: 'Kaynak', key: 'source' },
+              { header: 'Atanan', key: 'assigned_to' },
+            ])}
+            className="px-3 py-1.5 text-xs rounded-lg bg-[#111827] border border-[#C9A66B]/15 text-[#F5F1E8]/60 hover:text-[#F5F1E8] transition-all flex items-center gap-1.5"
+          >
+            <Download className="w-3 h-3" /> Excel / CSV
+          </button>
           <button className="px-3 py-1.5 text-xs rounded-lg bg-[#111827] border border-[#C9A66B]/10 text-[#F5F1E8]/40 hover:text-[#F5F1E8]/60 transition-colors flex items-center gap-1.5">
             <Filter className="w-3 h-3" /> Filtre
           </button>
