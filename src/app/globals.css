@@ -1,26 +1,174 @@
+/* ─── Google Fonts ─────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap');
+
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+/* ─── Tailwind Theme ───────────────────────────────────────── */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Colors */
+  --color-navy-900: #05070F;
+  --color-navy-800: #0B0F1A;
+  --color-navy-700: #111827;
+  --color-gold-300: #F0D99A;
+  --color-gold-400: #E8C77A;
+  --color-gold-500: #C9A66B;
+  --color-gold-600: #A8854D;
+  --color-cream: #F5F1E8;
+  --color-sapphire: #1B3A6B;
+
+  /* Fonts */
+  --font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Animations */
+  --animate-marquee: marquee 40s linear infinite;
+  --animate-marquee-reverse: marquee-reverse 40s linear infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-shimmer: shimmer 2s linear infinite;
+  --animate-pulse-gold: pulse-gold 2s ease-in-out infinite;
+
+  /* Keyframes */
+  @keyframes marquee {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-50%); }
+  }
+  @keyframes marquee-reverse {
+    0% { transform: translateX(-50%); }
+    100% { transform: translateX(0%); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+  @keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+  @keyframes pulse-gold {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(201, 166, 107, 0.4); }
+    50% { box-shadow: 0 0 20px 4px rgba(201, 166, 107, 0.15); }
+  }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ─── Base Styles ──────────────────────────────────────────── */
+:root {
+  --background: #05070F;
+  --foreground: #F5F1E8;
+  --gold-primary: #C9A66B;
+  --gold-secondary: #E8C77A;
+  --glass-bg: rgba(11, 15, 26, 0.6);
+  --glass-border: rgba(201, 166, 107, 0.15);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold-primary) var(--background);
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--gold-primary);
+  border-radius: 3px;
+}
+
+html {
+  scroll-behavior: auto; /* Lenis handles smooth scrolling */
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(201, 166, 107, 0.3);
+  color: var(--foreground);
+}
+
+/* ─── Glassmorphism Utilities ──────────────────────────────── */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+}
+
+.glass-heavy {
+  background: rgba(11, 15, 26, 0.85);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid var(--glass-border);
+}
+
+.glass-card {
+  background: rgba(11, 15, 26, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(201, 166, 107, 0.1);
+}
+
+/* ─── Gold Line Utilities ──────────────────────────────────── */
+.gold-line-h {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--gold-primary) 50%, transparent 100%);
+}
+
+.gold-line-v {
+  width: 1px;
+  background: linear-gradient(180deg, transparent 0%, var(--gold-primary) 50%, transparent 100%);
+}
+
+/* ─── Gold Gradient Text ───────────────────────────────────── */
+.text-gold-gradient {
+  background: linear-gradient(135deg, var(--gold-secondary) 0%, var(--gold-primary) 50%, var(--gold-secondary) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Section Base ─────────────────────────────────────────── */
+.section-padding {
+  padding-left: clamp(1.5rem, 5vw, 8rem);
+  padding-right: clamp(1.5rem, 5vw, 8rem);
+  padding-top: clamp(4rem, 8vw, 8rem);
+  padding-bottom: clamp(4rem, 8vw, 8rem);
+}
+
+/* ─── Heading Styles ───────────────────────────────────────── */
+.heading-display {
+  font-family: var(--font-serif);
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+  font-weight: 500;
+}
+
+.heading-section {
+  font-family: var(--font-serif);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: clamp(0.7rem, 1.2vw, 0.85rem);
+  color: var(--gold-primary);
+  font-weight: 600;
+}
+
+/* ─── Reduced Motion ───────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
