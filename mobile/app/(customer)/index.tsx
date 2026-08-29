@@ -390,7 +390,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: spacing.base,
     paddingTop: spacing.sm,
-    paddingBottom: spacing['4xl'],
+    paddingBottom: 120,
   },
   topBar: {
     flexDirection: 'row',

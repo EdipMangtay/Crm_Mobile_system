@@ -147,8 +147,13 @@ export default function ExploreScreen() {
   return (
     <SafeScreen>
       <ScrollView
+        style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        bounces={true}
+        overScrollMode="always"
+        nestedScrollEnabled={true}
       >
         {/* Header Block */}
         <View style={styles.headerBlock}>
@@ -162,13 +167,15 @@ export default function ExploreScreen() {
         {/* Experiences Cards Feed */}
         <View style={styles.cardsContainer}>
           {mockExperiences.map((exp) => (
-            <Pressable
+            <View
               key={exp.id}
               style={styles.experienceCard}
-              onPress={() => handleOpenDetail(exp)}
             >
-              {/* Cover Image with Vignette */}
-              <View style={styles.cardImageContainer}>
+              {/* Cover Image with Vignette - Tap to open details */}
+              <Pressable
+                style={styles.cardImageContainer}
+                onPress={() => handleOpenDetail(exp)}
+              >
                 <Image
                   source={experienceImages[exp.id] || { uri: exp.cover_image_url }}
                   style={styles.cardCoverImage}
@@ -193,11 +200,13 @@ export default function ExploreScreen() {
                     <Text style={styles.priceText}>{exp.price_label}</Text>
                   </View>
                 )}
-              </View>
+              </Pressable>
 
               {/* Card Body */}
               <View style={styles.cardBody}>
-                <Text style={styles.expTitle}>{exp.title}</Text>
+                <Pressable onPress={() => handleOpenDetail(exp)}>
+                  <Text style={styles.expTitle}>{exp.title}</Text>
+                </Pressable>
                 <Text style={styles.expDescription} numberOfLines={2}>
                   {exp.description}
                 </Text>
@@ -217,6 +226,7 @@ export default function ExploreScreen() {
                   <Pressable
                     style={styles.detailLinkBtn}
                     onPress={() => handleOpenDetail(exp)}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                   >
                     <Text style={styles.detailLinkText}>Detayları İncele</Text>
                     <Feather name="arrow-right" size={14} color={colors.gold} />
@@ -232,7 +242,7 @@ export default function ExploreScreen() {
                   </Button>
                 </View>
               </View>
-            </Pressable>
+            </View>
           ))}
         </View>
       </ScrollView>
@@ -433,7 +443,7 @@ export default function ExploreScreen() {
                   </Pressable>
                 </View>
 
-                <ScrollView showsVerticalScrollIndicator={false}>
+                <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
                   <Input
                     label="Tercih Edilen Tarih"
                     placeholder="YYYY-MM-DD"
@@ -476,10 +486,13 @@ export default function ExploreScreen() {
 }
 
 const styles = StyleSheet.create({
+  scrollView: {
+    flex: 1,
+  },
   scrollContent: {
     paddingHorizontal: spacing.base,
     paddingTop: spacing.sm,
-    paddingBottom: spacing['4xl'],
+    paddingBottom: 120,
   },
   headerBlock: {
     marginBottom: spacing.base,
@@ -681,7 +694,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   detailScrollContent: {
-    paddingBottom: 100,
+    paddingBottom: 130,
   },
   detailHeroImageWrap: {
     width: '100%',
