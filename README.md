@@ -4,39 +4,57 @@ TRAVIA DUBAI, kişiye özel VIP turizm, özel yat kiralama, çöl safarisi, heli
 
 ---
 
-## 🏗️ Mimari ve Geliştirici Kılavuzu
+## Mimari
 
-Projenin modüler dosya yapısı, katmanları ve yeni özellik/sayfa ekleme adımları için detaylı rehberimizi inceleyin:
+Uygulamalar ayrı process’lerde çalışır. Detay: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 
-👉 [ARCHITECTURE.md](ARCHITECTURE.md)
+| Uygulama | Dizin | Yerel adres |
+|---|---|---|
+| Public website | `apps/website` | http://localhost:3000 |
+| CRM + backend API | `apps/crm` | http://localhost:3001 |
+| Mobile (Expo) | `apps/mobile` | Expo / Metro (genelde 8081) |
+
+Gelecek üretim topolojisi:
+
+- Website domain → `apps/website`
+- CRM / API domain → `apps/crm`
+- iOS + Android → `apps/mobile`
 
 ---
 
-## 🚀 Başlarken (Getting Started)
-
-Geliştirme sunucusunu başlatmak için:
+## Başlarken
 
 ```bash
-npm run dev
+npm ci
+# veya
+npm install
 ```
 
-Tarayıcınızda [http://localhost:3000](http://localhost:3000) adresini açarak:
-- **Landing Page:** `/`
-- **CRM Paneli:** `/crm` (Giriş: `/crm/login`)
-- **Platform Admin:** `/platform-admin`
-- **Deneyimler:** `/experiences/yacht-sunset` vb.
+Geliştirme:
+
+```bash
+npm run dev            # Website :3000 + CRM :3001
+npm run dev:website    # yalnız Website
+npm run dev:crm        # yalnız CRM / API
+npm run dev:mobile     # Expo
+```
+
+- Landing: http://localhost:3000
+- Deneyimler: http://localhost:3000/experiences/yacht-sunset
+- CRM: http://localhost:3001/crm (giriş: `/crm/login`)
+- Platform Admin: http://localhost:3001/platform-admin
+- Backend: http://localhost:3001/api/...
+
+Website iletişim formu tarayıcıdan CRM’e gitmez. `POST /api/website/contact` sunucu tarafında CRM `POST /api/v1/leads` çağırır.
 
 ---
 
-## 🧪 Derleme & Tip Kontrolü
+## Derleme
 
 ```bash
-# TypeScript Tip Kontrolü
-npx tsc --noEmit
-
-# Linter Kontrolü
-npm run lint
-
-# Üretim Derlemesi (Production Build)
-npm run build
+npm run lint:website
+npm run build:website
+npm run lint:crm
+npm run build:crm
+npm run typecheck:mobile
 ```

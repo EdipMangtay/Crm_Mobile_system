@@ -24,7 +24,7 @@ trivia/
 ├── mobile/                 # Expo React Native customer and staff mobile app
 ├── shared/                 # Shared data repository singleton and domain models
 ├── src/                    # Next.js 16 App Router (Web landing, CRM route delegates, API endpoints)
-└── mobile/supabase/        # Supabase migrations (001 to 006)
+└── infra/supabase/         # Canonical Supabase migrations (001 to 007)
 ```
 
 ### Architectural Characteristics:
@@ -37,7 +37,7 @@ trivia/
 
 ## 3. Database Schema & Multi-Tenancy Analysis
 
-### Existing Migrations (`mobile/supabase/migrations/`):
+### Existing Migrations (`infra/supabase/migrations/`):
 - `001_schema.sql`: Core tables (`companies`, `profiles`, `customers`, `trips`, `bookings`, `customer_requests`, `messages`, `payments`, `documents`, `audit_logs`).
 - `002_rls.sql`: Row-Level Security policies for customers and staff.
 - `003_functions.sql`: Triggers for timestamps and user profile auto-creation.
