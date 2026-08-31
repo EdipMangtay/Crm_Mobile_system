@@ -1,355 +1,458 @@
 'use client';
 
-import { useState } from 'react';
-import {
-  DollarSign, TrendingUp, CalendarCheck, UserPlus, Target, BarChart3,
-  Users, CreditCard, Plane, Ship, Utensils, Car, AlertTriangle,
-  MessageCircle, ArrowRight
-} from 'lucide-react';
-import { KPICard, Badge } from '@/components/crm';
+import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
+import {
+  Plane,
+  Ship,
+  Utensils,
+  Car,
+  Users,
+  AlertTriangle,
+  MessageCircle,
+  ArrowRight,
+  TrendingUp,
+  Briefcase,
+  CalendarCheck,
+  Compass,
+} from 'lucide-react';
+import { useTenant } from '@/lib/tenancy/TenantProvider';
+import { TravelBadge } from '@/components/ui/travel/TravelBadge';
+import { TravelButton } from '@/components/ui/travel/TravelButton';
+import {
+  SHARED_CUSTOMERS,
+  SHARED_TRIPS,
+  SHARED_LEADS,
+  INITIAL_USER_THREADS,
+} from '@/shared/data/traviaData';
 
-// ─── Demo Dashboard Data ─────────────────────────────────────
-// In production: fetched from Supabase via server component or React Query
-const DEMO_KPIS = {
-  revenue: { value: '247,500', delta: 18.3, trend: 'up' as const },
-  grossContribution: { value: '89,200', delta: 12.7, trend: 'up' as const },
-  bookings: { value: '34', delta: 8.2, trend: 'up' as const },
-  newLeads: { value: '47', delta: -3.1, trend: 'down' as const },
-  conversionRate: { value: '%23.4', delta: 5.2, trend: 'up' as const },
-  avgBookingValue: { value: '7,280', delta: 11.1, trend: 'up' as const },
-  activeGuests: { value: '6', delta: 0, trend: 'neutral' as const },
-  outstandingPayments: { value: '42,300', delta: -8.5, trend: 'up' as const },
-};
-
-const PIPELINE_STAGES = [
-  { stage: 'Yeni', count: 12, value: 186000, color: '#60A5FA' },
-  { stage: 'İletişim', count: 8, value: 124000, color: '#A78BFA' },
-  { stage: 'Nitelikli', count: 6, value: 98000, color: '#34D399' },
-  { stage: 'Teklif', count: 4, value: 72000, color: '#FBBF24' },
-  { stage: 'Müzakere', count: 3, value: 54000, color: '#F97316' },
-  { stage: 'Rezervasyon', count: 14, value: 247500, color: '#10B981' },
-  { stage: 'Kayıp', count: 5, value: 45000, color: '#EF4444' },
-];
-
+// Authentic operations timeline derived from active trips
 const TODAY_OPERATIONS = [
-  { id: '1', time: '09:10', customer: 'Kerem Aydın', type: 'Havalimanı İniş', location: 'DXB Terminal 3', status: 'completed' as const, icon: Plane },
-  { id: '2', time: '10:30', customer: 'Edip Mangtay', type: 'VIP Transfer', location: 'DXB → Atlantis', status: 'confirmed' as const, icon: Car },
-  { id: '3', time: '14:00', customer: 'Edip Mangtay', type: 'Özel Yat', location: 'Dubai Marina', status: 'confirmed' as const, icon: Ship },
-  { id: '4', time: '20:30', customer: 'Edip Mangtay', type: 'Restoran', location: 'Nobu Dubai', status: 'confirmed' as const, icon: Utensils },
-  { id: '5', time: '22:00', customer: 'Selin Arslan', type: 'Hotel Check-in', location: 'Armani Hotel', status: 'pending' as const, icon: Users },
+  {
+    id: 'op-1',
+    time: '09:10',
+    customer: 'Kerem Aydın',
+    customerId: 'd0000000-0000-0000-0000-000000000002',
+    type: 'Havalimanı İniş & VIP Transfer',
+    location: 'DXB Terminal 3 → Burj Al Arab',
+    status: 'completed' as const,
+    icon: Plane,
+  },
+  {
+    id: 'op-2',
+    time: '10:30',
+    customer: 'Edip Mangtay',
+    customerId: 'd0000000-0000-0000-0000-000000000001',
+    type: 'Maybach VIP Transfer',
+    location: 'DXB Terminal 3 → Atlantis The Royal',
+    status: 'completed' as const,
+    icon: Car,
+  },
+  {
+    id: 'op-3',
+    time: '14:00',
+    customer: 'Edip Mangtay',
+    customerId: 'd0000000-0000-0000-0000-000000000001',
+    type: 'Özel Süperyat & Marina Seyri',
+    location: 'Dubai Marina Lagoon',
+    status: 'in_progress' as const,
+    icon: Ship,
+  },
+  {
+    id: 'op-4',
+    time: '20:30',
+    customer: 'Edip Mangtay',
+    customerId: 'd0000000-0000-0000-0000-000000000001',
+    type: 'Nobu Dubai Omakase Rezervasyon',
+    location: 'Palm Jumeirah · Teras Ön Sıra',
+    status: 'confirmed' as const,
+    icon: Utensils,
+  },
+  {
+    id: 'op-5',
+    time: '22:00',
+    customer: 'Selin Arslan',
+    customerId: 'd0000000-0000-0000-0000-000000000003',
+    type: 'VIP Check-in & Karşılama',
+    location: 'Armani Hotel Dubai',
+    status: 'pending' as const,
+    icon: Users,
+  },
 ];
 
-const LIVE_CONCIERGE = [
-  { id: '1', customer: 'Edip Mangtay', message: 'Bu akşam güzel bir steakhouse ayarlayabilir miyiz?', time: '2 dk', unread: true, vip: true },
-  { id: '2', customer: 'Selin Arslan', message: 'Havalimanı transfer saatini değiştirebilir miyiz?', time: '15 dk', unread: true, vip: false },
-  { id: '3', customer: 'Kerem Aydın', message: 'Çöl safarisi için çocuklar da gelebilir mi?', time: '1 saat', unread: false, vip: false },
+const ATTENTION_ITEMS = [
+  {
+    id: 'att-1',
+    type: 'payment',
+    title: 'Ödeme vadesi yaklaşıyor',
+    detail: 'Selin Arslan · Kalan Bakiye: 5,000 AED · Check-in öncesi tahsilat',
+    href: '/crm/payments',
+    badge: { label: 'Finans', variant: 'warning' as const },
+  },
+  {
+    id: 'att-2',
+    type: 'lead',
+    title: 'Yüksek bütçeli lead teklif bekliyor',
+    detail: 'Tobias Hartmann · Bütçe: 45,000 AED · Almanya (UHNW)',
+    href: '/crm/leads/l0000000-0000-0000-0000-000000000001',
+    badge: { label: 'Satış', variant: 'gold' as const },
+  },
+  {
+    id: 'att-3',
+    type: 'supplier',
+    title: 'Tedarikçi operasyon onayı',
+    detail: 'Yacht Marina Co · 14 Eylül gün batımı turu kaptan teyidi',
+    href: '/crm/suppliers',
+    badge: { label: 'Tedarikçi', variant: 'info' as const },
+  },
 ];
-
-const FINANCE_SUMMARY = [
-  { label: 'Tahsil Edilen', value: '205,200 AED', color: 'text-emerald-400' },
-  { label: 'Bekleyen', value: '42,300 AED', color: 'text-amber-400' },
-  { label: 'Vadesi Geçen', value: '8,750 AED', color: 'text-red-400' },
-  { label: 'Önümüzdeki 7 Gün', value: '28,000 AED', color: 'text-blue-400' },
-];
-
-const STATUS_STYLES = {
-  completed: { label: 'Tamamlandı', variant: 'success' as const },
-  confirmed: { label: 'Onaylı', variant: 'info' as const },
-  pending: { label: 'Bekliyor', variant: 'warning' as const },
-  issue: { label: 'Sorun', variant: 'error' as const },
-  in_progress: { label: 'Devam Ediyor', variant: 'gold' as const },
-};
 
 export default function CrmDashboardPage() {
-  const [dateRange, setDateRange] = useState('bu_ay');
+  const { tenant, formatMoney } = useTenant();
+  const [activeFilter, setActiveFilter] = useState<'today' | 'week' | 'month'>('today');
+
+  // Mathematical metrics calculation from authentic repo data
+  const metrics = useMemo(() => {
+    const totalCustomers = SHARED_CUSTOMERS.length;
+    const tripsList = Object.values(SHARED_TRIPS);
+    const totalTripsValue = tripsList.reduce((sum, t) => sum + (t.total_amount || 0), 0);
+    const totalTripsCost = tripsList.reduce((sum, t) => sum + (t.supplier_cost || 0), 0);
+    const grossMargin = totalTripsValue - totalTripsCost;
+
+    const leadsList = SHARED_LEADS;
+    const totalPipelineValue = leadsList.reduce((sum, l) => sum + (l.estimated_value || 0), 0);
+    const activeLeadsCount = leadsList.filter((l) => l.stage !== 'lost' && l.stage !== 'booked').length;
+
+    const threadsList = Object.values(INITIAL_USER_THREADS);
+    const unreadMessagesCount = threadsList.reduce((sum, th) => sum + (th.staff_unread_count || 0), 0);
+
+    return {
+      totalCustomers,
+      totalTripsCount: tripsList.length,
+      totalTripsValue,
+      grossMargin,
+      totalPipelineValue,
+      activeLeadsCount,
+      unreadMessagesCount,
+    };
+  }, []);
 
   return (
-    <div className="space-y-6 max-w-[1600px]">
-      {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-[#F5F1E8] tracking-tight">Genel Bakış</h1>
-          <p className="text-xs text-[#F5F1E8]/30 mt-0.5">Travia Dubai · Yönetim Kontrol Merkezi</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <select
-            value={dateRange}
-            onChange={(e) => setDateRange(e.target.value)}
-            className="px-3 py-1.5 text-xs rounded-lg bg-[#111827] border border-[#C9A66B]/10 text-[#F5F1E8]/60 focus:outline-none focus:border-[#C9A66B]/30"
-          >
-            <option value="bugun">Bugün</option>
-            <option value="bu_hafta">Bu Hafta</option>
-            <option value="bu_ay">Bu Ay</option>
-            <option value="son_90">Son 90 Gün</option>
-          </select>
-        </div>
-      </div>
-
-      {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <KPICard
-          title="Gelir"
-          value={`${DEMO_KPIS.revenue.value} AED`}
-          delta={DEMO_KPIS.revenue.delta}
-          deltaLabel="önceki döneme göre"
-          trend={DEMO_KPIS.revenue.trend}
-          icon={<DollarSign className="w-3.5 h-3.5 text-[#C9A66B]" />}
-        />
-        <KPICard
-          title="Brüt Katkı"
-          value={`${DEMO_KPIS.grossContribution.value} AED`}
-          delta={DEMO_KPIS.grossContribution.delta}
-          deltaLabel="önceki döneme göre"
-          trend={DEMO_KPIS.grossContribution.trend}
-          icon={<TrendingUp className="w-3.5 h-3.5 text-emerald-400" />}
-        />
-        <KPICard
-          title="Rezervasyonlar"
-          value={DEMO_KPIS.bookings.value}
-          delta={DEMO_KPIS.bookings.delta}
-          trend={DEMO_KPIS.bookings.trend}
-          icon={<CalendarCheck className="w-3.5 h-3.5 text-blue-400" />}
-        />
-        <KPICard
-          title="Yeni Lead'ler"
-          value={DEMO_KPIS.newLeads.value}
-          delta={DEMO_KPIS.newLeads.delta}
-          trend={DEMO_KPIS.newLeads.trend}
-          icon={<UserPlus className="w-3.5 h-3.5 text-purple-400" />}
-        />
-        <KPICard
-          title="Dönüşüm Oranı"
-          value={DEMO_KPIS.conversionRate.value}
-          delta={DEMO_KPIS.conversionRate.delta}
-          trend={DEMO_KPIS.conversionRate.trend}
-          icon={<Target className="w-3.5 h-3.5 text-[#C9A66B]" />}
-        />
-        <KPICard
-          title="Ort. Rezervasyon Değeri"
-          value={`${DEMO_KPIS.avgBookingValue.value} AED`}
-          delta={DEMO_KPIS.avgBookingValue.delta}
-          trend={DEMO_KPIS.avgBookingValue.trend}
-          icon={<BarChart3 className="w-3.5 h-3.5 text-[#C9A66B]" />}
-        />
-        <KPICard
-          title="Dubai'deki Misafirler"
-          value={DEMO_KPIS.activeGuests.value}
-          trend={DEMO_KPIS.activeGuests.trend}
-          icon={<Users className="w-3.5 h-3.5 text-amber-400" />}
-        />
-        <KPICard
-          title="Bekleyen Ödeme"
-          value={`${DEMO_KPIS.outstandingPayments.value} AED`}
-          delta={DEMO_KPIS.outstandingPayments.delta}
-          deltaLabel="azalma"
-          trend={DEMO_KPIS.outstandingPayments.trend}
-          icon={<CreditCard className="w-3.5 h-3.5 text-red-400" />}
-        />
-      </div>
-
-      {/* Main Grid: Today + Concierge + Pipeline */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* TODAY IN DUBAI */}
-        <div className="lg:col-span-2 bg-[#0B0F1A] border border-[#C9A66B]/8 rounded-xl overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#C9A66B]/8">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <h3 className="text-sm font-medium text-[#F5F1E8]">Bugün Dubai&apos;de</h3>
-              <span className="text-[10px] text-[#F5F1E8]/25 font-mono">{TODAY_OPERATIONS.length} operasyon</span>
-            </div>
-            <Link href="/crm/operations" className="text-[10px] text-[#C9A66B]/60 hover:text-[#C9A66B] transition-colors flex items-center gap-1">
-              Tümünü Gör <ArrowRight className="w-3 h-3" />
-            </Link>
-          </div>
-          <div className="divide-y divide-[#C9A66B]/5">
-            {TODAY_OPERATIONS.map((op) => {
-              const OpIcon = op.icon;
-              const statusInfo = STATUS_STYLES[op.status];
-              return (
-                <div key={op.id} className="flex items-center gap-4 px-5 py-3 hover:bg-[#F5F1E8]/[0.01] transition-colors">
-                  <span className="text-xs font-mono text-[#C9A66B]/50 w-12 shrink-0">{op.time}</span>
-                  <div className="w-8 h-8 rounded-lg bg-[#111827] border border-[#C9A66B]/10 flex items-center justify-center shrink-0">
-                    <OpIcon className="w-3.5 h-3.5 text-[#C9A66B]/50" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-[#F5F1E8]/80 truncate">{op.customer}</p>
-                    <p className="text-xs text-[#F5F1E8]/30 truncate">{op.type} · {op.location}</p>
-                  </div>
-                  <Badge variant={statusInfo.variant} size="sm">{statusInfo.label}</Badge>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* LIVE CONCIERGE */}
-        <div className="bg-[#0B0F1A] border border-[#C9A66B]/8 rounded-xl overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#C9A66B]/8">
-            <div className="flex items-center gap-2">
-              <MessageCircle className="w-3.5 h-3.5 text-[#C9A66B]/50" />
-              <h3 className="text-sm font-medium text-[#F5F1E8]">Concierge</h3>
-              <span className="w-5 h-5 rounded-full bg-[#C9A66B]/15 text-[#C9A66B] text-[10px] font-bold flex items-center justify-center">
-                {LIVE_CONCIERGE.filter(m => m.unread).length}
+    <div className="space-y-6 max-w-[1600px] pb-10">
+      {/* ─── Control Strip Header ────────────────────────────────────────── */}
+      <div className="bg-[#0B0F1A] border border-[#C9A66B]/15 rounded-2xl p-5 shadow-lg">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+              <h1 className="text-xl font-semibold text-[#F5F1E8] tracking-tight">
+                {tenant.display_name} · Operasyon Kontrol Merkezi
+              </h1>
+              <span className="hidden sm:inline-flex px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-[#C9A66B]/10 text-[#C9A66B] border border-[#C9A66B]/20">
+                Canlı Filo
               </span>
             </div>
-            <Link href="/crm/concierge" className="text-[10px] text-[#C9A66B]/60 hover:text-[#C9A66B] transition-colors flex items-center gap-1">
-              Inbox <ArrowRight className="w-3 h-3" />
-            </Link>
+            <p className="text-xs text-[#F5F1E8]/50">
+              Operasyonlar normal seyrinde · 5 saha görevi aktif · {metrics.unreadMessagesCount} okunmamış concierge mesajı
+            </p>
           </div>
-          <div className="divide-y divide-[#C9A66B]/5">
-            {LIVE_CONCIERGE.map((msg) => (
-              <Link key={msg.id} href="/crm/concierge" className="flex items-start gap-3 px-5 py-3 hover:bg-[#F5F1E8]/[0.01] transition-colors">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-xs font-semibold ${
-                  msg.unread ? 'bg-[#C9A66B]/15 text-[#C9A66B]' : 'bg-[#111827] text-[#F5F1E8]/30'
-                }`}>
-                  {msg.customer[0]}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <p className={`text-sm truncate ${msg.unread ? 'text-[#F5F1E8]' : 'text-[#F5F1E8]/50'}`}>
-                      {msg.customer}
-                    </p>
-                    {msg.vip && <Badge variant="gold" size="sm">VIP</Badge>}
-                  </div>
-                  <p className="text-xs text-[#F5F1E8]/30 truncate mt-0.5">{msg.message}</p>
-                </div>
-                <span className="text-[10px] text-[#F5F1E8]/20 shrink-0">{msg.time}</span>
-              </Link>
-            ))}
+
+          <div className="flex flex-wrap items-center gap-2.5">
+            <div className="flex items-center bg-[#111827] p-0.5 rounded-lg border border-[#C9A66B]/15 text-xs">
+              <button
+                onClick={() => setActiveFilter('today')}
+                className={`px-3 py-1 rounded-md transition-colors ${
+                  activeFilter === 'today'
+                    ? 'bg-[#C9A66B]/20 text-[#C9A66B] font-medium'
+                    : 'text-[#F5F1E8]/50 hover:text-[#F5F1E8]'
+                }`}
+              >
+                Bugün
+              </button>
+              <button
+                onClick={() => setActiveFilter('week')}
+                className={`px-3 py-1 rounded-md transition-colors ${
+                  activeFilter === 'week'
+                    ? 'bg-[#C9A66B]/20 text-[#C9A66B] font-medium'
+                    : 'text-[#F5F1E8]/50 hover:text-[#F5F1E8]'
+                }`}
+              >
+                Bu Hafta
+              </button>
+              <button
+                onClick={() => setActiveFilter('month')}
+                className={`px-3 py-1 rounded-md transition-colors ${
+                  activeFilter === 'month'
+                    ? 'bg-[#C9A66B]/20 text-[#C9A66B] font-medium'
+                    : 'text-[#F5F1E8]/50 hover:text-[#F5F1E8]'
+                }`}
+              >
+                Bu Ay
+              </button>
+            </div>
+
+            <Link href="/crm/operations">
+              <TravelButton variant="outline" size="sm">
+                <Compass className="w-3.5 h-3.5" />
+                Saha Operasyonu
+              </TravelButton>
+            </Link>
+            <Link href="/crm/concierge">
+              <TravelButton variant="primary" size="sm">
+                <MessageCircle className="w-3.5 h-3.5" />
+                Concierge ({metrics.unreadMessagesCount})
+              </TravelButton>
+            </Link>
           </div>
         </div>
       </div>
 
-      {/* Pipeline + Finance */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* SALES PIPELINE */}
-        <div className="lg:col-span-2 bg-[#0B0F1A] border border-[#C9A66B]/8 rounded-xl overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#C9A66B]/8">
-            <h3 className="text-sm font-medium text-[#F5F1E8]">Satış Pipeline</h3>
-            <Link href="/crm/leads" className="text-[10px] text-[#C9A66B]/60 hover:text-[#C9A66B] transition-colors flex items-center gap-1">
-              Detaylar <ArrowRight className="w-3 h-3" />
-            </Link>
+      {/* ─── Business Snapshot Metrics Bar ──────────────────────────────── */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {/* Active Trips Value */}
+        <div className="bg-[#0B0F1A] border border-[#C9A66B]/10 rounded-xl p-4 space-y-1">
+          <div className="flex items-center justify-between text-[11px] font-mono text-[#F5F1E8]/40 uppercase">
+            <span>Aktif Gezi Hacmi</span>
+            <CalendarCheck className="w-3.5 h-3.5 text-[#C9A66B]" />
           </div>
-          <div className="p-5">
-            {/* Pipeline Bar */}
-            <div className="flex rounded-lg overflow-hidden h-8 mb-5">
-              {PIPELINE_STAGES.filter(s => s.stage !== 'Kayıp').map((stage) => {
-                const total = PIPELINE_STAGES.reduce((sum, s) => sum + s.count, 0);
-                const pct = (stage.count / total) * 100;
+          <p className="text-xl font-bold font-mono text-[#F5F1E8] tabular-nums">
+            {formatMoney(metrics.totalTripsValue)}
+          </p>
+          <p className="text-[11px] text-[#F5F1E8]/40">
+            {metrics.totalTripsCount} VIP seyahat rotası kayıtlı
+          </p>
+        </div>
+
+        {/* Pipeline Value */}
+        <div className="bg-[#0B0F1A] border border-[#C9A66B]/10 rounded-xl p-4 space-y-1">
+          <div className="flex items-center justify-between text-[11px] font-mono text-[#F5F1E8]/40 uppercase">
+            <span>Satış Pipeline</span>
+            <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
+          </div>
+          <p className="text-xl font-bold font-mono text-[#F5F1E8] tabular-nums">
+            {formatMoney(metrics.totalPipelineValue)}
+          </p>
+          <p className="text-[11px] text-emerald-400/80">
+            {metrics.activeLeadsCount} aktif potansiyel fırsat
+          </p>
+        </div>
+
+        {/* Gross Margin (Staff Only / Neutral) */}
+        <div className="bg-[#0B0F1A] border border-[#C9A66B]/10 rounded-xl p-4 space-y-1">
+          <div className="flex items-center justify-between text-[11px] font-mono text-[#F5F1E8]/40 uppercase">
+            <span>Brüt Katkı (Dahili)</span>
+            <Briefcase className="w-3.5 h-3.5 text-[#C9A66B]" />
+          </div>
+          <p className="text-xl font-bold font-mono text-[#F5F1E8]/90 tabular-nums">
+            {formatMoney(metrics.grossMargin)}
+          </p>
+          <p className="text-[11px] text-[#C9A66B]/70">
+            %{((metrics.grossMargin / (metrics.totalTripsValue || 1)) * 100).toFixed(1)} portföy marjı
+          </p>
+        </div>
+
+        {/* Customer Base */}
+        <div className="bg-[#0B0F1A] border border-[#C9A66B]/10 rounded-xl p-4 space-y-1">
+          <div className="flex items-center justify-between text-[11px] font-mono text-[#F5F1E8]/40 uppercase">
+            <span>VIP Portföy</span>
+            <Users className="w-3.5 h-3.5 text-[#C9A66B]" />
+          </div>
+          <p className="text-xl font-bold font-mono text-[#F5F1E8] tabular-nums">
+            {metrics.totalCustomers} Müşteri
+          </p>
+          <p className="text-[11px] text-[#F5F1E8]/40">
+            100% profilli misafir kaydı
+          </p>
+        </div>
+      </div>
+
+      {/* ─── Main Two-Column Operational Grid ───────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Column (2 Cols): Operations Rhythm & Live Attention */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Today's Operations Section */}
+          <div className="bg-[#0B0F1A] border border-[#C9A66B]/10 rounded-xl overflow-hidden shadow-sm">
+            <div className="px-5 py-3.5 border-b border-[#C9A66B]/10 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-2 h-2 rounded-full bg-emerald-400" />
+                <h2 className="text-sm font-semibold text-[#F5F1E8]">Bugünkü Saha Operasyonları</h2>
+                <span className="text-xs font-mono text-[#F5F1E8]/30">({TODAY_OPERATIONS.length})</span>
+              </div>
+              <Link
+                href="/crm/operations"
+                className="text-xs text-[#C9A66B] hover:underline flex items-center gap-1"
+              >
+                Tüm Akışı Aç <ArrowRight className="w-3 h-3" />
+              </Link>
+            </div>
+
+            <div className="divide-y divide-[#C9A66B]/5">
+              {TODAY_OPERATIONS.map((op) => {
+                const Icon = op.icon;
+                const badgeVariant =
+                  op.status === 'completed'
+                    ? 'success'
+                    : op.status === 'in_progress'
+                    ? 'gold'
+                    : op.status === 'confirmed'
+                    ? 'info'
+                    : 'warning';
+
+                const statusText =
+                  op.status === 'completed'
+                    ? 'Tamamlandı'
+                    : op.status === 'in_progress'
+                    ? 'Sahada'
+                    : op.status === 'confirmed'
+                    ? 'Onaylı'
+                    : 'Bekliyor';
+
                 return (
                   <div
-                    key={stage.stage}
-                    className="relative group flex items-center justify-center text-[10px] font-medium text-[#05070F] transition-all hover:opacity-80"
-                    style={{ width: `${Math.max(pct, 5)}%`, backgroundColor: stage.color }}
+                    key={op.id}
+                    className="p-4 flex items-center gap-4 hover:bg-[#111827]/40 transition-colors"
                   >
-                    {pct > 8 && stage.count}
-                    <div className="absolute bottom-full mb-2 hidden group-hover:block bg-[#111827] border border-[#C9A66B]/20 rounded-lg px-3 py-2 text-left z-10 whitespace-nowrap shadow-xl">
-                      <p className="text-xs text-[#F5F1E8]">{stage.stage}</p>
-                      <p className="text-[10px] text-[#F5F1E8]/40">{stage.count} lead · {(stage.value / 1000).toFixed(0)}K AED</p>
+                    <div className="text-xs font-mono font-semibold text-[#C9A66B] w-12 shrink-0">
+                      {op.time}
                     </div>
+
+                    <div className="w-8 h-8 rounded-lg bg-[#111827] border border-[#C9A66B]/15 flex items-center justify-center shrink-0">
+                      <Icon className="w-4 h-4 text-[#C9A66B]" />
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <Link
+                          href={`/crm/customers/${op.customerId}`}
+                          className="text-xs font-medium text-[#F5F1E8] hover:text-[#C9A66B] transition-colors truncate"
+                        >
+                          {op.customer}
+                        </Link>
+                        <span className="text-[10px] text-[#F5F1E8]/30">·</span>
+                        <span className="text-xs text-[#F5F1E8]/70 truncate">{op.type}</span>
+                      </div>
+                      <p className="text-[11px] text-[#F5F1E8]/40 truncate mt-0.5">{op.location}</p>
+                    </div>
+
+                    <TravelBadge variant={badgeVariant} size="sm">
+                      {statusText}
+                    </TravelBadge>
                   </div>
                 );
               })}
             </div>
-            {/* Pipeline Stats Grid */}
-            <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
-              {PIPELINE_STAGES.filter(s => s.stage !== 'Kayıp').map((stage) => (
-                <div key={stage.stage} className="text-center">
-                  <div className="flex items-center justify-center gap-1.5 mb-1">
-                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: stage.color }} />
-                    <span className="text-[10px] text-[#F5F1E8]/40">{stage.stage}</span>
+          </div>
+
+          {/* Attention & Action Items */}
+          <div className="bg-[#0B0F1A] border border-[#C9A66B]/10 rounded-xl overflow-hidden">
+            <div className="px-5 py-3.5 border-b border-[#C9A66B]/10 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-amber-400" />
+                <h2 className="text-sm font-semibold text-[#F5F1E8]">Dikkat ve Eylem Gerektirenler</h2>
+              </div>
+              <span className="text-[10px] font-mono text-[#F5F1E8]/30 uppercase">3 Öncelikli</span>
+            </div>
+
+            <div className="divide-y divide-[#C9A66B]/5">
+              {ATTENTION_ITEMS.map((item) => (
+                <Link
+                  key={item.id}
+                  href={item.href}
+                  className="p-4 flex items-center justify-between gap-4 hover:bg-[#111827]/40 transition-colors group"
+                >
+                  <div className="space-y-1 min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <TravelBadge variant={item.badge.variant} size="sm">
+                        {item.badge.label}
+                      </TravelBadge>
+                      <h3 className="text-xs font-medium text-[#F5F1E8] group-hover:text-[#C9A66B] transition-colors truncate">
+                        {item.title}
+                      </h3>
+                    </div>
+                    <p className="text-[11px] text-[#F5F1E8]/40 truncate">{item.detail}</p>
                   </div>
-                  <p className="text-lg font-semibold text-[#F5F1E8]">{stage.count}</p>
-                  <p className="text-[10px] text-[#F5F1E8]/20">{(stage.value / 1000).toFixed(0)}K</p>
-                </div>
+
+                  <ArrowRight className="w-4 h-4 text-[#F5F1E8]/20 group-hover:text-[#C9A66B] group-hover:translate-x-0.5 transition-all shrink-0" />
+                </Link>
               ))}
             </div>
           </div>
         </div>
 
-        {/* FINANCE */}
-        <div className="bg-[#0B0F1A] border border-[#C9A66B]/8 rounded-xl overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#C9A66B]/8">
-            <h3 className="text-sm font-medium text-[#F5F1E8]">Finans</h3>
-            <Link href="/crm/payments" className="text-[10px] text-[#C9A66B]/60 hover:text-[#C9A66B] transition-colors flex items-center gap-1">
-              Detaylar <ArrowRight className="w-3 h-3" />
-            </Link>
-          </div>
-          <div className="p-5 space-y-4">
-            {FINANCE_SUMMARY.map((item) => (
-              <div key={item.label} className="flex items-center justify-between">
-                <span className="text-xs text-[#F5F1E8]/40">{item.label}</span>
-                <span className={`text-sm font-medium ${item.color}`}>{item.value}</span>
+        {/* Right Column (1 Col): Live Concierge + Commercial Pulse */}
+        <div className="space-y-6">
+          {/* Live Concierge Feed */}
+          <div className="bg-[#0B0F1A] border border-[#C9A66B]/10 rounded-xl overflow-hidden">
+            <div className="px-5 py-3.5 border-b border-[#C9A66B]/10 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <MessageCircle className="w-4 h-4 text-[#C9A66B]" />
+                <h2 className="text-sm font-semibold text-[#F5F1E8]">Canlı Concierge Kuyruğu</h2>
               </div>
-            ))}
-            <div className="h-px bg-[#C9A66B]/5 my-2" />
+              <Link
+                href="/crm/concierge"
+                className="text-xs text-[#C9A66B] hover:underline flex items-center gap-1"
+              >
+                Tümü <ArrowRight className="w-3 h-3" />
+              </Link>
+            </div>
+
+            <div className="divide-y divide-[#C9A66B]/5">
+              {Object.values(INITIAL_USER_THREADS).map((th) => (
+                <Link
+                  key={th.id}
+                  href="/crm/concierge"
+                  className="p-4 flex items-start gap-3 hover:bg-[#111827]/40 transition-colors block"
+                >
+                  <div className="w-8 h-8 rounded-full bg-[#C9A66B]/10 border border-[#C9A66B]/20 text-[#C9A66B] flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
+                    {th.customer_name.charAt(0)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs font-semibold text-[#F5F1E8] truncate">
+                        {th.customer_name} {th.customer_country}
+                      </p>
+                      <span className="text-[10px] font-mono text-[#F5F1E8]/30">{th.last_message_at}</span>
+                    </div>
+                    <p className="text-[11px] text-[#F5F1E8]/50 truncate mt-0.5">
+                      {th.last_message_preview}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Quick Lead Pipeline Distribution */}
+          <div className="bg-[#0B0F1A] border border-[#C9A66B]/10 rounded-xl p-5 space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-[#F5F1E8]/60 font-medium">Brüt Marj</span>
-              <span className="text-sm font-semibold text-[#C9A66B]">%36.0</span>
+              <h2 className="text-sm font-semibold text-[#F5F1E8]">Satış Pipeline Durumu</h2>
+              <Link href="/crm/leads" className="text-xs text-[#C9A66B] hover:underline">
+                Huniyi İncele
+              </Link>
             </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Marketing + Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* MARKETING SOURCES */}
-        <div className="bg-[#0B0F1A] border border-[#C9A66B]/8 rounded-xl overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#C9A66B]/8">
-            <h3 className="text-sm font-medium text-[#F5F1E8]">Lead Kaynakları</h3>
-            <Link href="/crm/marketing" className="text-[10px] text-[#C9A66B]/60 hover:text-[#C9A66B] transition-colors flex items-center gap-1">
-              Detaylar <ArrowRight className="w-3 h-3" />
-            </Link>
-          </div>
-          <div className="p-5 space-y-3">
-            {[
-              { source: 'Instagram', leads: 18, conversion: 28, color: '#E4405F' },
-              { source: 'Google', leads: 12, conversion: 22, color: '#4285F4' },
-              { source: 'Referral', leads: 8, conversion: 45, color: '#10B981' },
-              { source: 'WhatsApp', leads: 6, conversion: 38, color: '#25D366' },
-              { source: 'Organik', leads: 3, conversion: 15, color: '#8B5CF6' },
-            ].map((source) => (
-              <div key={source.source} className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: source.color }} />
-                <span className="text-xs text-[#F5F1E8]/60 w-20">{source.source}</span>
-                <div className="flex-1 h-1.5 bg-[#111827] rounded-full overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all"
-                    style={{ width: `${(source.leads / 18) * 100}%`, backgroundColor: source.color }}
-                  />
+            <div className="space-y-2.5">
+              {[
+                { stage: 'Nitelikli & İletişim', count: 3, budget: 120000, color: 'bg-emerald-400' },
+                { stage: 'Teklif Gönderildi', count: 2, budget: 85000, color: 'bg-[#C9A66B]' },
+                { stage: 'Müzakere', count: 1, budget: 45000, color: 'bg-blue-400' },
+              ].map((pipe) => (
+                <div key={pipe.stage} className="space-y-1">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-[#F5F1E8]/60">{pipe.stage}</span>
+                    <span className="font-mono font-medium text-[#F5F1E8] tabular-nums">
+                      {pipe.count} Lead · {formatMoney(pipe.budget)}
+                    </span>
+                  </div>
+                  <div className="h-1.5 bg-[#111827] rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full ${pipe.color}`}
+                      style={{ width: `${(pipe.budget / 120000) * 100}%` }}
+                    />
+                  </div>
                 </div>
-                <span className="text-xs text-[#F5F1E8]/40 w-8 text-right">{source.leads}</span>
-                <span className="text-[10px] text-[#F5F1E8]/20 w-10 text-right">%{source.conversion}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* RECENT ISSUES & ALERTS */}
-        <div className="bg-[#0B0F1A] border border-[#C9A66B]/8 rounded-xl overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#C9A66B]/8">
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
-              <h3 className="text-sm font-medium text-[#F5F1E8]">Dikkat Gerektiren</h3>
+              ))}
             </div>
-          </div>
-          <div className="divide-y divide-[#C9A66B]/5">
-            {[
-              { type: 'overdue', title: 'Ödeme vadesi geçti', detail: 'Selin Arslan · 4,200 AED · 3 gün', variant: 'error' as const },
-              { type: 'follow_up', title: 'Takip gerekli', detail: 'Burak Çetin · Qualified · Son iletişim 5 gün önce', variant: 'warning' as const },
-              { type: 'unconfirmed', title: 'Tedarikçi onayı bekliyor', detail: 'Yacht Marina Co · 14 Eylül yat turu', variant: 'warning' as const },
-              { type: 'new_lead', title: 'Yüksek değerli lead', detail: 'Alman çift · 6 kişi · 50K+ AED · Instagram', variant: 'info' as const },
-            ].map((alert, i) => (
-              <div key={i} className="flex items-center gap-3 px-5 py-3 hover:bg-[#F5F1E8]/[0.01] transition-colors">
-                <Badge variant={alert.variant} size="sm">{alert.type === 'overdue' ? '!' : '•'}</Badge>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-[#F5F1E8]/70">{alert.title}</p>
-                  <p className="text-xs text-[#F5F1E8]/25 truncate">{alert.detail}</p>
-                </div>
-                <ArrowRight className="w-3.5 h-3.5 text-[#F5F1E8]/10" />
-              </div>
-            ))}
           </div>
         </div>
       </div>

@@ -1,12 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import {
-  Globe, Shield, Building2, Plus, X, ExternalLink, Search, Play, Pause
+  Globe,
+  Plus,
+  X,
+  ExternalLink,
+  Search,
 } from 'lucide-react';
 import { tenantRegistry } from '@/lib/tenancy/tenantContext';
 import { Tenant, TenantStatus, TenantPlan, TenantFeatures } from '@/shared/types/models';
+import { TravelButton } from '@/components/ui/travel/TravelButton';
+import { TravelDialog } from '@/components/ui/travel/TravelDialog';
 
 export default function PlatformAdminDashboard() {
   const [tenants, setTenants] = useState<Tenant[]>(() => tenantRegistry.getAllTenants());
@@ -31,10 +37,11 @@ export default function PlatformAdminDashboard() {
 
   const stats = tenantRegistry.getPlatformStats();
 
-  const filteredTenants = tenants.filter(t =>
-    t.display_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    t.slug.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    t.legal_name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredTenants = tenants.filter(
+    (t) =>
+      t.display_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      t.slug.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      t.legal_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleStatusChange = (tenantId: string, newStatus: TenantStatus) => {
@@ -47,7 +54,11 @@ export default function PlatformAdminDashboard() {
 
   const handleFeatureToggle = (tenantId: string, feature: keyof TenantFeatures) => {
     const tenant = tenantRegistry.getTenantById(tenantId);
-    const updated = tenantRegistry.toggleTenantFeature(tenantId, feature, !tenant.features[feature]);
+    const updated = tenantRegistry.toggleTenantFeature(
+      tenantId,
+      feature,
+      !tenant.features[feature]
+    );
     setTenants(tenantRegistry.getAllTenants());
     setSelectedTenant(updated);
   };
@@ -78,22 +89,24 @@ export default function PlatformAdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#060913] text-[#F5F1E8] p-6 lg:p-10 font-sans">
-      {/* Platform Header */}
+    <div className="min-h-screen bg-[#05070F] text-[#F5F1E8] p-6 lg:p-10 font-sans">
       <div className="max-w-7xl mx-auto space-y-8">
-        <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-white/10">
+        {/* ─── Platform Header ────────────────────────────────────────────── */}
+        <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-cyan-500/20">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-600 to-blue-500 flex items-center justify-center text-white shadow-[0_0_20px_rgba(6,182,212,0.4)]">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-600 to-blue-600 flex items-center justify-center text-white shadow-[0_0_20px_rgba(6,182,212,0.2)]">
               <Globe className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-xl font-bold tracking-tight text-white">TRAVEL OS</h1>
                 <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
-                  PLATFORM CONTROL PLANE
+                  PLATFORM KONTROL MERKEZİ
                 </span>
               </div>
-              <p className="text-xs text-white/40 mt-0.5">Multi-Tenant Fleet Management & Tenant Provisioning Engine</p>
+              <p className="text-xs text-white/40 mt-0.5">
+                Çoklu acente kayıt defteri ve oturum tenant yönetim paneli
+              </p>
             </div>
           </div>
 
@@ -102,58 +115,62 @@ export default function PlatformAdminDashboard() {
               href="/crm"
               className="px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-white/70 hover:text-white transition-all flex items-center gap-1.5"
             >
-              <span>Tenant #001 (Travia CRM)</span>
+              <span>Acente CRM Görünümü</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </Link>
-            <button
+            <TravelButton
+              variant="primary"
+              size="sm"
               onClick={() => setIsProvisionOpen(true)}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold flex items-center gap-2 shadow-[0_0_25px_rgba(6,182,212,0.3)] transition-all"
             >
               <Plus className="w-4 h-4" />
-              <span>Yeni Acente / Tenant Oluştur</span>
-            </button>
+              Yeni Acente Tanımla
+            </TravelButton>
           </div>
         </div>
 
-        {/* Global Platform KPIs */}
+        {/* ─── Authentic Platform Registry Metrics ────────────────────────── */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="p-5 rounded-2xl bg-[#0B0F1A] border border-white/10 space-y-1">
-            <span className="text-[10px] font-mono uppercase text-white/40">Kayıtlı Tenant Sayısı</span>
+          <div className="p-5 rounded-xl bg-[#0B0F1A] border border-cyan-500/15 space-y-1">
+            <span className="text-[10px] font-mono uppercase text-white/40">Kayıtlı Acente Sayısı</span>
             <p className="text-2xl font-bold text-white font-mono">{stats.totalTenants}</p>
-            <p className="text-[11px] text-emerald-400 font-mono">● {stats.activeTenants} Aktif Operasyonda</p>
+            <p className="text-[11px] text-white/40 font-mono">Kayıt Defteri Havuzu</p>
           </div>
-          <div className="p-5 rounded-2xl bg-[#0B0F1A] border border-white/10 space-y-1">
-            <span className="text-[10px] font-mono uppercase text-white/40">Platform Sağlığı</span>
-            <p className="text-2xl font-bold text-emerald-400 font-mono">100%</p>
-            <p className="text-[11px] text-white/40 font-mono">Sıfır Kesinti · PostgreSQL OK</p>
+
+          <div className="p-5 rounded-xl bg-[#0B0F1A] border border-cyan-500/15 space-y-1">
+            <span className="text-[10px] font-mono uppercase text-white/40">Aktif Operasyonlar</span>
+            <p className="text-2xl font-bold text-emerald-400 font-mono">{stats.activeTenants}</p>
+            <p className="text-[11px] text-white/40 font-mono">Çalışır Durumda</p>
           </div>
-          <div className="p-5 rounded-2xl bg-[#0B0F1A] border border-white/10 space-y-1">
-            <span className="text-[10px] font-mono uppercase text-white/40">Veritabanı İzolasyonu</span>
-            <p className="text-2xl font-bold text-cyan-400 font-mono">Row RLS</p>
-            <p className="text-[11px] text-white/40 font-mono">Security Definer + Memb. Key</p>
+
+          <div className="p-5 rounded-xl bg-[#0B0F1A] border border-cyan-500/15 space-y-1">
+            <span className="text-[10px] font-mono uppercase text-white/40">Deneme / Trial</span>
+            <p className="text-2xl font-bold text-amber-400 font-mono">{stats.trialTenants}</p>
+            <p className="text-[11px] text-white/40 font-mono">Değerlendirme Modunda</p>
           </div>
-          <div className="p-5 rounded-2xl bg-[#0B0F1A] border border-white/10 space-y-1">
-            <span className="text-[10px] font-mono uppercase text-white/40">Aktif Depolama</span>
-            <p className="text-2xl font-bold text-white font-mono">{stats.totalStorageGB} GB</p>
-            <p className="text-[11px] text-white/40 font-mono">Voucher & Belge Havuzu</p>
+
+          <div className="p-5 rounded-xl bg-[#0B0F1A] border border-cyan-500/15 space-y-1">
+            <span className="text-[10px] font-mono uppercase text-white/40">Askıda (Suspended)</span>
+            <p className="text-2xl font-bold text-rose-400 font-mono">{stats.suspendedTenants}</p>
+            <p className="text-[11px] text-white/40 font-mono">Durdurulan Tenant</p>
           </div>
         </div>
 
-        {/* Search & Tenants Table */}
-        <div className="bg-[#0B0F1A] border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
+        {/* ─── Search & Tenants Table ─────────────────────────────────────── */}
+        <div className="bg-[#0B0F1A] border border-cyan-500/15 rounded-xl overflow-hidden shadow-xl">
           <div className="p-5 border-b border-white/10 flex items-center justify-between gap-4">
             <div className="relative flex-1 max-w-sm">
               <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" />
               <input
                 type="text"
-                placeholder="Acente adı, slug veya domain ile ara..."
+                placeholder="Acente adı, slug veya unvan ile ara..."
                 value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-xl text-xs text-white placeholder-white/30 focus:outline-none focus:border-cyan-500"
               />
             </div>
             <div className="text-xs text-white/40 font-mono">
-              Toplam {filteredTenants.length} Tenant Listeleniyor
+              Toplam {filteredTenants.length} Acente Listeleniyor
             </div>
           </div>
 
@@ -161,16 +178,16 @@ export default function PlatformAdminDashboard() {
             <table className="w-full text-xs text-left">
               <thead className="bg-white/[0.02] border-b border-white/5 text-white/40 font-mono uppercase text-[10px]">
                 <tr>
-                  <th className="px-5 py-3.5">Tenant / Şirket</th>
+                  <th className="px-5 py-3.5">Tenant / Acente</th>
                   <th className="px-5 py-3.5">Slug & ID</th>
-                  <th className="px-5 py-3.5">Plan</th>
-                  <th className="px-5 py-3.5">Para Birimi & Bölge</th>
+                  <th className="px-5 py-3.5">Hizmet Planı</th>
+                  <th className="px-5 py-3.5">Para Birimi / Dil</th>
                   <th className="px-5 py-3.5">Durum</th>
-                  <th className="px-5 py-3.5 text-right">Yönetim</th>
+                  <th className="px-5 py-3.5 text-right">Detay</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
-                {filteredTenants.map(t => (
+                {filteredTenants.map((t) => (
                   <tr
                     key={t.id}
                     onClick={() => setSelectedTenant(t)}
@@ -181,10 +198,14 @@ export default function PlatformAdminDashboard() {
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
                         <div
-                          className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-white text-xs shadow-md shrink-0"
-                          style={{ backgroundColor: t.primary_color }}
+                          className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs"
+                          style={{
+                            backgroundColor: (t.primary_color || '#3B82F6') + '25',
+                            color: t.primary_color || '#3B82F6',
+                            border: `1px solid ${t.primary_color || '#3B82F6'}40`,
+                          }}
                         >
-                          {t.display_name.slice(0, 1)}
+                          {t.display_name.charAt(0)}
                         </div>
                         <div>
                           <p className="font-semibold text-white">{t.display_name}</p>
@@ -192,39 +213,42 @@ export default function PlatformAdminDashboard() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-5 py-4 font-mono text-[11px] text-white/60">
-                      <span className="text-cyan-400 font-semibold">{t.slug}</span>
-                      <p className="text-[10px] text-white/30 truncate max-w-[140px]">{t.id}</p>
+
+                    <td className="px-5 py-4 font-mono text-[11px] text-white/70">
+                      <span className="text-cyan-400">@{t.slug}</span>
                     </td>
+
+                    <td className="px-5 py-4 font-mono text-xs">
+                      <span className="capitalize text-white/80">{t.plan.replace('_', ' ')}</span>
+                    </td>
+
+                    <td className="px-5 py-4 font-mono text-xs text-white/60">
+                      <span>{t.default_currency}</span> · <span className="uppercase">{t.default_language}</span>
+                    </td>
+
                     <td className="px-5 py-4">
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-mono uppercase bg-white/5 border border-white/10 text-white/80">
-                        {t.plan}
-                      </span>
-                    </td>
-                    <td className="px-5 py-4 font-mono text-[11px] text-white/60">
-                      <span className="text-white font-semibold">{t.default_currency}</span> · {t.timezone}
-                    </td>
-                    <td className="px-5 py-4">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium ${
-                        t.status === 'active'
-                          ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
-                          : t.status === 'trial'
-                          ? 'bg-blue-500/15 text-blue-400 border border-blue-500/30'
-                          : 'bg-red-500/15 text-red-400 border border-red-500/30'
-                      }`}>
-                        <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                      <span
+                        className={`px-2.5 py-1 rounded-full text-[10px] font-mono font-medium ${
+                          t.status === 'active'
+                            ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+                            : t.status === 'trial'
+                            ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
+                            : 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
+                        }`}
+                      >
                         {t.status.toUpperCase()}
                       </span>
                     </td>
+
                     <td className="px-5 py-4 text-right">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedTenant(t);
                         }}
-                        className="px-3 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white transition-colors"
+                        className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-[11px] text-white/70 hover:text-white transition-all font-mono"
                       >
-                        Yapılandır
+                        İncele
                       </button>
                     </td>
                   </tr>
@@ -234,217 +258,203 @@ export default function PlatformAdminDashboard() {
           </div>
         </div>
 
-        {/* Selected Tenant Inspection & Feature Flags Drawer */}
+        {/* ─── Selected Tenant Detail Drawer ──────────────────────────────── */}
         {selectedTenant && (
-          <div className="bg-[#0B0F1A] border border-cyan-500/30 rounded-3xl p-6 lg:p-8 shadow-2xl space-y-6 animate-in fade-in slide-in-from-bottom-4">
-            <div className="flex flex-wrap items-start justify-between gap-4 pb-6 border-b border-white/10">
-              <div className="flex items-center gap-4">
+          <div className="bg-[#0B0F1A] border border-cyan-500/20 rounded-xl p-6 space-y-6">
+            <div className="flex items-center justify-between border-b border-white/10 pb-4">
+              <div className="flex items-center gap-3">
                 <div
-                  className="w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-white text-lg shadow-lg"
-                  style={{ backgroundColor: selectedTenant.primary_color }}
+                  className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm"
+                  style={{
+                    backgroundColor: (selectedTenant.primary_color || '#3B82F6') + '25',
+                    color: selectedTenant.primary_color || '#3B82F6',
+                    border: `1px solid ${selectedTenant.primary_color || '#3B82F6'}40`,
+                  }}
                 >
-                  {selectedTenant.display_name.slice(0, 1)}
+                  {selectedTenant.display_name.charAt(0)}
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                    {selectedTenant.display_name}
-                    <span className="text-xs font-mono font-normal text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20">
-                      ID: {selectedTenant.id}
-                    </span>
-                  </h3>
-                  <p className="text-xs text-white/50">{selectedTenant.legal_name} · Domain: {selectedTenant.domain || 'travelos.app/' + selectedTenant.slug}</p>
+                  <h2 className="text-base font-bold text-white">{selectedTenant.display_name}</h2>
+                  <p className="text-xs text-white/40 font-mono">ID: {selectedTenant.id}</p>
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
-                {selectedTenant.status === 'active' ? (
-                  <button
-                    onClick={() => handleStatusChange(selectedTenant.id, 'suspended')}
-                    className="px-3 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 text-xs font-medium flex items-center gap-1.5 transition-all"
-                  >
-                    <Pause className="w-3.5 h-3.5" />
-                    <span>Askıya Al (Suspend)</span>
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => handleStatusChange(selectedTenant.id, 'active')}
-                    className="px-3 py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-xs font-medium flex items-center gap-1.5 transition-all"
-                  >
-                    <Play className="w-3.5 h-3.5" />
-                    <span>Etkinleştir (Activate)</span>
-                  </button>
-                )}
                 <button
                   onClick={() => setSelectedTenant(null)}
-                  className="p-1.5 rounded-lg text-white/40 hover:text-white"
+                  className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white/40 hover:text-white"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
             </div>
 
-            {/* Feature Modules Grid */}
-            <div>
-              <h4 className="text-xs font-mono uppercase tracking-wider text-cyan-400 mb-3">
-                Aktif Modüller & Özellik Paketleri (Tenant Feature Flags)
-              </h4>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {(Object.keys(selectedTenant.features) as (keyof TenantFeatures)[]).map(feature => {
-                  const isEnabled = selectedTenant.features[feature];
-                  return (
-                    <button
-                      key={feature}
-                      type="button"
-                      onClick={() => handleFeatureToggle(selectedTenant.id, feature)}
-                      className={`p-3.5 rounded-xl border text-left flex items-center justify-between transition-all ${
-                        isEnabled
-                          ? 'bg-cyan-500/10 border-cyan-500/40 text-white shadow-[0_0_15px_rgba(6,182,212,0.15)]'
-                          : 'bg-white/[0.02] border-white/5 text-white/30 hover:border-white/20'
-                      }`}
-                    >
-                      <span className="text-xs font-mono font-medium">{feature}</span>
-                      <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${
-                        isEnabled ? 'bg-cyan-400 text-black font-bold' : 'bg-white/10 text-white/40'
-                      }`}>
-                        {isEnabled ? '✓' : '×'}
-                      </span>
-                    </button>
-                  );
-                })}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Basic Meta */}
+              <div className="space-y-3">
+                <h3 className="text-xs font-mono uppercase text-white/40">Acente Profili</h3>
+                <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5 space-y-2 text-xs">
+                  <div>
+                    <span className="text-white/40 block text-[10px]">Yasal Unvan:</span>
+                    <span className="text-white font-medium">{selectedTenant.legal_name}</span>
+                  </div>
+                  <div>
+                    <span className="text-white/40 block text-[10px]">Saat Dilimi:</span>
+                    <span className="text-white font-mono">{selectedTenant.timezone}</span>
+                  </div>
+                  <div>
+                    <span className="text-white/40 block text-[10px]">Özel Domain:</span>
+                    <span className="text-cyan-400 font-mono">{selectedTenant.domain || 'Tanımlanmadı'}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Status Management */}
+              <div className="space-y-3">
+                <h3 className="text-xs font-mono uppercase text-white/40">Oturum Durumu</h3>
+                <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5 space-y-3">
+                  <div className="flex items-center gap-2">
+                    {(['active', 'trial', 'suspended'] as TenantStatus[]).map((st) => (
+                      <button
+                        key={st}
+                        onClick={() => handleStatusChange(selectedTenant.id, st)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-all uppercase ${
+                          selectedTenant.status === st
+                            ? 'bg-cyan-500 text-black font-bold'
+                            : 'bg-white/5 text-white/50 hover:text-white'
+                        }`}
+                      >
+                        {st}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-[10px] text-white/40">
+                    Durum değişikliği aktif in-memory oturumunda anında uygulanır.
+                  </p>
+                </div>
+              </div>
+
+              {/* Module Toggles */}
+              <div className="space-y-3">
+                <h3 className="text-xs font-mono uppercase text-white/40">Modül Yetkileri</h3>
+                <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5 space-y-2 text-xs">
+                  {(Object.keys(selectedTenant.features) as (keyof TenantFeatures)[]).slice(0, 4).map((f) => (
+                    <div key={f} className="flex items-center justify-between">
+                      <span className="text-white/70 font-mono text-[11px]">{f}</span>
+                      <button
+                        onClick={() => handleFeatureToggle(selectedTenant.id, f)}
+                        className={`px-2 py-0.5 rounded text-[10px] font-mono ${
+                          selectedTenant.features[f]
+                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                            : 'bg-white/5 text-white/30'
+                        }`}
+                      >
+                        {selectedTenant.features[f] ? 'AÇIK' : 'KAPALI'}
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         )}
-      </div>
 
-      {/* New Tenant Provisioning Wizard Modal (Section 20 & 32) */}
-      {isProvisionOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="relative w-full max-w-xl bg-[#0B0F1A] border border-cyan-500/40 rounded-3xl p-6 lg:p-8 shadow-[0_25px_80px_rgba(0,0,0,0.9)] space-y-6">
-            <div className="flex items-center justify-between pb-4 border-b border-white/10">
-              <div className="flex items-center gap-2">
-                <Building2 className="w-5 h-5 text-cyan-400" />
-                <h3 className="text-base font-bold text-white">Yeni Acente / Tenant Tahsis Et</h3>
-              </div>
-              <button onClick={() => setIsProvisionOpen(false)} className="text-white/40 hover:text-white">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <form onSubmit={handleProvisionTenant} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[10px] font-mono uppercase text-cyan-400 mb-1">Ticari Ünvan (Legal Name) *</label>
-                  <input
-                    type="text"
-                    required
-                    value={wizardData.legal_name}
-                    onChange={e => setWizardData({ ...wizardData, legal_name: e.target.value })}
-                    placeholder="Örn: Horizon Luxury Travel Ltd."
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white focus:outline-none focus:border-cyan-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-mono uppercase text-cyan-400 mb-1">Marka Adı (Display Name) *</label>
-                  <input
-                    type="text"
-                    required
-                    value={wizardData.display_name}
-                    onChange={e => setWizardData({ ...wizardData, display_name: e.target.value })}
-                    placeholder="Örn: Horizon Travel"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white focus:outline-none focus:border-cyan-500"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[10px] font-mono uppercase text-cyan-400 mb-1">Tenant Slug (Subdomain) *</label>
-                  <input
-                    type="text"
-                    required
-                    value={wizardData.slug}
-                    onChange={e => setWizardData({ ...wizardData, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '') })}
-                    placeholder="Örn: horizon"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white font-mono focus:outline-none focus:border-cyan-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-mono uppercase text-cyan-400 mb-1">Abonelik Paketi *</label>
-                  <select
-                    value={wizardData.plan}
-                    onChange={e => setWizardData({ ...wizardData, plan: e.target.value as TenantPlan })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#111827] border border-white/10 text-xs text-white focus:outline-none focus:border-cyan-500"
-                  >
-                    <option value="starter">Starter Plan</option>
-                    <option value="professional">Professional Plan</option>
-                    <option value="premium">Premium Plan</option>
-                    <option value="enterprise">Enterprise Plan</option>
-                    <option value="founding_partner">Founding Partner</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-[10px] font-mono uppercase text-cyan-400 mb-1">Para Birimi</label>
-                  <select
-                    value={wizardData.default_currency}
-                    onChange={e => setWizardData({ ...wizardData, default_currency: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#111827] border border-white/10 text-xs text-white focus:outline-none"
-                  >
-                    <option value="USD">USD ($)</option>
-                    <option value="AED">AED (د.إ)</option>
-                    <option value="EUR">EUR (€)</option>
-                    <option value="GBP">GBP (£)</option>
-                    <option value="TRY">TRY (₺)</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-[10px] font-mono uppercase text-cyan-400 mb-1">Zaman Dilimi</label>
-                  <input
-                    type="text"
-                    value={wizardData.timezone}
-                    onChange={e => setWizardData({ ...wizardData, timezone: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-mono uppercase text-cyan-400 mb-1">Ana Renk Kodu</label>
-                  <input
-                    type="text"
-                    value={wizardData.primary_color}
-                    onChange={e => setWizardData({ ...wizardData, primary_color: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white font-mono focus:outline-none"
-                  />
-                </div>
-              </div>
-
+        {/* ─── Provision Wizard Dialog ────────────────────────────────────── */}
+        <TravelDialog
+          open={isProvisionOpen}
+          onOpenChange={setIsProvisionOpen}
+          title="Oturuma Yeni Acente Tanımla"
+          description="Kayıt defterine oturum boyunca geçerli yeni bir acente profili ekleyin."
+        >
+          <form onSubmit={handleProvisionTenant} className="space-y-4 pt-2">
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-[10px] font-mono uppercase text-cyan-400 mb-1">Acente Yönetici E-Postası (Admin Account) *</label>
+                <label className="block text-xs text-white/70 mb-1">Görünen Ad</label>
                 <input
-                  type="email"
+                  type="text"
                   required
-                  value={wizardData.admin_email}
-                  onChange={e => setWizardData({ ...wizardData, admin_email: e.target.value })}
-                  placeholder="admin@horizon.com"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white focus:outline-none focus:border-cyan-500"
+                  placeholder="Örn: Bosphorus VIP"
+                  value={wizardData.display_name}
+                  onChange={(e) => setWizardData({ ...wizardData, display_name: e.target.value })}
+                  className="w-full px-3 py-2 text-xs rounded-lg bg-[#111827] border border-white/10 text-white focus:outline-none focus:border-cyan-500"
                 />
               </div>
 
-              <div className="pt-3 border-t border-white/10">
-                <button
-                  type="submit"
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(6,182,212,0.4)] transition-all"
-                >
-                  <Shield className="w-4 h-4" />
-                  <span>Acenteyi Canlıya Al (Provision Tenant)</span>
-                </button>
+              <div>
+                <label className="block text-xs text-white/70 mb-1">Slug / Tanımlayıcı</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="bosphorus"
+                  value={wizardData.slug}
+                  onChange={(e) => setWizardData({ ...wizardData, slug: e.target.value })}
+                  className="w-full px-3 py-2 text-xs rounded-lg bg-[#111827] border border-white/10 text-white focus:outline-none focus:border-cyan-500"
+                />
               </div>
-            </form>
-          </div>
-        </div>
-      )}
+            </div>
+
+            <div>
+              <label className="block text-xs text-white/70 mb-1">Yasal Şirket Unvanı</label>
+              <input
+                type="text"
+                placeholder="Bosphorus Travel A.Ş."
+                value={wizardData.legal_name}
+                onChange={(e) => setWizardData({ ...wizardData, legal_name: e.target.value })}
+                className="w-full px-3 py-2 text-xs rounded-lg bg-[#111827] border border-white/10 text-white focus:outline-none focus:border-cyan-500"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs text-white/70 mb-1">Hizmet Planı</label>
+                <select
+                  value={wizardData.plan}
+                  onChange={(e) => setWizardData({ ...wizardData, plan: e.target.value as TenantPlan })}
+                  className="w-full px-3 py-2 text-xs rounded-lg bg-[#111827] border border-white/10 text-white focus:outline-none focus:border-cyan-500"
+                >
+                  <option value="starter">Starter</option>
+                  <option value="professional">Professional</option>
+                  <option value="premium">Premium</option>
+                  <option value="enterprise">Enterprise</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs text-white/70 mb-1">Para Birimi</label>
+                <select
+                  value={wizardData.default_currency}
+                  onChange={(e) => setWizardData({ ...wizardData, default_currency: e.target.value })}
+                  className="w-full px-3 py-2 text-xs rounded-lg bg-[#111827] border border-white/10 text-white focus:outline-none focus:border-cyan-500"
+                >
+                  <option value="USD">USD ($)</option>
+                  <option value="EUR">EUR (€)</option>
+                  <option value="AED">AED (د.إ)</option>
+                  <option value="TRY">TRY (₺)</option>
+                  <option value="GBP">GBP (£)</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="p-3 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-[11px] text-cyan-300">
+              ℹ Tanımlanan acente oturum süresince tenant havuzuna eklenir.
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 border-t border-white/5">
+              <TravelButton
+                variant="outline"
+                size="sm"
+                type="button"
+                onClick={() => setIsProvisionOpen(false)}
+              >
+                İptal
+              </TravelButton>
+              <TravelButton variant="primary" size="sm" type="submit">
+                Acenteyi Tanımla
+              </TravelButton>
+            </div>
+          </form>
+        </TravelDialog>
+      </div>
     </div>
   );
 }

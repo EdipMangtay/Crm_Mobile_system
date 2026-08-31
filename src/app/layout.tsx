@@ -32,6 +32,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { TravelToaster } from "@/components/ui/travel";
+
 export default function RootLayout({
   children,
 }: {
@@ -41,6 +43,7 @@ export default function RootLayout({
     <html lang="tr" className="h-full antialiased">
       <body className="min-h-full flex flex-col bg-navy-900 text-cream">
         {children}
+        <TravelToaster />
       </body>
     </html>
   );

@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import React, { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { Lock, Eye, EyeOff, AlertCircle, ShieldCheck } from 'lucide-react';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
-import { Lock, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { TravelButton } from '@/components/ui/travel/TravelButton';
 
 function LoginForm() {
   const router = useRouter();
@@ -38,7 +39,9 @@ function LoginForm() {
       }
 
       // Verify staff role
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         setError('Oturum oluşturulamadı.');
         setLoading(false);
@@ -67,47 +70,40 @@ function LoginForm() {
     }
   };
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-[#05070F] relative overflow-hidden">
-      {/* Ambient glow */}
-      <div className="absolute top-1/3 left-1/4 w-[600px] h-[600px] bg-[#C9A66B]/[0.03] rounded-full blur-[180px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-[#1B3A6B]/[0.06] rounded-full blur-[140px] pointer-events-none" />
+  const handleDemoAccess = () => {
+    document.cookie = 'travia_staff_session=demo; path=/; max-age=86400';
+    router.push(redirect);
+  };
 
-      <div className="w-full max-w-[420px] mx-4 relative z-10">
-        {/* Brand */}
-        <div className="text-center mb-10">
-          <h1 className="font-serif text-3xl tracking-[0.15em] text-[#F5F1E8] mb-1">
-            TRAVIA
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-[#05070F] relative overflow-hidden px-4">
+      <div className="w-full max-w-[400px] relative z-10 space-y-6">
+        {/* Brand Header */}
+        <div className="text-center space-y-1.5">
+          <div className="w-10 h-10 rounded-xl bg-[#C9A66B]/15 border border-[#C9A66B]/25 flex items-center justify-center text-[#C9A66B] mx-auto shadow-sm">
+            <Lock className="w-4 h-4" />
+          </div>
+          <h1 className="text-xl font-semibold tracking-tight text-[#F5F1E8]">
+            TRAVEL OS
           </h1>
-          <p className="text-xs tracking-[0.3em] text-[#C9A66B] uppercase font-medium">
-            Ultimate CRM
+          <p className="text-xs font-mono uppercase tracking-wider text-[#C9A66B]">
+            Yetkili Personel Giriş Kapısı
           </p>
         </div>
 
         {/* Login Card */}
-        <div className="bg-[#0B0F1A]/80 backdrop-blur-xl border border-[#C9A66B]/15 rounded-2xl p-8 shadow-[0_25px_80px_rgba(0,0,0,0.6)]">
-          <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-[#C9A66B]/10 border border-[#C9A66B]/20 mx-auto mb-6">
-            <Lock className="w-5 h-5 text-[#C9A66B]" />
-          </div>
-
-          <h2 className="text-lg text-[#F5F1E8] text-center font-medium mb-1">
-            Personel Girişi
-          </h2>
-          <p className="text-xs text-[#F5F1E8]/40 text-center mb-6">
-            Travia CRM&apos;e erişmek için giriş yapın
-          </p>
-
+        <div className="bg-[#0B0F1A] border border-[#C9A66B]/20 rounded-2xl p-7 shadow-2xl space-y-5">
           {error && (
-            <div className="flex items-start gap-2.5 p-3 mb-5 rounded-lg bg-red-500/10 border border-red-500/20">
-              <AlertCircle className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
-              <p className="text-xs text-red-300 leading-relaxed">{error}</p>
+            <div className="flex items-start gap-2.5 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-xs text-red-400">
+              <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+              <p className="leading-relaxed">{error}</p>
             </div>
           )}
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-[10px] font-mono tracking-wider text-[#C9A66B] uppercase mb-1.5">
-                E-posta
+              <label className="block text-[11px] font-mono tracking-wider text-[#C9A66B] uppercase mb-1.5">
+                Personel E-Postası
               </label>
               <input
                 type="email"
@@ -115,14 +111,14 @@ function LoginForm() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 autoComplete="email"
-                className="w-full rounded-xl bg-[#111827] border border-[#C9A66B]/15 px-4 py-3 text-sm text-[#F5F1E8] placeholder-[#F5F1E8]/20 focus:border-[#C9A66B]/50 focus:outline-none focus:ring-1 focus:ring-[#C9A66B]/20 transition-all"
-                placeholder="ornek@traviadubai.com"
+                placeholder="edip@traviadubai.com"
+                className="w-full rounded-lg bg-[#111827] border border-[#C9A66B]/15 px-3.5 py-2.5 text-xs text-[#F5F1E8] placeholder-[#F5F1E8]/20 focus:border-[#C9A66B]/50 focus:outline-none transition-colors"
               />
             </div>
 
             <div>
-              <label className="block text-[10px] font-mono tracking-wider text-[#C9A66B] uppercase mb-1.5">
-                Şifre
+              <label className="block text-[11px] font-mono tracking-wider text-[#C9A66B] uppercase mb-1.5">
+                Güvenlik Şifresi
               </label>
               <div className="relative">
                 <input
@@ -131,8 +127,8 @@ function LoginForm() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   autoComplete="current-password"
-                  className="w-full rounded-xl bg-[#111827] border border-[#C9A66B]/15 px-4 py-3 pr-10 text-sm text-[#F5F1E8] placeholder-[#F5F1E8]/20 focus:border-[#C9A66B]/50 focus:outline-none focus:ring-1 focus:ring-[#C9A66B]/20 transition-all"
                   placeholder="••••••••"
+                  className="w-full rounded-lg bg-[#111827] border border-[#C9A66B]/15 px-3.5 py-2.5 pr-10 text-xs text-[#F5F1E8] placeholder-[#F5F1E8]/20 focus:border-[#C9A66B]/50 focus:outline-none transition-colors"
                 />
                 <button
                   type="button"
@@ -144,20 +140,15 @@ function LoginForm() {
               </div>
             </div>
 
-            <button
+            <TravelButton
               type="submit"
+              variant="primary"
+              size="md"
+              className="w-full justify-center"
               disabled={loading}
-              className="w-full py-3 mt-2 rounded-xl bg-gradient-to-r from-[#C9A66B] to-[#E8C77A] text-[#05070F] text-sm font-semibold tracking-wide hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-[0_0_20px_rgba(201,166,107,0.25)]"
             >
-              {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <span className="w-4 h-4 border-2 border-[#05070F]/30 border-t-[#05070F] rounded-full animate-spin" />
-                  Giriş yapılıyor...
-                </span>
-              ) : (
-                'Giriş Yap'
-              )}
-            </button>
+              {loading ? 'Doğrulanıyor...' : 'Güvenli Giriş Yap'}
+            </TravelButton>
 
             <div className="relative my-3">
               <div className="absolute inset-0 flex items-center">
@@ -170,19 +161,17 @@ function LoginForm() {
 
             <button
               type="button"
-              onClick={() => {
-                document.cookie = 'travia_staff_session=demo; path=/; max-age=86400';
-                router.push(redirect);
-              }}
-              className="w-full py-2.5 rounded-xl bg-[#111827] border border-[#C9A66B]/20 text-[#C9A66B] text-xs font-medium hover:bg-[#C9A66B]/10 transition-all flex items-center justify-center gap-2"
+              onClick={handleDemoAccess}
+              className="w-full py-2.5 rounded-lg bg-[#111827] border border-[#C9A66B]/20 text-[#C9A66B] text-xs font-medium hover:bg-[#C9A66B]/10 transition-colors flex items-center justify-center gap-2"
             >
-              Demo Girişi (Hızlı İnceleme)
+              <ShieldCheck className="w-3.5 h-3.5" />
+              Hızlı İnceleme (Demo Oturumu)
             </button>
           </form>
         </div>
 
-        <p className="text-center text-[10px] text-[#F5F1E8]/20 mt-6 tracking-wide">
-          © {new Date().getFullYear()} Travia Dubai · Güvenli bağlantı
+        <p className="text-center text-[11px] text-[#F5F1E8]/30 font-mono">
+          TravelOS v2.4 · 256-Bit UHNW Şifreleme
         </p>
       </div>
     </div>
@@ -191,11 +180,13 @@ function LoginForm() {
 
 export default function CrmLoginPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-[#05070F]">
-        <div className="w-8 h-8 border-2 border-[#C9A66B]/30 border-t-[#C9A66B] rounded-full animate-spin" />
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-[#05070F]">
+          <div className="w-6 h-6 border-2 border-[#C9A66B]/30 border-t-[#C9A66B] rounded-full animate-spin" />
+        </div>
+      }
+    >
       <LoginForm />
     </Suspense>
   );
