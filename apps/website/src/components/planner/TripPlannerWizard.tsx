@@ -6,7 +6,7 @@ import {
   Sparkles, Check, ArrowRight, ArrowLeft,
   Ship, Compass, Utensils, Car, Send, CheckCircle2
 } from 'lucide-react';
-import { formatCurrency } from '@/types/crm';
+import { formatCurrency } from '@/lib/formatCurrency';
 
 interface PlannerData {
   nights: number;

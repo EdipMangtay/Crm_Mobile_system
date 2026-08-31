@@ -1,5 +1,0 @@
-(globalThis["TURBOPACK_CHUNK_LISTS"] || (globalThis["TURBOPACK_CHUNK_LISTS"] = [])).push({
-    script: typeof document === "object" ? document.currentScript : undefined,
-    chunks: ["static/chunks/apps_website_src_app_globals_186zzsp.css","static/chunks/apps_website_src_0l5o5a2._.js","static/chunks/node_modules_0f-wfqu._.js","static/chunks/apps_website_src_components_Hero_ParticleScene_tsx_0akwrkb._.js","static/chunks/apps_website_src_1ge1ot6._.js","static/chunks/node_modules_next_1f4xw_w._.js","static/chunks/node_modules_motion-dom_dist_es_1pv939i._.js","static/chunks/node_modules_framer-motion_dist_es_0zq0s-z._.js","static/chunks/node_modules_three_build_three_core_18d0oq6.js","static/chunks/node_modules_three_build_three_module_03rsyo6.js","static/chunks/node_modules_three_build_three_module_1_wgwg8.js","static/chunks/node_modules_@react-three_fiber_dist_0sjpx1_._.js","static/chunks/node_modules_1ni-lzm._.js","static/chunks/apps_website_src_components_Hero_ParticleScene_tsx_0ayquus._.js"],
-    source: "entry"
-});

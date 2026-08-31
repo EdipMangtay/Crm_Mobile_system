@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, Clock, Sparkles, Check, MessageCircle } from 'lucide-react';
 import { Navbar, Footer, WhatsAppButton } from '@/components/website';
-import { formatCurrency } from '@/types';
+import { formatCurrency } from '@/lib/formatCurrency';
 
 interface ExperienceData {
   title: string;

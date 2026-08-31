@@ -1,7 +1,0 @@
-{
-  "/_global-error/page": "/_global-error",
-  "/_not-found/page": "/_not-found",
-  "/api/website/contact/route": "/api/website/contact",
-  "/experiences/[slug]/page": "/experiences/[slug]",
-  "/page": "/"
-}

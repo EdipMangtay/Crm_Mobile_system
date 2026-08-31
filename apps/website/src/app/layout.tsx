@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   },
 };
 
-import { TravelToaster } from "@/components/ui/travel";
+import { Toaster as TravelToaster } from "@/components/ui/sonner";
 
 export default function RootLayout({
   children,

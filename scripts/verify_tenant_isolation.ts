@@ -3,9 +3,9 @@
  * Sections 31 & 32
  */
 
-import { tenantRegistry, DEFAULT_TENANT_ID } from '../src/lib/tenancy/tenantContext';
-import { customerService, tripService, eventBus } from '../src/lib/services';
-import { traviaData } from '../shared/data/traviaData';
+import { tenantRegistry, DEFAULT_TENANT_ID } from '../apps/crm/src/lib/tenancy/tenantContext';
+import { customerService, tripService, eventBus } from '../apps/crm/src/lib/services';
+import { traviaData } from '../apps/crm/src/shared/data/traviaData';
 
 async function runTenantIsolationTests() {
   console.log('\n═══════════════════════════════════════════════════════════════════');

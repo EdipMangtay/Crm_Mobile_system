@@ -1,24 +1,8 @@
 /**
- * TRAVELOS / TRAVIA — UI Primitives Barrel Export
+ * TRAVELOS / TRAVIA — Website UI barrel
  */
 
-// TravelOS Core Primitives
-export * from './travel';
-
-// Radix Primitives
-export * from './dialog';
-export * from './alert-dialog';
-export * from './sheet';
-export * from './tabs';
-export * from './tooltip';
-export * from './popover';
-export * from './dropdown-menu';
-export * from './scroll-area';
-export * from './skeleton';
-export * from './sonner';
-export * from './command';
-
-// Legacy Website UI Components
+export { Toaster } from './sonner';
 export { default as CustomCursor } from './CustomCursor';
 export { default as AmbientGoldenDust } from './AmbientGoldenDust';
 export { default as WhatsAppButton } from './WhatsAppButton';

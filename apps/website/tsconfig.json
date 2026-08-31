@@ -19,9 +19,7 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"],
-      "@/crm/*": ["./crm/*"],
-      "@/shared/*": ["./shared/*"]
+      "@/*": ["./src/*"]
     }
   },
   "include": [
@@ -32,5 +30,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules", "mobile"]
+  "exclude": ["node_modules"]
 }

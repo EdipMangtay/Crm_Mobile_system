@@ -49,7 +49,7 @@ export default function Card({
     scale.value = withSpring(1, springConfig.responsive);
   };
 
-  const Wrapper = onPress ? AnimatedPressable : Animated.View;
+  const Wrapper = (onPress ? AnimatedPressable : Animated.View) as React.ElementType;
 
   return (
     <Wrapper

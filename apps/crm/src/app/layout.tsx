@@ -1,38 +1,18 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { TravelToaster } from "@/components/ui/travel";
+
+const crmUrl = process.env.NEXT_PUBLIC_CRM_URL || "http://localhost:3001";
 
 export const metadata: Metadata = {
-  title: "Travia Dubai | VIP Dubai Turları & Vize Danışmanlığı",
-  description:
-    "Dubai'yi size özel yaşayın. Kişiye özel VIP turlar, profesyonel vize danışmanlığı, çöl safarisi, yat turları ve daha fazlası. 10 saatlik özel lüks araç ve Türkçe rehber eşliğinde unutulmaz bir Dubai deneyimi.",
-  keywords: [
-    "Dubai tur",
-    "Dubai vize",
-    "VIP tur Dubai",
-    "Dubai vize danışmanlığı",
-    "Dubai özel tur",
-    "Dubai şehir turu",
-    "Travia Dubai",
-    "Dubai lüks tur",
-    "Dubai çöl safarisi",
-    "Dubai yat turu",
-  ],
-  openGraph: {
-    title: "Travia Dubai | VIP Dubai Turları & Vize Danışmanlığı",
-    description:
-      "Dubai'yi size özel yaşayın. Kişiye özel VIP turlar, profesyonel vize danışmanlığı ve unutulmaz deneyimler.",
-    url: "https://traviadubai.com",
-    siteName: "Travia Dubai",
-    locale: "tr_TR",
-    type: "website",
-  },
+  metadataBase: new URL(crmUrl),
+  title: "TravelOS CRM",
+  description: "TravelOS customer operations console",
   robots: {
-    index: true,
-    follow: true,
+    index: false,
+    follow: false,
   },
 };
-
-import { TravelToaster } from "@/components/ui/travel";
 
 export default function RootLayout({
   children,
