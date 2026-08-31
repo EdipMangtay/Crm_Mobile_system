@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
       tenant_id: tenant.id,
       lead,
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to ingest lead' },
       { status: 500 }

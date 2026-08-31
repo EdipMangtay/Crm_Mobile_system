@@ -2,7 +2,7 @@
 
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { Users, Car, FileCheck, Headset, Sparkles } from 'lucide-react';
+import { Users, Car, FileCheck, Headset } from 'lucide-react';
 import CountUp from './ui/CountUp';
 import { STATS } from '@/lib/constants';
 

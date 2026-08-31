@@ -6,10 +6,9 @@ import { useParams } from 'next/navigation';
 import {
   ArrowLeft, Users, Plus, Key, Printer, AlertCircle
 } from 'lucide-react';
-import Badge from '@/components/crm/ui/Badge';
-import ProposalModal from '@/crm/components/proposal/ProposalModal';
-import { formatCurrency } from '@/types/crm';
-import { traviaData } from '@/../shared/data/traviaData';
+import { Badge, ProposalModal } from '@/components/crm';
+import { formatCurrency } from '@/types';
+import { traviaData } from '@/shared/data/traviaData';
 
 export default function TripDetailPage() {
   const params = useParams<{ id: string }>();

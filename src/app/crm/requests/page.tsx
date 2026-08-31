@@ -1,14 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, X, Clock, MessageSquare, AlertCircle, ArrowRight } from 'lucide-react';
-import Badge from '@/components/crm/ui/Badge';
+import { Check } from 'lucide-react';
+import { Badge } from '@/components/crm';
 
 const DEMO_REQUESTS = [
   { id: '1', customer: 'Edip Mangtay', category: 'Restoran', title: 'Nobu Dubai Akşam Yemeği Rezervasyonu', time: '13 Eyl 20:30', pax: 2, notes: 'Yıldönümü kutlaması için sessiz köşe masa ricası.', status: 'confirmed' as const, created_at: '27 Ağu 17:15' },
   { id: '2', customer: 'Edip Mangtay', category: 'Aktivite', title: 'Helikopter Şehir Turu Ekleme', time: '14 Eyl 11:00', pax: 2, notes: '22 Dakikalık Palm rotası, hava durumuna göre planlanması.', status: 'reviewing' as const, created_at: '27 Ağu 18:00' },
-  { id: '3', customer: 'Canan Özdemir', category: 'Transfer', title: 'Havalimanı Dönüş Transferi Saati Değişikliği', time: '23 Eyl 15:30', pax: 1, notes: 'Uçuş saati 2 saat ertelendi, transferin 17:30 yapılması ricası.', status: 'received' as const, created_at: '27 Ağu 18:40' },
-  { id: '4', customer: 'Ahmet Yılmaz', category: 'Çöl Safarisi', title: 'Çocuk Menüsü ve Özel Sandboarding Talebi', time: '16 Eyl 16:00', pax: 4, notes: '2 çocuk için kasksız kum kayağı ve mini buggy aracı.', status: 'received' as const, created_at: '27 Ağu 19:10' },
+  { id: '3', customer: 'Selin Arslan', category: 'Transfer', title: 'Havalimanı Dönüş Transferi Saati Değişikliği', time: '23 Eyl 15:30', pax: 1, notes: 'Uçuş saati 2 saat ertelendi, transferin 17:30 yapılması ricası.', status: 'received' as const, created_at: '27 Ağu 18:40' },
+  { id: '4', customer: 'Kerem Aydın', category: 'Çöl Safarisi', title: 'Çocuk Menüsü ve Özel Sandboarding Talebi', time: '16 Eyl 16:00', pax: 4, notes: '2 çocuk için kasksız kum kayağı ve mini buggy aracı.', status: 'received' as const, created_at: '27 Ağu 19:10' },
 ];
 
 export default function RequestsPage() {

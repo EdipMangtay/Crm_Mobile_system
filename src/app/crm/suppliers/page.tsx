@@ -1,8 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Plus, Search, Truck, Star, Phone, Mail, CheckCircle2 } from 'lucide-react';
-import Badge from '@/components/crm/ui/Badge';
+import { Plus, Star } from 'lucide-react';
+import { Badge } from '@/components/crm';
 
 const SUPPLIERS = [
   { id: '1', name: 'Marina Superyachts Charter LLC', category: 'Yat & Deniz', contact: 'Kaptan Tariq Al-Mansoor', phone: '+971 55 890 1234', email: 'charter@marinayachts.ae', rating: 4.9, terms: 'Net 15 Gün', status: 'active' },

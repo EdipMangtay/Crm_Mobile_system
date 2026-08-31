@@ -2,10 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
-import CrmSidebar from '@/components/crm/shell/Sidebar';
-import CrmHeader from '@/components/crm/shell/Header';
-import CommandPalette from '@/components/crm/shell/CommandPalette';
-
+import { CrmSidebar, CrmHeader, CommandPalette } from '@/components/crm';
 import { TenantProvider } from '@/lib/tenancy/TenantProvider';
 
 export default function CrmLayout({ children }: { children: React.ReactNode }) {

@@ -15,7 +15,6 @@ function InstagramIcon({ className }: { className?: string }) {
 }
 
 import MagneticButton from './ui/MagneticButton';
-import GoldLine from './ui/GoldLine';
 import { CONTACT } from '@/lib/constants';
 
 export default function Contact() {
@@ -167,7 +166,7 @@ export default function Contact() {
                           onChange={handleChange}
                           required
                           className="w-full rounded-2xl bg-navy-800/80 border border-gold-400/20 px-5 py-4 text-cream text-sm placeholder-cream/25 focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/20 transition-all"
-                          placeholder="Örn: Ahmet Yılmaz"
+                          placeholder="Örn: Kerem Aydın"
                         />
                       </div>
 

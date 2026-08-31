@@ -1,6 +1,6 @@
 'use client';
 
-import { Settings, Shield, Bell, Key, Globe, Database } from 'lucide-react';
+import { Globe, Database } from 'lucide-react';
 
 export default function SettingsPage() {
   const isSupabaseConfigured = Boolean(

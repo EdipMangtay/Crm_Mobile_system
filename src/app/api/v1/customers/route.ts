@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
       tenant_id: tenant.id,
       customer,
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to create customer' },
       { status: 500 }

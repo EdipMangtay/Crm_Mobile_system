@@ -6,9 +6,9 @@ import { useParams } from 'next/navigation';
 import {
   ArrowLeft, Phone, MessageCircle, Mail, Key, Edit, AlertCircle
 } from 'lucide-react';
-import Badge from '@/components/crm/ui/Badge';
-import { formatCurrency, COUNTRY_FLAGS } from '@/types/crm';
-import { traviaData } from '@/../shared/data/traviaData';
+import { Badge } from '@/components/crm';
+import { formatCurrency, COUNTRY_FLAGS } from '@/types';
+import { traviaData } from '@/shared/data/traviaData';
 
 const TABS = ['Genel', 'Geziler', 'Rezervasyonlar', 'Concierge', 'Talepler', 'Ödemeler', 'Belgeler', 'Tercihler', 'Aktivite', 'Dahili'] as const;
 
@@ -86,7 +86,7 @@ export default function Customer360Page() {
                 <span>·</span>
                 <span>Müşteri: Ağu 2026</span>
                 <span>·</span>
-                <span>Yönetici: Furkan Çelik</span>
+                <span>Yönetici: Deniz Acar</span>
               </div>
               <div className="flex items-center gap-2 mt-2">
                 {(customerRecord.tags || ['VIP', 'Luxury']).map(tag => (

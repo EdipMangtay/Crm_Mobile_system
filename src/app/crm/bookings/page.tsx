@@ -1,28 +1,25 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
-import { Search, Plus, Filter, Calendar, Users, DollarSign, ArrowUpDown, Download } from 'lucide-react';
-import Badge from '@/components/crm/ui/Badge';
-import { formatCurrency, BOOKING_TYPE_LABELS, type BookingType } from '@/types/crm';
+import { Search, Plus, Download } from 'lucide-react';
+import { Badge } from '@/components/crm';
+import { formatCurrency, BOOKING_TYPE_LABELS, type BookingType } from '@/types';
 
 const DEMO_BOOKINGS = [
   { id: '1', title: 'VIP Airport Chauffeur Transfer', customer: 'Edip Mangtay', trip: 'Travia Dubai', type: 'transfer' as BookingType, date: '12 Eyl 2026', time: '10:30', supplier: 'Al Futtaim Motors', cost: 450, price: 850, margin: 400, status: 'confirmed' as const },
   { id: '2', title: 'Private Superyacht Sunset Cruise', customer: 'Edip Mangtay', trip: 'Travia Dubai', type: 'yacht' as BookingType, date: '13 Eyl 2026', time: '14:00', supplier: 'Marina Yachts LLC', cost: 4200, price: 6800, margin: 2600, status: 'confirmed' as const },
   { id: '3', title: 'Nobu Dubai Gourmet Dinner', customer: 'Edip Mangtay', trip: 'Travia Dubai', type: 'restaurant' as BookingType, date: '13 Eyl 2026', time: '20:30', supplier: 'Atlantis The Palm', cost: 1800, price: 2800, margin: 1000, status: 'confirmed' as const },
-  { id: '4', title: 'VIP Red Dunes Safari & Royal Majlis', customer: 'Ahmet Yılmaz', trip: 'Luxury Family', type: 'desert_safari' as BookingType, date: '16 Eyl 2026', time: '15:30', supplier: 'Desert Royal Safaris', cost: 2400, price: 4200, margin: 1800, status: 'confirmed' as const },
-  { id: '5', title: 'Helicopter 25m Skyline Tour', customer: 'Canan Özdemir', trip: 'VIP Solo Retreat', type: 'helicopter' as BookingType, date: '19 Eyl 2026', time: '11:00', supplier: 'HeliDubai', cost: 2100, price: 3600, margin: 1500, status: 'pending' as const },
+  { id: '4', title: 'VIP Red Dunes Safari & Royal Majlis', customer: 'Kerem Aydın', trip: 'Luxury Family', type: 'desert_safari' as BookingType, date: '16 Eyl 2026', time: '15:30', supplier: 'Desert Royal Safaris', cost: 2400, price: 4200, margin: 1800, status: 'confirmed' as const },
+  { id: '5', title: 'Helicopter 25m Skyline Tour', customer: 'Selin Arslan', trip: 'VIP Solo Retreat', type: 'helicopter' as BookingType, date: '19 Eyl 2026', time: '11:00', supplier: 'HeliDubai', cost: 2100, price: 3600, margin: 1500, status: 'pending' as const },
 ];
 
 export default function BookingsPage() {
   const [search, setSearch] = useState('');
-  const [typeFilter, setTypeFilter] = useState('all');
 
-  const filtered = DEMO_BOOKINGS.filter(b => {
-    const matchSearch = b.title.toLowerCase().includes(search.toLowerCase()) || b.customer.toLowerCase().includes(search.toLowerCase());
-    const matchType = typeFilter === 'all' || b.type === typeFilter;
-    return matchSearch && matchType;
-  });
+  const filtered = DEMO_BOOKINGS.filter(b =>
+    b.title.toLowerCase().includes(search.toLowerCase()) ||
+    b.customer.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="space-y-5 max-w-[1600px]">

@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, Search, Sparkles, Tag, DollarSign, Clock, MapPin, Eye } from 'lucide-react';
-import Badge from '@/components/crm/ui/Badge';
-import { formatCurrency, BOOKING_TYPE_LABELS, type BookingType } from '@/types/crm';
+import { Plus, Search } from 'lucide-react';
+import { Badge } from '@/components/crm';
+import { formatCurrency, BOOKING_TYPE_LABELS, type BookingType } from '@/types';
 
 const EXPERIENCES = [
   {
@@ -62,7 +62,10 @@ const EXPERIENCES = [
 
 export default function ExperiencesPage() {
   const [search, setSearch] = useState('');
-  const filtered = EXPERIENCES.filter(e => e.title.toLowerCase().includes(search.toLowerCase()));
+  const filtered = EXPERIENCES.filter(e =>
+    e.title.toLowerCase().includes(search.toLowerCase()) ||
+    e.desc.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="space-y-5 max-w-[1600px]">
@@ -74,6 +77,17 @@ export default function ExperiencesPage() {
         <button className="px-3.5 py-1.5 text-xs rounded-lg bg-gradient-to-r from-[#C9A66B] to-[#E8C77A] text-[#05070F] font-semibold flex items-center gap-1.5 hover:opacity-90">
           <Plus className="w-3.5 h-3.5" /> Yeni Deneyim Ekle
         </button>
+      </div>
+
+      <div className="relative max-w-md">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#F5F1E8]/20" />
+        <input
+          type="text"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Deneyim ara..."
+          className="w-full pl-9 pr-4 py-2 text-sm rounded-lg bg-[#111827] border border-[#C9A66B]/10 text-[#F5F1E8] placeholder-[#F5F1E8]/20 focus:outline-none focus:border-[#C9A66B]/30"
+        />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

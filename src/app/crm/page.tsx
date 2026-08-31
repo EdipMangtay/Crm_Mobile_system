@@ -4,10 +4,9 @@ import { useState } from 'react';
 import {
   DollarSign, TrendingUp, CalendarCheck, UserPlus, Target, BarChart3,
   Users, CreditCard, Plane, Ship, Utensils, Car, AlertTriangle,
-  MessageCircle, Clock, ArrowRight, ChevronDown
+  MessageCircle, ArrowRight
 } from 'lucide-react';
-import KPICard from '@/components/crm/ui/KPICard';
-import Badge from '@/components/crm/ui/Badge';
+import { KPICard, Badge } from '@/components/crm';
 import Link from 'next/link';
 
 // ─── Demo Dashboard Data ─────────────────────────────────────
@@ -34,17 +33,17 @@ const PIPELINE_STAGES = [
 ];
 
 const TODAY_OPERATIONS = [
-  { id: '1', time: '09:10', customer: 'Ahmet Yılmaz', type: 'Havalimanı İniş', location: 'DXB Terminal 3', status: 'completed' as const, icon: Plane },
+  { id: '1', time: '09:10', customer: 'Kerem Aydın', type: 'Havalimanı İniş', location: 'DXB Terminal 3', status: 'completed' as const, icon: Plane },
   { id: '2', time: '10:30', customer: 'Edip Mangtay', type: 'VIP Transfer', location: 'DXB → Atlantis', status: 'confirmed' as const, icon: Car },
   { id: '3', time: '14:00', customer: 'Edip Mangtay', type: 'Özel Yat', location: 'Dubai Marina', status: 'confirmed' as const, icon: Ship },
   { id: '4', time: '20:30', customer: 'Edip Mangtay', type: 'Restoran', location: 'Nobu Dubai', status: 'confirmed' as const, icon: Utensils },
-  { id: '5', time: '22:00', customer: 'Canan Özdemir', type: 'Hotel Check-in', location: 'Armani Hotel', status: 'pending' as const, icon: Users },
+  { id: '5', time: '22:00', customer: 'Selin Arslan', type: 'Hotel Check-in', location: 'Armani Hotel', status: 'pending' as const, icon: Users },
 ];
 
 const LIVE_CONCIERGE = [
   { id: '1', customer: 'Edip Mangtay', message: 'Bu akşam güzel bir steakhouse ayarlayabilir miyiz?', time: '2 dk', unread: true, vip: true },
-  { id: '2', customer: 'Canan Özdemir', message: 'Havalimanı transfer saatini değiştirebilir miyiz?', time: '15 dk', unread: true, vip: false },
-  { id: '3', customer: 'Ahmet Yılmaz', message: 'Çöl safarisi için çocuklar da gelebilir mi?', time: '1 saat', unread: false, vip: false },
+  { id: '2', customer: 'Selin Arslan', message: 'Havalimanı transfer saatini değiştirebilir miyiz?', time: '15 dk', unread: true, vip: false },
+  { id: '3', customer: 'Kerem Aydın', message: 'Çöl safarisi için çocuklar da gelebilir mi?', time: '1 saat', unread: false, vip: false },
 ];
 
 const FINANCE_SUMMARY = [
@@ -337,8 +336,8 @@ export default function CrmDashboardPage() {
           </div>
           <div className="divide-y divide-[#C9A66B]/5">
             {[
-              { type: 'overdue', title: 'Ödeme vadesi geçti', detail: 'Canan Özdemir · 4,200 AED · 3 gün', variant: 'error' as const },
-              { type: 'follow_up', title: 'Takip gerekli', detail: 'Mert Kaya · Qualified · Son iletişim 5 gün önce', variant: 'warning' as const },
+              { type: 'overdue', title: 'Ödeme vadesi geçti', detail: 'Selin Arslan · 4,200 AED · 3 gün', variant: 'error' as const },
+              { type: 'follow_up', title: 'Takip gerekli', detail: 'Burak Çetin · Qualified · Son iletişim 5 gün önce', variant: 'warning' as const },
               { type: 'unconfirmed', title: 'Tedarikçi onayı bekliyor', detail: 'Yacht Marina Co · 14 Eylül yat turu', variant: 'warning' as const },
               { type: 'new_lead', title: 'Yüksek değerli lead', detail: 'Alman çift · 6 kişi · 50K+ AED · Instagram', variant: 'info' as const },
             ].map((alert, i) => (

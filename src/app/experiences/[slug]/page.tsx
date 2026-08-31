@@ -1,10 +1,8 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, Clock, Users, Shield, Sparkles, Check, Phone, MessageCircle } from 'lucide-react';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import WhatsAppButton from '@/components/ui/WhatsAppButton';
-import { formatCurrency } from '@/types/crm';
+import { ArrowLeft, Clock, Sparkles, Check, MessageCircle } from 'lucide-react';
+import { Navbar, Footer, WhatsAppButton } from '@/components/website';
+import { formatCurrency } from '@/types';
 
 interface ExperienceData {
   title: string;

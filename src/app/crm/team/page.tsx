@@ -1,12 +1,12 @@
 'use client';
 
-import { Plus, Shield, Users, Mail, Phone } from 'lucide-react';
-import Badge from '@/components/crm/ui/Badge';
+import { Plus, Mail, Phone } from 'lucide-react';
+import { Badge } from '@/components/crm';
 
 const TEAM = [
   { id: '1', name: 'Edip Mangtay', role: 'Kurucu / Sahip (Owner)', email: 'edip@traviadubai.com', phone: '+90 532 000 0000', badge: 'gold' as const, active: true },
-  { id: '2', name: 'Furkan Çelik', role: 'Kıdemli Satış & VIP Portföy Yöneticisi', email: 'furkan@traviadubai.com', phone: '+971 50 111 2233', badge: 'info' as const, active: true },
-  { id: '3', name: 'Efza Kaya', role: 'VIP Concierge & Misafir İlişkileri Lideri', email: 'efza@traviadubai.com', phone: '+971 52 444 5566', badge: 'info' as const, active: true },
+  { id: '2', name: 'Deniz Acar', role: 'Kıdemli Satış & VIP Portföy Yöneticisi', email: 'deniz@traviadubai.com', phone: '+971 50 111 2233', badge: 'info' as const, active: true },
+  { id: '3', name: 'Melis Demir', role: 'VIP Concierge & Misafir İlişkileri Lideri', email: 'melis@traviadubai.com', phone: '+971 52 444 5566', badge: 'info' as const, active: true },
   { id: '4', name: 'Tariq Al-Mansoor', role: 'Saha Operasyon & Şoför Koordinatörü', email: 'tariq@traviadubai.com', phone: '+971 55 777 8899', badge: 'warning' as const, active: true },
 ];
 

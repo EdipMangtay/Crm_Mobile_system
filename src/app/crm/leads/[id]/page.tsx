@@ -6,9 +6,9 @@ import { useParams } from 'next/navigation';
 import {
   ArrowLeft, Phone, MessageCircle, Calendar, Plus, UserCheck, AlertCircle
 } from 'lucide-react';
-import Badge from '@/components/crm/ui/Badge';
-import { LEAD_STAGES, COUNTRY_FLAGS, formatCurrency, type LeadStage } from '@/types/crm';
-import { traviaData } from '@/../shared/data/traviaData';
+import { Badge } from '@/components/crm';
+import { LEAD_STAGES, COUNTRY_FLAGS, formatCurrency, type LeadStage } from '@/types';
+import { traviaData } from '@/shared/data/traviaData';
 
 export default function LeadDetailPage() {
   const params = useParams<{ id: string }>();
@@ -21,7 +21,7 @@ export default function LeadDetailPage() {
   );
   const [noteInput, setNoteInput] = useState('');
   const [timeline, setTimeline] = useState([
-    { time: 'Bugün 14:15', title: 'İletişim Kuruldu', desc: `${leadRecord?.assigned_to || 'Danışman'}: Misafir ile görüşüldü. Tercihler güncellendi.`, user: leadRecord?.assigned_to?.split(' ')[0] || 'Furkan' },
+    { time: 'Bugün 14:15', title: 'İletişim Kuruldu', desc: `${leadRecord?.assigned_to || 'Danışman'}: Misafir ile görüşüldü. Tercihler güncellendi.`, user: leadRecord?.assigned_to?.split(' ')[0] || 'Deniz' },
     { time: '26 Ağu 11:00', title: 'Aşama Güncellendi', desc: `Lead "${leadRecord?.stage || 'new'}" aşamasında takip ediliyor.`, user: 'Sistem' },
     { time: '25 Ağu 14:30', title: 'Lead Oluşturuldu', desc: `${leadRecord?.source || 'Web Sitesi'} üzerinden kayıt alındı.`, user: 'Sistem' },
   ]);
@@ -95,7 +95,7 @@ export default function LeadDetailPage() {
 
           <div className="flex items-center gap-2">
             <a
-              href={`https://wa.me/${(leadRecord.whatsapp || leadRecord.phone).replace(/[^0-9]/g, '')}`}
+              href={`https://wa.me/${(leadRecord.whatsapp || leadRecord.phone || '').replace(/[^0-9]/g, '')}`}
               target="_blank"
               rel="noopener noreferrer"
               className="px-3.5 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium hover:bg-emerald-500/20 transition-all flex items-center gap-2"

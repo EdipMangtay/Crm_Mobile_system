@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ArrowDown, MessageCircle, Sparkles, Compass } from 'lucide-react';
+import { MessageCircle, Sparkles, Compass } from 'lucide-react';
 import MagneticButton from '../ui/MagneticButton';
 import { CONTACT } from '@/lib/constants';
 

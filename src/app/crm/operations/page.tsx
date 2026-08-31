@@ -1,16 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { Plane, Car, Ship, Utensils, Compass, Sun, ChevronRight, Clock, AlertTriangle, CheckCircle, Play, Pause } from 'lucide-react';
-import Badge from '@/components/crm/ui/Badge';
+import { Plane, Car, Ship, Utensils, Compass, Sun, AlertTriangle, CheckCircle, Play } from 'lucide-react';
+import { Badge } from '@/components/crm';
 
 const OPERATIONS = [
-  { id: '1', time: '09:10', customer: 'Ahmet Yılmaz', country: '🇹🇷', type: 'Havalimanı İniş & Karşılama', detail: 'Uçuş: TK762 · 4 Kişi', location: 'DXB Terminal 3', driver: '—', status: 'completed' as const, icon: Plane },
+  { id: '1', time: '09:10', customer: 'Kerem Aydın', country: '🇹🇷', type: 'Havalimanı İniş & Karşılama', detail: 'Uçuş: TK762 · 4 Kişi', location: 'DXB Terminal 3', driver: '—', status: 'completed' as const, icon: Plane },
   { id: '2', time: '10:30', customer: 'Edip Mangtay', country: '🇹🇷', type: 'VIP Chauffeur Transfer', detail: 'Mercedes V-Class (Dubai X 78219)', location: 'DXB → Atlantis The Royal', driver: 'Khalid Ahmed · +971 50 123 4567', status: 'in_progress' as const, icon: Car },
   { id: '3', time: '14:00', customer: 'Edip Mangtay', country: '🇹🇷', type: 'Özel Süperyat Seyri', detail: 'Majesty 56ft Yacht · Şampanya İkramı', location: 'Dubai Marina Yacht Club Pier 7', driver: 'Kaptan Rashid', status: 'confirmed' as const, icon: Ship },
-  { id: '4', time: '15:30', customer: 'Canan Özdemir', country: '🇹🇷', type: 'VIP Çöl Safarisi', detail: 'Land Cruiser · 1 Kişi', location: 'Otel Lobisi → Lahbab Çölü', driver: 'Ahmed Hassan', status: 'confirmed' as const, icon: Compass },
+  { id: '4', time: '15:30', customer: 'Selin Arslan', country: '🇹🇷', type: 'VIP Çöl Safarisi', detail: 'Land Cruiser · 1 Kişi', location: 'Otel Lobisi → Lahbab Çölü', driver: 'Ahmed Hassan', status: 'confirmed' as const, icon: Compass },
   { id: '5', time: '20:30', customer: 'Edip Mangtay', country: '🇹🇷', type: 'Nobu Dubai Akşam Yemeği', detail: 'Teras Masa · 2 Kişi', location: 'Atlantis The Palm', driver: '—', status: 'confirmed' as const, icon: Utensils },
-  { id: '6', time: '22:00', customer: 'Ahmet Yılmaz', country: '🇹🇷', type: 'Hotel Check-in', detail: 'Royal Suite · Postviya Suite', location: 'Burj Al Arab Jumeirah', driver: '—', status: 'pending' as const, icon: Sun },
+  { id: '6', time: '22:00', customer: 'Kerem Aydın', country: '🇹🇷', type: 'Hotel Check-in', detail: 'Royal Suite · Postviya Suite', location: 'Burj Al Arab Jumeirah', driver: '—', status: 'pending' as const, icon: Sun },
 ];
 
 const STATUS_STYLES = {

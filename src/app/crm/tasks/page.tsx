@@ -1,14 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, CheckCircle2, Circle, Clock, User, AlertCircle } from 'lucide-react';
-import Badge from '@/components/crm/ui/Badge';
+import { Plus, CheckCircle2, Circle } from 'lucide-react';
+import { Badge } from '@/components/crm';
 
 const TASKS = [
-  { id: '1', title: 'Edip Mangtay için Atlantis Sky Pool Villa özel karşılama çiçeği sipariş et', due: '11 Eyl 14:00', priority: 'high' as const, assigned: 'Efza Kaya', completed: false },
-  { id: '2', title: '13 Eylül süperyat turu için Veuve Clicquot şampanya tedarik teyidi al', due: '12 Eyl 10:00', priority: 'urgent' as const, assigned: 'Furkan Çelik', completed: false },
-  { id: '3', title: 'Ahmet Yılmaz (Family) çöl safarisi çocuk menüsü listesini kampa ilet', due: '14 Eyl 18:00', priority: 'medium' as const, assigned: 'Tariq Al-Mansoor', completed: true },
-  { id: '4', title: 'Alman misafir Stefan Müller teklif revizyonunu hazırla ve PDF gönder', due: 'Bugün 18:00', priority: 'high' as const, assigned: 'Furkan Çelik', completed: false },
+  { id: '1', title: 'Edip Mangtay için Atlantis Sky Pool Villa özel karşılama çiçeği sipariş et', due: '11 Eyl 14:00', priority: 'high' as const, assigned: 'Melis Demir', completed: false },
+  { id: '2', title: '13 Eylül süperyat turu için Veuve Clicquot şampanya tedarik teyidi al', due: '12 Eyl 10:00', priority: 'urgent' as const, assigned: 'Deniz Acar', completed: false },
+  { id: '3', title: 'Kerem Aydın (Family) çöl safarisi çocuk menüsü listesini kampa ilet', due: '14 Eyl 18:00', priority: 'medium' as const, assigned: 'Tariq Al-Mansoor', completed: true },
+  { id: '4', title: 'Alman misafir Tobias Hartmann teklif revizyonunu hazırla ve PDF gönder', due: 'Bugün 18:00', priority: 'high' as const, assigned: 'Deniz Acar', completed: false },
 ];
 
 export default function TasksPage() {

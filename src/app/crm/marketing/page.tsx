@@ -1,8 +1,6 @@
 'use client';
 
-import { TrendingUp, Target, DollarSign, Users, Share2 } from 'lucide-react';
-import Badge from '@/components/crm/ui/Badge';
-import { formatCurrency } from '@/types/crm';
+import { formatCurrency } from '@/types';
 
 const CAMPAIGNS = [
   { id: '1', name: 'Meta Instagram VIP Couples Ad', spend: 6500, leads: 24, bookings: 7, revenue: 129500, roas: '19.9x' },

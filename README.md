@@ -1,36 +1,42 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 👑 TRAVIA DUBAI — Luxury Tourism & Operating System
 
-## Getting Started
+TRAVIA DUBAI, kişiye özel VIP turizm, özel yat kiralama, çöl safarisi, helikopter turları ve lüks seyahat deneyimleri sunan entegre bir seyahat işletim sistemidir (Travel OS).
 
-First, run the development server:
+---
+
+## 🏗️ Mimari ve Geliştirici Kılavuzu
+
+Projenin modüler dosya yapısı, katmanları ve yeni özellik/sayfa ekleme adımları için detaylı rehberimizi inceleyin:
+
+👉 [ARCHITECTURE.md](ARCHITECTURE.md)
+
+---
+
+## 🚀 Başlarken (Getting Started)
+
+Geliştirme sunucusunu başlatmak için:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Tarayıcınızda [http://localhost:3000](http://localhost:3000) adresini açarak:
+- **Landing Page:** `/`
+- **CRM Paneli:** `/crm` (Giriş: `/crm/login`)
+- **Platform Admin:** `/platform-admin`
+- **Deneyimler:** `/experiences/yacht-sunset` vb.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🧪 Derleme & Tip Kontrolü
 
-## Learn More
+```bash
+# TypeScript Tip Kontrolü
+npx tsc --noEmit
 
-To learn more about Next.js, take a look at the following resources:
+# Linter Kontrolü
+npm run lint
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Üretim Derlemesi (Production Build)
+npm run build
+```

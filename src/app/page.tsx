@@ -1,20 +1,22 @@
 'use client';
 
 import { useSmoothScroll } from '@/hooks/useSmoothScroll';
-import Navbar from '@/components/Navbar';
-import HeroSection from '@/components/Hero/HeroSection';
-import BrandStats from '@/components/BrandStats';
-import About from '@/components/About';
-import Services from '@/components/Services';
-import Process from '@/components/Process';
-import FAQ from '@/components/FAQ';
-import Gallery from '@/components/Gallery';
-import Contact from '@/components/Contact';
-import Footer from '@/components/Footer';
-import CustomCursor from '@/components/ui/CustomCursor';
-import AmbientGoldenDust from '@/components/ui/AmbientGoldenDust';
-import TripPlannerWizard from '@/components/planner/TripPlannerWizard';
-import WhatsAppButton from '@/components/ui/WhatsAppButton';
+import {
+  Navbar,
+  HeroSection,
+  BrandStats,
+  About,
+  Services,
+  TripPlannerWizard,
+  Process,
+  FAQ,
+  Gallery,
+  Contact,
+  Footer,
+  CustomCursor,
+  AmbientGoldenDust,
+  WhatsAppButton,
+} from '@/components/website';
 
 export default function Home() {
   // Initialize cinematic smooth scrolling

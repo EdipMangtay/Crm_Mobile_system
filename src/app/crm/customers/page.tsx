@@ -3,16 +3,16 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Search, Plus, Filter, ArrowUpDown, Download } from 'lucide-react';
-import Badge from '@/components/crm/ui/Badge';
-import { exportToCsv } from '@/crm/utils/exportCsv';
-import { COUNTRY_FLAGS, formatCurrency } from '@/types/crm';
+import { Badge } from '@/components/crm';
+import { exportToCsv } from '@/lib/utils';
+import { COUNTRY_FLAGS, formatCurrency } from '@/types';
 
 const DEMO_CUSTOMERS = [
-  { id: 'd0000000-0000-0000-0000-000000000001', first_name: 'Edip', last_name: 'Mangtay', country: 'TR', tags: ['VIP', 'Couple', 'Luxury'], email: 'edip@email.com', phone: '+90 532 000 0000', trips: 1, lifetime_value: 18500, status: 'active', assigned: 'Furkan' },
-  { id: 'd0000000-0000-0000-0000-000000000002', first_name: 'Ahmet', last_name: 'Yılmaz', country: 'TR', tags: ['Family', 'Luxury'], email: 'ahmet@email.com', phone: '+90 533 111 2233', trips: 2, lifetime_value: 42000, status: 'active', assigned: 'Furkan' },
-  { id: 'd0000000-0000-0000-0000-000000000003', first_name: 'Canan', last_name: 'Özdemir', country: 'TR', tags: ['VIP', 'Solo'], email: 'canan@email.com', phone: '+90 534 444 5566', trips: 1, lifetime_value: 15000, status: 'active', assigned: 'Efza' },
-  { id: 'd0000000-0000-0000-0000-000000000004', first_name: 'Hans', last_name: 'Weber', country: 'DE', tags: ['Business', 'Repeat'], email: 'hans@email.de', phone: '+49 170 123 4567', trips: 3, lifetime_value: 68000, status: 'active', assigned: 'Furkan' },
-  { id: 'd0000000-0000-0000-0000-000000000005', first_name: 'Oliver', last_name: 'Smith', country: 'GB', tags: ['Honeymoon', 'Couple'], email: 'oliver@email.co.uk', phone: '+44 7700 900000', trips: 1, lifetime_value: 24000, status: 'active', assigned: 'Efza' },
+  { id: 'd0000000-0000-0000-0000-000000000001', first_name: 'Edip', last_name: 'Mangtay', country: 'TR', tags: ['VIP', 'Couple', 'Luxury'], email: 'edip@email.com', phone: '+90 532 000 0000', trips: 1, lifetime_value: 18500, status: 'active', assigned: 'Deniz' },
+  { id: 'd0000000-0000-0000-0000-000000000002', first_name: 'Kerem', last_name: 'Aydın', country: 'TR', tags: ['Family', 'Luxury'], email: 'kerem@email.com', phone: '+90 533 111 2233', trips: 2, lifetime_value: 42000, status: 'active', assigned: 'Deniz' },
+  { id: 'd0000000-0000-0000-0000-000000000003', first_name: 'Selin', last_name: 'Arslan', country: 'TR', tags: ['VIP', 'Solo'], email: 'selin@email.com', phone: '+90 534 444 5566', trips: 1, lifetime_value: 15000, status: 'active', assigned: 'Melis' },
+  { id: 'd0000000-0000-0000-0000-000000000004', first_name: 'Luca', last_name: 'Bianchi', country: 'DE', tags: ['Business', 'Repeat'], email: 'luca@email.it', phone: '+49 170 123 4567', trips: 3, lifetime_value: 68000, status: 'active', assigned: 'Deniz' },
+  { id: 'd0000000-0000-0000-0000-000000000005', first_name: 'Callum', last_name: 'Hayes', country: 'GB', tags: ['Honeymoon', 'Couple'], email: 'callum@email.co.uk', phone: '+44 7700 900000', trips: 1, lifetime_value: 24000, status: 'active', assigned: 'Melis' },
 ];
 
 export default function CustomersPage() {

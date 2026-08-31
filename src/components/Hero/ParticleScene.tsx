@@ -3,7 +3,7 @@
 import { useRef, useMemo, useEffect } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { useDevicePerformance, getParticleCount } from '@/hooks/useDevicePerformance';
+import { useDevicePerformance } from '@/hooks/useDevicePerformance';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 // High-fidelity Dubai Burj Khalifa and futuristic skyline architectural silhouette
@@ -116,7 +116,7 @@ function InteractiveParticleCloud({ count }: { count: number }) {
   const pointsRef = useRef<THREE.Points>(null);
   const { viewport } = useThree();
 
-  const { targets, initials, colors, scales } = useMemo(
+  const { targets, initials, colors } = useMemo(
     () => generateArchitecturalSkyline(count),
     [count]
   );

@@ -2,13 +2,12 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Plus, Filter, LayoutGrid, List, Table2, Search, Phone, Mail, Calendar, Users, DollarSign, ArrowRight, GripVertical, Download } from 'lucide-react';
-import Badge from '@/components/crm/ui/Badge';
-import { exportToCsv } from '@/crm/utils/exportCsv';
-import { LEAD_STAGES, COUNTRY_FLAGS, formatCurrency } from '@/types/crm';
-import type { LeadStage, LeadPriority } from '@/types/crm';
-
-import { SHARED_LEADS } from '@/../shared/data/traviaData';
+import { Plus, Filter, LayoutGrid, List, Table2, Search, Calendar, Users, Download } from 'lucide-react';
+import { Badge } from '@/components/crm';
+import { exportToCsv } from '@/lib/utils';
+import { LEAD_STAGES, COUNTRY_FLAGS, formatCurrency } from '@/types';
+import type { LeadStage, LeadPriority } from '@/types';
+import { SHARED_LEADS } from '@/shared/data/traviaData';
 
 const DEMO_LEADS = SHARED_LEADS;
 

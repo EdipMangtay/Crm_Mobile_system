@@ -1,19 +1,18 @@
 'use client';
 
 import { useState } from 'react';
-import { DollarSign, TrendingUp, CreditCard, ArrowDownRight, ArrowUpRight, Download, Filter, Plus } from 'lucide-react';
-import Badge from '@/components/crm/ui/Badge';
-import PaymentLinkModal from '@/crm/components/payments/PaymentLinkModal';
-import { exportToCsv } from '@/crm/utils/exportCsv';
-import { formatCurrency } from '@/types/crm';
+import { Download, Plus } from 'lucide-react';
+import { Badge, PaymentLinkModal } from '@/components/crm';
+import { exportToCsv } from '@/lib/utils';
+import { formatCurrency } from '@/types';
 
 const PAYMENTS = [
   { id: 'pay-1', customer: 'Edip Mangtay', trip: 'Travia Dubai — Premium Couple', amount: 5000, method: 'Banka Havalesi (EFT)', status: 'received' as const, date: '27 Ağu 2026 14:00', ref: 'TRV-2026-0812' },
   { id: 'pay-2', customer: 'Edip Mangtay', trip: 'Travia Dubai — Premium Couple', amount: 13500, method: 'Kredi Kartı / Otel', status: 'pending' as const, date: '12 Eyl 2026', ref: 'TRV-2026-0813' },
-  { id: 'pay-3', customer: 'Ahmet Yılmaz', trip: 'Dubai Luxury Family', amount: 42000, method: 'Stripe Kredi Kartı', status: 'received' as const, date: '25 Ağu 2026 11:20', ref: 'TRV-2026-0798' },
-  { id: 'pay-4', customer: 'Canan Özdemir', trip: 'VIP Solo Retreat', amount: 10800, method: 'Banka Havalesi', status: 'received' as const, date: '24 Ağu 2026 16:45', ref: 'TRV-2026-0785' },
-  { id: 'pay-5', customer: 'Canan Özdemir', trip: 'VIP Solo Retreat', amount: 4200, method: 'Nakit / Havalimanı', status: 'pending' as const, date: '18 Eyl 2026', ref: 'TRV-2026-0786' },
-  { id: 'pay-6', customer: 'Fatma Demir', trip: 'Solo Shopping & Dubai Mall', amount: 3500, method: 'Kredi Kartı', status: 'refunded' as const, date: '23 Ağu 2026 10:15', ref: 'TRV-2026-0770' },
+  { id: 'pay-3', customer: 'Kerem Aydın', trip: 'Dubai Luxury Family', amount: 42000, method: 'Stripe Kredi Kartı', status: 'received' as const, date: '25 Ağu 2026 11:20', ref: 'TRV-2026-0798' },
+  { id: 'pay-4', customer: 'Selin Arslan', trip: 'VIP Solo Retreat', amount: 10800, method: 'Banka Havalesi', status: 'received' as const, date: '24 Ağu 2026 16:45', ref: 'TRV-2026-0785' },
+  { id: 'pay-5', customer: 'Selin Arslan', trip: 'VIP Solo Retreat', amount: 4200, method: 'Nakit / Havalimanı', status: 'pending' as const, date: '18 Eyl 2026', ref: 'TRV-2026-0786' },
+  { id: 'pay-6', customer: 'Zeynep Koç', trip: 'Solo Shopping & Dubai Mall', amount: 3500, method: 'Kredi Kartı', status: 'refunded' as const, date: '23 Ağu 2026 10:15', ref: 'TRV-2026-0770' },
 ];
 
 const PAYMENT_STATUS_MAP: Record<string, { label: string; variant: 'success' | 'warning' | 'error' | 'default' }> = {

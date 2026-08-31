@@ -1,7 +1,6 @@
 'use client';
 
-import { BarChart3, TrendingUp, DollarSign, Calendar, Users, Target } from 'lucide-react';
-import KPICard from '@/components/crm/ui/KPICard';
+import { KPICard } from '@/components/crm';
 
 export default function AnalyticsPage() {
   return (

@@ -70,7 +70,7 @@ export async function POST(
       tenant_id: tenant.id,
       message,
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to send message' },
       { status: 500 }
