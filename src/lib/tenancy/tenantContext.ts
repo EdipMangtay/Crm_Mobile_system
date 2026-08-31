@@ -221,6 +221,25 @@ class TenantRegistry {
     return newTenant;
   }
 
+  updateTenant(tenantId: string, update: Partial<Tenant>): Tenant {
+    const tenant = this.getTenantById(tenantId);
+    const updated: Tenant = {
+      ...tenant,
+      ...update,
+      settings: {
+        ...tenant.settings,
+        ...(update.settings || {}),
+      },
+      features: {
+        ...tenant.features,
+        ...(update.features || {}),
+      },
+      updated_at: new Date().toISOString(),
+    };
+    this.tenants.set(tenantId, updated);
+    return updated;
+  }
+
   updateTenantStatus(tenantId: string, status: TenantStatus): Tenant {
     const tenant = this.getTenantById(tenantId);
     tenant.status = status;
@@ -251,9 +270,6 @@ class TenantRegistry {
         enterprise: all.filter(t => t.plan === 'enterprise').length,
         founding_partner: all.filter(t => t.plan === 'founding_partner').length,
       },
-      systemHealth: '100% Operational',
-      activeDatabaseNodes: 1,
-      totalStorageGB: 18.4,
     };
   }
 }

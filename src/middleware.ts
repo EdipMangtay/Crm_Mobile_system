@@ -14,16 +14,46 @@ export async function middleware(request: NextRequest) {
   if (pathname.startsWith('/platform-admin')) {
     const demoCookie = request.cookies.get('travia_staff_session');
     const isDev = process.env.NODE_ENV !== 'production';
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const isConfigured = Boolean(supabaseUrl && !supabaseUrl.includes('your-project'));
 
-    // Allow in local dev / demo mode
-    if (demoCookie?.value === 'demo' || isDev) {
+    // In dev / demo preview mode without live Supabase credentials
+    if (!isConfigured && (demoCookie?.value === 'demo' || isDev)) {
       return NextResponse.next();
     }
 
-    const loginUrl = new URL('/crm/login', request.url);
-    loginUrl.searchParams.set('error', 'unauthorized');
-    loginUrl.searchParams.set('redirect', pathname);
-    return NextResponse.redirect(loginUrl);
+    try {
+      const { supabase, response } = await createSupabaseMiddlewareClient(request);
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        const loginUrl = new URL('/crm/login', request.url);
+        loginUrl.searchParams.set('redirect', pathname);
+        return NextResponse.redirect(loginUrl);
+      }
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role, is_active')
+        .eq('id', user.id)
+        .single();
+
+      // Platform admin requires active admin / super_admin role
+      if (!profile || !profile.is_active || (profile.role !== 'admin' && profile.role !== 'super_admin')) {
+        const loginUrl = new URL('/crm/login', request.url);
+        loginUrl.searchParams.set('error', 'unauthorized');
+        return NextResponse.redirect(loginUrl);
+      }
+
+      return response;
+    } catch {
+      if (!isConfigured && isDev) {
+        return NextResponse.next();
+      }
+      const loginUrl = new URL('/crm/login', request.url);
+      loginUrl.searchParams.set('error', 'unauthorized');
+      return NextResponse.redirect(loginUrl);
+    }
   }
 
   // Only protect CRM routes (except login)

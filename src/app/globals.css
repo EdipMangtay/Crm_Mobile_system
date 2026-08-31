@@ -5,7 +5,44 @@
 
 /* ─── Tailwind Theme ───────────────────────────────────────── */
 @theme inline {
-  /* Colors */
+  /* Semantic Canvases & Surfaces */
+  --color-canvas: #05070F;
+  --color-surface-1: #0B0F1A;
+  --color-surface-2: #101524;
+  --color-surface-3: #161D30;
+  --color-surface-elevated: #1C243C;
+  --color-overlay: rgba(5, 7, 15, 0.85);
+
+  /* Semantic Borders */
+  --color-border-subtle: rgba(201, 166, 107, 0.08);
+  --color-border-medium: rgba(201, 166, 107, 0.16);
+  --color-border-strong: rgba(201, 166, 107, 0.30);
+  --color-border-focus: rgba(201, 166, 107, 0.45);
+
+  /* Semantic Text */
+  --color-text-primary: #F5F1E8;
+  --color-text-secondary: #C4BFB4;
+  --color-text-muted: #78746D;
+  --color-text-faint: #4A4742;
+
+  /* Semantic Brand Accent */
+  --color-accent-primary: #C9A66B;
+  --color-accent-hover: #E8C77A;
+  --color-accent-active: #A8854D;
+  --color-accent-surface: rgba(201, 166, 107, 0.10);
+  --color-accent-subtle: rgba(201, 166, 107, 0.05);
+
+  /* Status Signals & Backgrounds */
+  --color-success: #10B981;
+  --color-success-bg: rgba(16, 185, 129, 0.10);
+  --color-warning: #F59E0B;
+  --color-warning-bg: rgba(245, 158, 11, 0.10);
+  --color-danger: #EF4444;
+  --color-danger-bg: rgba(239, 68, 68, 0.10);
+  --color-info: #3B82F6;
+  --color-info-bg: rgba(59, 130, 246, 0.10);
+
+  /* Legacy Color Compatibility */
   --color-navy-900: #05070F;
   --color-navy-800: #0B0F1A;
   --color-navy-700: #111827;
@@ -16,9 +53,17 @@
   --color-cream: #F5F1E8;
   --color-sapphire: #1B3A6B;
 
+  /* Controlled Radii */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+  --radius-full: 9999px;
+
   /* Fonts */
   --font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
   /* Animations */
   --animate-marquee: marquee 40s linear infinite;
@@ -58,6 +103,10 @@
   --gold-secondary: #E8C77A;
   --glass-bg: rgba(11, 15, 26, 0.6);
   --glass-border: rgba(201, 166, 107, 0.15);
+
+  /* CRM Micro-Motion */
+  --crm-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --crm-duration: 140ms;
 }
 
 * {

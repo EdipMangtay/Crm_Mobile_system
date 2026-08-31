@@ -7,6 +7,7 @@ import { tenantRegistry, DEFAULT_TENANT_ID } from './tenantContext';
 interface TenantContextValue {
   tenant: Tenant;
   setTenantId: (id: string) => void;
+  updateTenant: (update: Partial<Tenant>) => void;
   availableTenants: Tenant[];
   formatMoney: (amount: number) => string;
 }
@@ -21,8 +22,15 @@ export function TenantProvider({
   initialTenantId?: string;
 }) {
   const [tenantId, setTenantId] = useState<string>(initialTenantId);
+  const [, setVersion] = useState(0);
+
   const tenant = tenantRegistry.getTenantById(tenantId);
   const availableTenants = tenantRegistry.getAllTenants();
+
+  const updateTenant = (update: Partial<Tenant>) => {
+    tenantRegistry.updateTenant(tenantId, update);
+    setVersion((v) => v + 1);
+  };
 
   const formatMoney = (amount: number): string => {
     const currency = tenant.default_currency || 'USD';
@@ -38,7 +46,7 @@ export function TenantProvider({
   };
 
   return (
-    <TenantContext.Provider value={{ tenant, setTenantId, availableTenants, formatMoney }}>
+    <TenantContext.Provider value={{ tenant, setTenantId, updateTenant, availableTenants, formatMoney }}>
       {children}
     </TenantContext.Provider>
   );
@@ -51,6 +59,7 @@ export function useTenant(): TenantContextValue {
     return {
       tenant: defaultTenant,
       setTenantId: () => {},
+      updateTenant: () => {},
       availableTenants: tenantRegistry.getAllTenants(),
       formatMoney: (amount: number) => `${amount.toLocaleString()} ${defaultTenant.default_currency}`,
     };
