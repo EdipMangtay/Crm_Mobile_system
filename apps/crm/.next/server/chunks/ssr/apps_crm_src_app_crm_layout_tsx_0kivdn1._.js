@@ -1,0 +1,3 @@
+module.exports=[70104,a=>{"use strict";a.s(["default",()=>b]);let b=(0,a.i(11857).registerClientReference)(function(){throw Error("Attempted to call the default export of [project]/apps/crm/src/app/crm/layout.tsx from the server, but it's on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.")},"[project]/apps/crm/src/app/crm/layout.tsx","default")},38529,a=>{"use strict";var b=a.i(70104);a.n(b)},14085,function(a){a.n(a.i(38529))}];
+
+//# sourceMappingURL=apps_crm_src_app_crm_layout_tsx_0kivdn1._.js.map

@@ -1,0 +1,11 @@
+{
+  "/api/communication/threads/route": "app/api/communication/threads/route.js",
+  "/api/v1/customers/route": "app/api/v1/customers/route.js",
+  "/crm/customers/[id]/page": "app/crm/customers/[id]/page.js",
+  "/crm/customers/page": "app/crm/customers/page.js",
+  "/crm/leads/page": "app/crm/leads/page.js",
+  "/crm/login/page": "app/crm/login/page.js",
+  "/crm/page": "app/crm/page.js",
+  "/page": "app/page.js",
+  "/platform-admin/page": "app/platform-admin/page.js"
+}

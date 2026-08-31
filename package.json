@@ -2,11 +2,22 @@
   "name": "trivia",
   "version": "0.1.0",
   "private": true,
+  "workspaces": [
+    "apps/website",
+    "apps/crm",
+    "apps/mobile"
+  ],
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "dev": "npm run dev:crm",
+    "dev:website": "npm run dev --workspace=apps/website",
+    "dev:crm": "npm run dev --workspace=apps/crm",
+    "dev:mobile": "npm run ios --workspace=apps/mobile",
+    "build": "npm run build:crm && npm run build:website",
+    "build:website": "npm run build --workspace=apps/website",
+    "build:crm": "npm run build --workspace=apps/crm",
+    "lint:website": "npm run lint --workspace=apps/website",
+    "lint:crm": "npm run lint --workspace=apps/crm",
+    "typecheck:mobile": "npm run typecheck --workspace=apps/mobile"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

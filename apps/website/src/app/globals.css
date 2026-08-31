@@ -1,0 +1,223 @@
+/* ─── Google Fonts ─────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@import "tailwindcss";
+
+/* ─── Tailwind Theme ───────────────────────────────────────── */
+@theme inline {
+  /* Semantic Canvases & Surfaces */
+  --color-canvas: #05070F;
+  --color-surface-1: #0B0F1A;
+  --color-surface-2: #101524;
+  --color-surface-3: #161D30;
+  --color-surface-elevated: #1C243C;
+  --color-overlay: rgba(5, 7, 15, 0.85);
+
+  /* Semantic Borders */
+  --color-border-subtle: rgba(201, 166, 107, 0.08);
+  --color-border-medium: rgba(201, 166, 107, 0.16);
+  --color-border-strong: rgba(201, 166, 107, 0.30);
+  --color-border-focus: rgba(201, 166, 107, 0.45);
+
+  /* Semantic Text */
+  --color-text-primary: #F5F1E8;
+  --color-text-secondary: #C4BFB4;
+  --color-text-muted: #78746D;
+  --color-text-faint: #4A4742;
+
+  /* Semantic Brand Accent */
+  --color-accent-primary: #C9A66B;
+  --color-accent-hover: #E8C77A;
+  --color-accent-active: #A8854D;
+  --color-accent-surface: rgba(201, 166, 107, 0.10);
+  --color-accent-subtle: rgba(201, 166, 107, 0.05);
+
+  /* Status Signals & Backgrounds */
+  --color-success: #10B981;
+  --color-success-bg: rgba(16, 185, 129, 0.10);
+  --color-warning: #F59E0B;
+  --color-warning-bg: rgba(245, 158, 11, 0.10);
+  --color-danger: #EF4444;
+  --color-danger-bg: rgba(239, 68, 68, 0.10);
+  --color-info: #3B82F6;
+  --color-info-bg: rgba(59, 130, 246, 0.10);
+
+  /* Legacy Color Compatibility */
+  --color-navy-900: #05070F;
+  --color-navy-800: #0B0F1A;
+  --color-navy-700: #111827;
+  --color-gold-300: #F0D99A;
+  --color-gold-400: #E8C77A;
+  --color-gold-500: #C9A66B;
+  --color-gold-600: #A8854D;
+  --color-cream: #F5F1E8;
+  --color-sapphire: #1B3A6B;
+
+  /* Controlled Radii */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+  --radius-full: 9999px;
+
+  /* Fonts */
+  --font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  /* Animations */
+  --animate-marquee: marquee 40s linear infinite;
+  --animate-marquee-reverse: marquee-reverse 40s linear infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-shimmer: shimmer 2s linear infinite;
+  --animate-pulse-gold: pulse-gold 2s ease-in-out infinite;
+
+  /* Keyframes */
+  @keyframes marquee {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-50%); }
+  }
+  @keyframes marquee-reverse {
+    0% { transform: translateX(-50%); }
+    100% { transform: translateX(0%); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+  @keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+  @keyframes pulse-gold {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(201, 166, 107, 0.4); }
+    50% { box-shadow: 0 0 20px 4px rgba(201, 166, 107, 0.15); }
+  }
+}
+
+/* ─── Base Styles ──────────────────────────────────────────── */
+:root {
+  --background: #05070F;
+  --foreground: #F5F1E8;
+  --gold-primary: #C9A66B;
+  --gold-secondary: #E8C77A;
+  --glass-bg: rgba(11, 15, 26, 0.6);
+  --glass-border: rgba(201, 166, 107, 0.15);
+
+  /* CRM Micro-Motion */
+  --crm-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --crm-duration: 140ms;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold-primary) var(--background);
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--gold-primary);
+  border-radius: 3px;
+}
+
+html {
+  scroll-behavior: auto; /* Lenis handles smooth scrolling */
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(201, 166, 107, 0.3);
+  color: var(--foreground);
+}
+
+/* ─── Glassmorphism Utilities ──────────────────────────────── */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+}
+
+.glass-heavy {
+  background: rgba(11, 15, 26, 0.85);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid var(--glass-border);
+}
+
+.glass-card {
+  background: rgba(11, 15, 26, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(201, 166, 107, 0.1);
+}
+
+/* ─── Gold Line Utilities ──────────────────────────────────── */
+.gold-line-h {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--gold-primary) 50%, transparent 100%);
+}
+
+.gold-line-v {
+  width: 1px;
+  background: linear-gradient(180deg, transparent 0%, var(--gold-primary) 50%, transparent 100%);
+}
+
+/* ─── Gold Gradient Text ───────────────────────────────────── */
+.text-gold-gradient {
+  background: linear-gradient(135deg, var(--gold-secondary) 0%, var(--gold-primary) 50%, var(--gold-secondary) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Section Base ─────────────────────────────────────────── */
+.section-padding {
+  padding-left: clamp(1.5rem, 5vw, 8rem);
+  padding-right: clamp(1.5rem, 5vw, 8rem);
+  padding-top: clamp(4rem, 8vw, 8rem);
+  padding-bottom: clamp(4rem, 8vw, 8rem);
+}
+
+/* ─── Heading Styles ───────────────────────────────────────── */
+.heading-display {
+  font-family: var(--font-serif);
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+  font-weight: 500;
+}
+
+.heading-section {
+  font-family: var(--font-serif);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: clamp(0.7rem, 1.2vw, 0.85rem);
+  color: var(--gold-primary);
+  font-weight: 600;
+}
+
+/* ─── Reduced Motion ───────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

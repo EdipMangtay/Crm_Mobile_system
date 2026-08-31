@@ -1,0 +1,246 @@
+{
+  "version": 3,
+  "pages404": true,
+  "appType": "app",
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "priority": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    }
+  ],
+  "headers": [],
+  "onMatchHeaders": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [],
+    "fallback": []
+  },
+  "dynamicRoutes": [
+    {
+      "page": "/api/communication/threads/[threadId]",
+      "regex": "^/api/communication/threads/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPthreadId": "nxtPthreadId"
+      },
+      "namedRegex": "^/api/communication/threads/(?<nxtPthreadId>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/crm/customers/[id]",
+      "regex": "^/crm/customers/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/crm/customers/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/crm/leads/[id]",
+      "regex": "^/crm/leads/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/crm/leads/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/crm/trips/[id]",
+      "regex": "^/crm/trips/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/crm/trips/(?<nxtPid>[^/]+?)(?:/)?$"
+    }
+  ],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_global-error",
+      "regex": "^/_global\\-error(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_global\\-error(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/api/communication/threads",
+      "regex": "^/api/communication/threads(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/communication/threads(?:/)?$"
+    },
+    {
+      "page": "/api/v1/customers",
+      "regex": "^/api/v1/customers(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/v1/customers(?:/)?$"
+    },
+    {
+      "page": "/api/v1/leads",
+      "regex": "^/api/v1/leads(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/v1/leads(?:/)?$"
+    },
+    {
+      "page": "/api/v1/mobile/config",
+      "regex": "^/api/v1/mobile/config(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/v1/mobile/config(?:/)?$"
+    },
+    {
+      "page": "/api/v1/tenants",
+      "regex": "^/api/v1/tenants(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/v1/tenants(?:/)?$"
+    },
+    {
+      "page": "/api/v1/trips",
+      "regex": "^/api/v1/trips(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/v1/trips(?:/)?$"
+    },
+    {
+      "page": "/crm",
+      "regex": "^/crm(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/crm(?:/)?$"
+    },
+    {
+      "page": "/crm/analytics",
+      "regex": "^/crm/analytics(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/crm/analytics(?:/)?$"
+    },
+    {
+      "page": "/crm/bookings",
+      "regex": "^/crm/bookings(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/crm/bookings(?:/)?$"
+    },
+    {
+      "page": "/crm/concierge",
+      "regex": "^/crm/concierge(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/crm/concierge(?:/)?$"
+    },
+    {
+      "page": "/crm/customers",
+      "regex": "^/crm/customers(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/crm/customers(?:/)?$"
+    },
+    {
+      "page": "/crm/design-system",
+      "regex": "^/crm/design\\-system(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/crm/design\\-system(?:/)?$"
+    },
+    {
+      "page": "/crm/experiences",
+      "regex": "^/crm/experiences(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/crm/experiences(?:/)?$"
+    },
+    {
+      "page": "/crm/leads",
+      "regex": "^/crm/leads(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/crm/leads(?:/)?$"
+    },
+    {
+      "page": "/crm/login",
+      "regex": "^/crm/login(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/crm/login(?:/)?$"
+    },
+    {
+      "page": "/crm/marketing",
+      "regex": "^/crm/marketing(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/crm/marketing(?:/)?$"
+    },
+    {
+      "page": "/crm/operations",
+      "regex": "^/crm/operations(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/crm/operations(?:/)?$"
+    },
+    {
+      "page": "/crm/payments",
+      "regex": "^/crm/payments(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/crm/payments(?:/)?$"
+    },
+    {
+      "page": "/crm/requests",
+      "regex": "^/crm/requests(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/crm/requests(?:/)?$"
+    },
+    {
+      "page": "/crm/settings",
+      "regex": "^/crm/settings(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/crm/settings(?:/)?$"
+    },
+    {
+      "page": "/crm/suppliers",
+      "regex": "^/crm/suppliers(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/crm/suppliers(?:/)?$"
+    },
+    {
+      "page": "/crm/tasks",
+      "regex": "^/crm/tasks(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/crm/tasks(?:/)?$"
+    },
+    {
+      "page": "/crm/team",
+      "regex": "^/crm/team(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/crm/team(?:/)?$"
+    },
+    {
+      "page": "/crm/trips",
+      "regex": "^/crm/trips(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/crm/trips(?:/)?$"
+    },
+    {
+      "page": "/platform-admin",
+      "regex": "^/platform\\-admin(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/platform\\-admin(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments",
+    "clientParamParsing": false,
+    "dynamicRSCPrerender": false
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  }
+}
