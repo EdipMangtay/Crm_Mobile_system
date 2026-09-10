@@ -1,158 +1,30 @@
-'use client';
-
-import { useRef } from 'react';
 import Image from 'next/image';
-import { motion, useInView } from 'framer-motion';
-import { Camera } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowUpRight } from 'lucide-react';
+import Reveal from './ui/Reveal';
 
-const galleryPhotos = [
-  {
-    id: 1,
-    title: 'Burj Khalifa & Downtown Fıskiyeleri',
-    category: 'Şehir Silueti',
-    src: '/images/hero-skyline.jpg',
-  },
-  {
-    id: 2,
-    title: 'Mercedes-Maybach VIP Şehir Turu',
-    category: 'Lüks Transfer',
-    src: '/images/vip-chauffeur.jpg',
-  },
-  {
-    id: 3,
-    title: 'Dubai Marina Özel Süperyat Seyri',
-    category: 'Yat Deneyimi',
-    src: '/images/luxury-yacht.jpg',
-  },
-  {
-    id: 4,
-    title: 'Kızıl Kum Tepeleri & Bedevi Majlis',
-    category: 'VIP Çöl Safarisi',
-    src: '/images/desert-safari.jpg',
-  },
-  {
-    id: 5,
-    title: 'Kişiye Özel Vize & Konsiyerj Hizmeti',
-    category: 'Vize Danışmanlığı',
-    src: '/images/visa-concierge.jpg',
-  },
+const moments = [
+  { src: '/images/luxury-yacht.jpg', title: 'Marina’dan açık denize', meta: 'Özel yat · Gün batımı', href: '/experiences/yacht-sunset', className: 'md:col-span-7 md:row-span-2' },
+  { src: '/images/desert-safari.jpg', title: 'Kızıl kumlarda sessizlik', meta: 'Lahbab · Özel Majlis', href: '/experiences/desert-safari', className: 'md:col-span-5' },
+  { src: '/images/hero-skyline.jpg', title: 'Şehrin ışıkları üstünden', meta: 'Downtown · Gece', href: '/experiences/helicopter-tour', className: 'md:col-span-5' },
 ];
 
 export default function Gallery() {
-  const ref = useRef<HTMLElement>(null);
-  const isInView = useInView(ref, { once: true, margin: '-60px' });
-
-  // Duplicate for seamless infinite loop
-  const loopPhotos = [...galleryPhotos, ...galleryPhotos];
-  const reverseLoop = [...galleryPhotos.slice().reverse(), ...galleryPhotos.slice().reverse()];
-
   return (
-    <section
-      id="gallery"
-      ref={ref}
-      className="py-20 sm:py-32 overflow-hidden bg-navy-900 relative select-none"
-      aria-label="Fotoğraf Galerisi"
-    >
-      {/* Section Header */}
-      <div className="mx-auto max-w-7xl px-6 mb-16 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="inline-flex items-center gap-2 mb-3"
-        >
-          <Camera className="h-4 w-4 text-gold-400" />
-          <span className="heading-section">Görsel Vitrin</span>
-        </motion.div>
-
-        <motion.h2
-          className="heading-display text-3xl sm:text-5xl lg:text-6xl text-cream"
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, delay: 0.2 }}
-        >
-          Dubai&apos;nin İhtişamına{' '}
-          <span className="text-gold-gradient">Tanıklık Edin</span>
-        </motion.h2>
-
-        <motion.p
-          className="mt-4 text-cream/60 text-base sm:text-lg max-w-xl mx-auto font-light"
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, delay: 0.3 }}
-        >
-          Misafirlerimizin deneyimlediği en özel anlardan ilham alan büyüleyici kareler.
-        </motion.p>
-      </div>
-
-      {/* Row 1: Leftward Infinite Marquee */}
-      <div className="relative mb-6">
-        <div className="flex animate-marquee hover:[animation-play-state:paused] w-max gap-6 will-change-transform">
-          {loopPhotos.map((item, i) => (
-            <div
-              key={`row1-${item.id}-${i}`}
-              className="relative w-80 sm:w-96 h-60 sm:h-72 rounded-3xl overflow-hidden shrink-0 border border-gold-400/20 group hover:border-gold-400/70 transition-all duration-500 shadow-[0_20px_45px_rgba(0,0,0,0.7)]"
-            >
-              <Image
-                src={item.src}
-                alt={item.title}
-                fill
-                className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-110"
-                sizes="(max-width: 768px) 320px, 384px"
-              />
-              {/* Dark gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-navy-900/90 via-navy-900/20 to-transparent" />
-
-              {/* Information pill */}
-              <div className="absolute bottom-4 left-4 right-4 p-3 rounded-2xl glass-heavy border border-gold-400/20 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                <span className="text-[10px] font-mono tracking-widest text-gold-400 uppercase block mb-1">
-                  {item.category}
-                </span>
-                <p className="text-cream text-sm font-serif font-medium truncate">
-                  {item.title}
-                </p>
-              </div>
-            </div>
+    <section id="gallery" className="paper-section section-space" aria-labelledby="gallery-title">
+      <div className="container-wide">
+        <Reveal className="flex flex-col gap-7 border-b border-[#0b1513]/18 pb-9 md:flex-row md:items-end md:justify-between"><div><p className="eyebrow">03 · Signature moments</p><h2 id="gallery-title" className="display title-lg mt-7">Bir başka<br /><em className="text-[#80673f]">Dubai.</em></h2></div><p className="max-w-sm text-sm leading-7 text-[#0b1513]/62">Şehrin ihtişamından çölün sessizliğine uzanan, yalnızca size ait anlar.</p></Reveal>
+        <div className="mt-8 grid auto-rows-[19rem] gap-4 md:grid-cols-12 md:auto-rows-[21rem]">
+          {moments.map((moment, index) => (
+            <Reveal key={moment.title} delay={index * .08} className={`${moment.className} min-h-0`}>
+              <Link href={moment.href} className="group image-frame block h-full text-ivory">
+                <Image src={moment.src} alt={moment.title} fill sizes="(max-width: 768px) 100vw, 60vw" className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035]" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 flex items-end justify-between p-6 sm:p-8"><div><p className="text-[.6rem] font-bold uppercase tracking-[.17em] text-sand-light">{moment.meta}</p><h3 className="mt-2 font-serif text-2xl sm:text-3xl">{moment.title}</h3></div><span className="grid size-11 place-items-center border border-white/40 transition-colors duration-200 group-hover:bg-ivory group-hover:text-ink"><ArrowUpRight className="size-4" /></span></div>
+              </Link>
+            </Reveal>
           ))}
         </div>
-
-        {/* Edge Vignette Fades */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-32 sm:w-48 bg-gradient-to-r from-navy-900 to-transparent z-10" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-32 sm:w-48 bg-gradient-to-l from-navy-900 to-transparent z-10" />
-      </div>
-
-      {/* Row 2: Rightward Infinite Marquee */}
-      <div className="relative">
-        <div className="flex animate-marquee-reverse hover:[animation-play-state:paused] w-max gap-6 will-change-transform">
-          {reverseLoop.map((item, i) => (
-            <div
-              key={`row2-${item.id}-${i}`}
-              className="relative w-72 sm:w-88 h-52 sm:h-64 rounded-3xl overflow-hidden shrink-0 border border-gold-400/15 group hover:border-gold-400/60 transition-all duration-500 shadow-[0_20px_45px_rgba(0,0,0,0.7)]"
-            >
-              <Image
-                src={item.src}
-                alt={item.title}
-                fill
-                className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-110"
-                sizes="(max-width: 768px) 288px, 352px"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-navy-900/90 via-navy-900/20 to-transparent" />
-
-              <div className="absolute bottom-4 left-4 right-4 p-3 rounded-2xl glass-heavy border border-gold-400/20">
-                <span className="text-[10px] font-mono tracking-widest text-gold-400 uppercase block mb-0.5">
-                  {item.category}
-                </span>
-                <p className="text-cream text-xs sm:text-sm font-serif font-medium truncate">
-                  {item.title}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Edge Vignette Fades */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-32 sm:w-48 bg-gradient-to-r from-navy-900 to-transparent z-10" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-32 sm:w-48 bg-gradient-to-l from-navy-900 to-transparent z-10" />
       </div>
     </section>
   );

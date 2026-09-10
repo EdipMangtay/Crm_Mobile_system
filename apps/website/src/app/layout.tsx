@@ -1,50 +1,27 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import { Cormorant_Garamond, Manrope } from "next/font/google";
+import { Toaster as TravelToaster } from "@/components/ui/sonner";
 import "./globals.css";
 
+const display = Cormorant_Garamond({ subsets: ["latin", "latin-ext"], variable: "--font-display", display: "swap", weight: ["400", "500", "600"] });
+const body = Manrope({ subsets: ["latin", "latin-ext"], variable: "--font-body", display: "swap" });
+
 export const metadata: Metadata = {
-  title: "Travia Dubai | VIP Dubai Turları & Vize Danışmanlığı",
-  description:
-    "Dubai'yi size özel yaşayın. Kişiye özel VIP turlar, profesyonel vize danışmanlığı, çöl safarisi, yat turları ve daha fazlası. 10 saatlik özel lüks araç ve Türkçe rehber eşliğinde unutulmaz bir Dubai deneyimi.",
-  keywords: [
-    "Dubai tur",
-    "Dubai vize",
-    "VIP tur Dubai",
-    "Dubai vize danışmanlığı",
-    "Dubai özel tur",
-    "Dubai şehir turu",
-    "Travia Dubai",
-    "Dubai lüks tur",
-    "Dubai çöl safarisi",
-    "Dubai yat turu",
-  ],
-  openGraph: {
-    title: "Travia Dubai | VIP Dubai Turları & Vize Danışmanlığı",
-    description:
-      "Dubai'yi size özel yaşayın. Kişiye özel VIP turlar, profesyonel vize danışmanlığı ve unutulmaz deneyimler.",
-    url: "https://traviadubai.com",
-    siteName: "Travia Dubai",
-    locale: "tr_TR",
-    type: "website",
-  },
-  robots: {
-    index: true,
-    follow: true,
-  },
+  metadataBase: new URL("https://traviadubai.com"),
+  title: "Travia Dubai | Size Özel Dubai Deneyimleri",
+  description: "Özel araç ve Türkçe rehberli Dubai turları, vize danışmanlığı, çöl safarisi ve yat deneyimleri.",
+  keywords: ["Dubai tur", "Dubai vize", "VIP tur Dubai", "Dubai özel tur", "Travia Dubai"],
+  openGraph: { title: "Travia Dubai | Size Özel Dubai Deneyimleri", description: "Dubai'yi kendi ritminizde, size özel planlanan ayrıcalıklı deneyimlerle keşfedin.", url: "https://traviadubai.com", siteName: "Travia Dubai", locale: "tr_TR", type: "website", images: [{ url: "/images/hero-skyline.jpg", width: 1376, height: 768, alt: "Dubai şehir silüeti" }] },
+  robots: { index: true, follow: true },
 };
 
-import { Toaster as TravelToaster } from "@/components/ui/sonner";
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#07100f",
+};
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <html lang="tr" className="h-full antialiased">
-      <body className="min-h-full flex flex-col bg-navy-900 text-cream">
-        {children}
-        <TravelToaster />
-      </body>
-    </html>
-  );
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  return <html lang="tr" className={`${display.variable} ${body.variable}`}><body>{children}<TravelToaster /></body></html>;
 }

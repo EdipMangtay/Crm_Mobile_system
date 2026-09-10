@@ -1,0 +1,128 @@
+{
+  "check300": {
+    "overlay": true,
+    "canvases": 1,
+    "stored": "shown",
+    "reduced": false
+  },
+  "check1500": {
+    "overlay": true,
+    "canvases": 1
+  },
+  "firstVisit": {
+    "overlay": false,
+    "canvases": 0,
+    "introStored": "shown",
+    "webgl": true,
+    "heroImageReady": true,
+    "horizontalOverflow": false,
+    "title": "Dubai,sizin ritminizde."
+  },
+  "returnVisit": {
+    "overlay": false,
+    "canvases": 0
+  },
+  "mobile": {
+    "overlay": false,
+    "horizontalOverflow": true,
+    "heroHeight": 844,
+    "menuLabel": "false",
+    "overflowers": [
+      {
+        "tag": "HEADER",
+        "className": "fixed inset-x-0 top-0 z-50 transition-[background-color,border-color] duration-500 bg-transparent",
+        "right": 408
+      },
+      {
+        "tag": "NAV",
+        "className": "container-wide flex h-[76px] items-center justify-between",
+        "right": 408
+      },
+      {
+        "tag": "DIV",
+        "className": "absolute inset-0",
+        "right": 396
+      },
+      {
+        "tag": "IMG",
+        "className": "object-cover object-[58%_center]",
+        "right": 396
+      },
+      {
+        "tag": "DIV",
+        "className": "motion-reduce-transform image-frame aspect-[4/5] sm:aspect-[5/4] lg:aspect-[4/5]",
+        "right": 398
+      },
+      {
+        "tag": "IMG",
+        "className": "object-cover object-center",
+        "right": 398
+      },
+      {
+        "tag": "DIV",
+        "className": "motion-reduce-transform image-frame aspect-[16/11] lg:col-span-7 lg:aspect-[16/10] lg:order-2",
+        "right": 398
+      },
+      {
+        "tag": "IMG",
+        "className": "object-cover transition-transform duration-700 ease-out hover:scale-[1.025]",
+        "right": 398
+      }
+    ]
+  },
+  "menuOpen": {
+    "dialog": true,
+    "expanded": "true",
+    "activeLabel": "Menüyü kapat"
+  },
+  "menuClosed": {
+    "dialog": true,
+    "activeLabel": "Menüyü aç"
+  },
+  "journeys": {
+    "whatsapp": true,
+    "experience": true,
+    "contact": true,
+    "planner": false,
+    "heroCta": true
+  },
+  "reducedMotion": {
+    "overlay": false,
+    "canvases": 0
+  },
+  "detailRoute": {
+    "overlay": false,
+    "title": "Dubai helikopter şehir turu"
+  },
+  "webglFallback": {
+    "overlay": false,
+    "hero": true,
+    "imageReady": true
+  },
+  "events": [
+    {
+      "type": "warning",
+      "value": "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+    },
+    {
+      "type": "warning",
+      "value": "Image with src \"/images/visa-concierge.jpg\" was detected as the Largest Contentful Paint (LCP). Please add the `loading=\"eager\"` property if this image is above the fold.\nRead more: https://nextjs.org/docs/app/api-reference/components/image#loading"
+    },
+    {
+      "type": "warning",
+      "value": "Image with src \"/images/hero-skyline.jpg\" was detected as the Largest Contentful Paint (LCP). Please add the `loading=\"eager\"` property if this image is above the fold.\nRead more: https://nextjs.org/docs/app/api-reference/components/image#loading"
+    },
+    {
+      "type": "warning",
+      "value": "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+    },
+    {
+      "type": "warning",
+      "value": "You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled"
+    },
+    {
+      "type": "warning",
+      "value": "Image with src \"/images/hero-skyline.jpg\" was detected as the Largest Contentful Paint (LCP). Please add the `loading=\"eager\"` property if this image is above the fold.\nRead more: https://nextjs.org/docs/app/api-reference/components/image#loading"
+    }
+  ]
+}

@@ -1,296 +1,313 @@
 'use client';
 
-import { useRef, useMemo, useEffect } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { useDevicePerformance } from '@/hooks/useDevicePerformance';
-import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { useDevicePerformance, type PerformanceTier } from '@/hooks/useDevicePerformance';
+import { INTRO_TIMING } from '@/lib/motion';
 
-// High-fidelity Dubai Burj Khalifa and futuristic skyline architectural silhouette
-function generateArchitecturalSkyline(count: number): {
+type ParticleSceneProps = {
+  onReady: () => void;
+  onComplete: () => void;
+  onFailure: () => void;
+  onProgress: (time: number, mobile: boolean) => void;
+};
+
+type ArchitectureData = {
+  positions: Float32Array;
+  sources: Float32Array;
   targets: Float32Array;
-  initials: Float32Array;
+  city: Float32Array;
   colors: Float32Array;
-  scales: Float32Array;
-} {
-  const targets = new Float32Array(count * 3);
-  const initials = new Float32Array(count * 3);
-  const colors = new Float32Array(count * 3);
-  const scales = new Float32Array(count);
+  seeds: Float32Array;
+  sizes: Float32Array;
+  structure: Float32Array;
+};
 
-  const goldBright = new THREE.Color('#FFF1D0');
-  const goldMid = new THREE.Color('#E8C77A');
-  const goldDeep = new THREE.Color('#C9A66B');
-  const sapphireAccent = new THREE.Color('#4E7DBA');
+const vertexShader = /* glsl */ `
+  uniform float uTime;
+  uniform float uPixelRatio;
+  uniform float uConvergeStart;
+  uniform float uConvergeEnd;
+  uniform float uTraceStart;
+  uniform float uTraceEnd;
+  uniform float uCityStart;
+  uniform float uCityEnd;
+  uniform float uMobile;
 
-  // Allocate ~45% particles strictly to the intricate Burj Khalifa spire & tiers
-  const burjCount = Math.floor(count * 0.48);
+  attribute vec3 aSource;
+  attribute vec3 aTarget;
+  attribute vec3 aCity;
+  attribute vec3 aColor;
+  attribute float aSeed;
+  attribute float aSize;
+  attribute float aStructure;
 
-  for (let i = 0; i < count; i++) {
-    // Random initial positions exploded across 3D space
-    const theta = Math.random() * Math.PI * 2;
-    const phi = Math.acos(Math.random() * 2 - 1);
-    const radius = Math.random() * 16 + 8; // wide dispersion outside camera view
+  varying vec3 vColor;
+  varying float vAlpha;
 
-    initials[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
-    initials[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
-    initials[i * 3 + 2] = (radius * Math.cos(phi)) * 0.7 - 2;
-
-    let x = 0;
-    let y = 0;
-    let z = 0;
-    let scale = Math.random() * 2.2 + 0.8;
-    const col = new THREE.Color();
-
-    if (i < burjCount) {
-      // ──────────────────────────────────────────
-      // BURJ KHALIFA PINNACLE & TIER ARCHITECTURE
-      // ──────────────────────────────────────────
-      const t = Math.random(); // Height normalized [0, 1]
-      y = t * 6.8 - 2.8; // Vertical range [-2.8, 4.0]
-
-      // Architectural taper: exponential tapering towards tip
-      const baseWidth = 1.35 * Math.pow(1 - t * 0.88, 1.4);
-
-      // Y-shaped buttressed core angle (120 degrees wings)
-      const wing = (Math.floor(Math.random() * 3) * 120 * Math.PI) / 180;
-      const wingDist = Math.random() * baseWidth;
-      const angleJitter = (Math.random() - 0.5) * 0.6;
-
-      x = Math.cos(wing + angleJitter) * wingDist;
-      z = Math.sin(wing + angleJitter) * wingDist * 0.5;
-
-      // Pinnacle spire tip needle
-      if (t > 0.88) {
-        x *= 0.15;
-        z *= 0.15;
-        scale *= 1.4;
-        col.copy(goldBright); // Beacon glow
-      } else if (Math.random() > 0.82) {
-        col.copy(goldBright); // Floor lights
-      } else if (Math.random() > 0.3) {
-        col.copy(goldMid);
-      } else {
-        col.copy(goldDeep);
-      }
-    } else {
-      // ──────────────────────────────────────────
-      // SURROUNDING DUBAI DOWNTOWN TOWERS & MARINA
-      // ──────────────────────────────────────────
-      // Towers on left & right clusters
-      const side = Math.random() > 0.5 ? 1 : -1;
-      const distFromCenter = Math.random() * 4.2 + 0.85;
-      x = side * distFromCenter;
-
-      const towerHeight = Math.random() * 3.8 + 1.2;
-      const tY = Math.random();
-      y = tY * towerHeight - 2.8;
-
-      const buildingWidth = (Math.random() * 0.45 + 0.2) * (1 - tY * 0.3);
-      x += (Math.random() - 0.5) * buildingWidth;
-      z = (Math.random() - 0.5) * 1.2;
-
-      // Color assignment
-      const r = Math.random();
-      if (r > 0.85) col.copy(goldBright);
-      else if (r > 0.55) col.copy(goldMid);
-      else if (r > 0.2) col.copy(goldDeep);
-      else col.copy(sapphireAccent);
-    }
-
-    targets[i * 3] = x;
-    targets[i * 3 + 1] = y;
-    targets[i * 3 + 2] = z;
-
-    colors[i * 3] = col.r;
-    colors[i * 3 + 1] = col.g;
-    colors[i * 3 + 2] = col.b;
-
-    scales[i] = scale;
+  float easeOut(float t) {
+    return 1.0 - pow(1.0 - clamp(t, 0.0, 1.0), 3.0);
   }
 
-  return { targets, initials, colors, scales };
+  void main() {
+    float height = clamp((aTarget.y + 3.04) / 6.34, 0.0, 1.0);
+    float gather = easeOut(smoothstep(uConvergeStart + height * 0.12, uConvergeEnd, uTime));
+    float release = smoothstep(uCityStart + height * 0.1, uCityEnd, uTime);
+    float arc = sin(gather * 3.14159265);
+    vec3 source = aSource;
+    source.x += uTime * 0.008 * (1.0 + source.z * 0.1);
+
+    vec3 architectural = mix(source, aTarget, gather);
+    architectural.y -= arc * (0.1 + height * 0.08);
+    architectural.z += arc * (0.18 + height * 0.18) * (1.0 - uMobile * 0.6);
+    // Horizontal travel leads the descent, so the architecture opens into a city.
+    vec3 transformed = mix(architectural, aCity, release);
+    transformed.x = mix(architectural.x, aCity.x, easeOut(release));
+
+    float traceProgress = clamp((uTime - uTraceStart) / (uTraceEnd - uTraceStart), 0.0, 1.0);
+    float traceY = mix(-3.04, 3.3, traceProgress);
+    float trace = aStructure * exp(-abs(aTarget.y - traceY) * 9.0)
+      * exp(-abs(aTarget.x - 0.24) * 24.0)
+      * step(uTraceStart, uTime)
+      * (1.0 - smoothstep(uTraceEnd, uTraceEnd + 0.24, uTime));
+    float pinnacle = aStructure * exp(-pow((uTime - uTraceEnd - 0.06) / 0.2, 2.0))
+      * smoothstep(3.08, 3.28, aTarget.y);
+
+    vec4 mvPosition = modelViewMatrix * vec4(transformed, 1.0);
+    gl_Position = projectionMatrix * mvPosition;
+    gl_PointSize = min(4.5, (aSize + trace * 0.85 + pinnacle * (1.0 - uMobile * 0.4))
+      * uPixelRatio * (7.0 / max(1.0, -mvPosition.z)));
+
+    vColor = mix(aColor, vec3(0.98, 0.95, 0.87), min(1.0, trace + pinnacle * 0.6));
+    float formed = smoothstep(0.18, 0.86, gather);
+    float starAlpha = smoothstep(0.84, 0.99, aSeed) * 0.22;
+    vAlpha = mix(starAlpha, 0.46 + aSeed * 0.18, formed * aStructure);
+    vAlpha += trace * 0.28 + pinnacle * 0.18;
+    vAlpha *= smoothstep(0.0, 0.3, uTime);
+    vAlpha *= mix(1.0, 0.24, smoothstep(0.0, 0.5, release));
+    vAlpha *= 1.0 - smoothstep(0.62 + aSeed * 0.16, 1.0, release);
+  }
+`;
+
+const fragmentShader = /* glsl */ `
+  varying vec3 vColor;
+  varying float vAlpha;
+
+  void main() {
+    float distanceToCenter = distance(gl_PointCoord, vec2(0.5));
+    float softPoint = 1.0 - smoothstep(0.14, 0.5, distanceToCenter);
+    gl_FragColor = vec4(vColor, vAlpha * softPoint);
+  }
+`;
+
+function createRandom(seed = 2708) {
+  let value = seed >>> 0;
+  return () => {
+    value += 0x6d2b79f5;
+    let result = value;
+    result = Math.imul(result ^ (result >>> 15), result | 1);
+    result ^= result + Math.imul(result ^ (result >>> 7), result | 61);
+    return ((result ^ (result >>> 14)) >>> 0) / 4294967296;
+  };
 }
 
-function InteractiveParticleCloud({ count }: { count: number }) {
-  const pointsRef = useRef<THREE.Points>(null);
-  const { viewport } = useThree();
+// Alternating wing setbacks; the final fifth is a slender mast, not a cone.
+const SETBACKS = [0, 0.12, 0.23, 0.34, 0.44, 0.54, 0.63, 0.71, 0.78, 0.84, 0.9, 0.96];
+const LEFT = [0.36, 0.36, 0.29, 0.29, 0.22, 0.22, 0.155, 0.155, 0.09, 0.052, 0.025, 0.006];
+const RIGHT = [0.34, 0.28, 0.28, 0.215, 0.215, 0.15, 0.15, 0.09, 0.065, 0.035, 0.016, 0.006];
 
-  const { targets, initials, colors } = useMemo(
-    () => generateArchitecturalSkyline(count),
-    [count]
-  );
+function makeArchitecture(count: number, mobile: boolean, width: number, height: number, crop: number): ArchitectureData {
+  const random = createRandom();
+  const positions = new Float32Array(count * 3);
+  const sources = new Float32Array(count * 3);
+  const targets = new Float32Array(count * 3);
+  const city = new Float32Array(count * 3);
+  const colors = new Float32Array(count * 3);
+  const seeds = new Float32Array(count);
+  const sizes = new Float32Array(count);
+  const structure = new Float32Array(count);
+  const ivory = new THREE.Color('#f4f0e7');
+  const brass = new THREE.Color('#c7b591');
+  const shadowGold = new THREE.Color('#8f8570');
+  const color = new THREE.Color();
+  const towerCount = Math.floor(count * 0.86);
+  const imageWidth = Math.max(width, height * 1376 / 768);
+  const imageHeight = imageWidth * 768 / 1376;
+  const spineCount = Math.floor(count * 0.045);
+  // Photograph landmarks in UV space, matching HeroSection's responsive crop.
+  const buildings = [[0.02, 0.1, 0.46], [0.12, 0.21, 0.49], [0.22, 0.25, 0.41], [0.28, 0.32, 0.42], [0.39, 0.42, 0.38], [0.55, 0.61, 0.54], [0.67, 0.7, 0.52], [0.76, 0.8, 0.36], [0.83, 0.9, 0.46], [0.94, 0.98, 0.45]];
 
-  const velocitiesRef = useRef<Float32Array | null>(null);
-  const mouseWorld = useRef(new THREE.Vector3(999, 999, 0));
-  const scrollRef = useRef(0);
+  for (let index = 0; index < count; index += 1) {
+    const offset = index * 3;
+    const seed = random();
+    seeds[index] = seed;
+    sizes[index] = (mobile ? 1.55 : 1.4) + random() * 0.65;
 
+    const sourceDepth = -(index % 3) * (mobile ? 0.35 : 0.65) - random() * 0.15;
+    sources[offset] = (random() - 0.5) * width * 1.1;
+    sources[offset + 1] = (random() - 0.5) * height;
+    sources[offset + 2] = sourceDepth;
+
+    if (index < towerCount) {
+      structure[index] = 1;
+      const spine = index < spineCount;
+      const rawHeight = spine ? index / (spineCount - 1) : index % 19 === 0 ? 0.84 + random() * 0.16 : random() * 0.84;
+      const level = Math.round(rawHeight * 160) / 160;
+      const h = spine || index % 5 === 0 ? rawHeight : level;
+      let tier = SETBACKS.length - 1;
+      while (h < SETBACKS[tier]) tier -= 1;
+      const side = random() < 0.5 ? -1 : 1;
+      const sideWidth = side < 0 ? LEFT[tier] : RIGHT[tier];
+      const rib = index % 5 === 0;
+      const x = spine ? 0 : rib ? side * sideWidth : side * (Math.floor(random() * 7) / 7) * sideWidth;
+
+      targets[offset] = x * (mobile ? 1.16 : 1) + 0.24;
+      targets[offset + 1] = -3.04 + h * 6.34;
+      targets[offset + 2] = (random() - 0.5) * sideWidth * 0.3;
+      // Correlated heights create a lateral architectural gathering, not a vortex.
+      sources[offset + 1] = THREE.MathUtils.lerp(sources[offset + 1], targets[offset + 1], 0.68);
+      if (spine) sizes[index] *= 0.76;
+      if (h > 0.84) sizes[index] *= 0.8;
+    } else {
+      targets[offset] = sources[offset] * 0.78;
+      targets[offset + 1] = sources[offset + 1] * 0.72;
+      targets[offset + 2] = sources[offset + 2] - 0.3;
+      sizes[index] *= 0.72;
+    }
+
+    let u: number;
+    let v: number;
+    if (index % 4 === 0 && index < towerCount) {
+      u = 0.5 + (targets[offset] - 0.24) * 0.075;
+      v = 0.65 - ((targets[offset + 1] + 3.04) / 6.34) * 0.63;
+    } else if (index % 3 === 0) {
+      u = random();
+      v = 0.64 + random() * 0.12;
+    } else {
+      const building = buildings[Math.floor(random() * buildings.length)];
+      u = building[0] + random() * (building[1] - building[0]);
+      v = building[2] + random() * (0.64 - building[2]);
+    }
+    const depth = -random() * (mobile ? 0.2 : 0.55);
+    const perspective = (8.4 - depth) / 8.4;
+    city[offset] = ((u * imageWidth + (width - imageWidth) * crop - width / 2) * 1.03) * perspective;
+    city[offset + 1] = ((0.5 - v) * imageHeight * 1.03) * perspective + 0.22;
+    city[offset + 2] = depth;
+
+    const colorChoice = random();
+    color.copy(colorChoice > 0.45 ? ivory : colorChoice > 0.16 ? brass : shadowGold);
+    colors[offset] = color.r;
+    colors[offset + 1] = color.g;
+    colors[offset + 2] = color.b;
+
+    positions[offset] = sources[offset];
+    positions[offset + 1] = sources[offset + 1];
+    positions[offset + 2] = sources[offset + 2];
+  }
+
+  return { positions, sources, targets, city, colors, seeds, sizes, structure };
+}
+
+function ArchitecturalPoints({ count, onComplete, onReady, onProgress, onFailure }: ParticleSceneProps & {
+  count: number;
+}) {
+  const { viewport, size, gl } = useThree();
+  const materialRef = useRef<THREE.ShaderMaterial>(null);
+  const elapsedRef = useRef(0);
+  const completeRef = useRef(false);
+  const startedRef = useRef<number | null>(null);
+  const mobile = size.width < 768;
+  const timing = mobile ? INTRO_TIMING.mobile : INTRO_TIMING.desktop;
+  const crop = size.width < 768 ? 0.55 : size.width < 1024 ? 0.52 : 0.5;
+  const data = useMemo(() => makeArchitecture(count, mobile, viewport.width, viewport.height, crop), [count, mobile, viewport.width, viewport.height, crop]);
   useEffect(() => {
-    const handlePointerMove = (e: PointerEvent) => {
-      // Normalize mouse to 3D viewport coordinates
-      const nx = (e.clientX / window.innerWidth) * 2 - 1;
-      const ny = -(e.clientY / window.innerHeight) * 2 + 1;
-      mouseWorld.current.set(
-        (nx * viewport.width) / 2,
-        (ny * viewport.height) / 2,
-        0
-      );
-    };
+    const canvas = gl.domElement;
+    canvas.addEventListener('webglcontextlost', onFailure, { once: true });
+    return () => canvas.removeEventListener('webglcontextlost', onFailure);
+  }, [gl, onFailure]);
+  const uniforms = useMemo(() => ({
+    uTime: { value: 0 },
+    uPixelRatio: { value: gl.getPixelRatio() },
+    uMobile: { value: mobile ? 1 : 0 },
+    uConvergeStart: { value: timing.convergeStart },
+    uConvergeEnd: { value: timing.convergeEnd },
+    uTraceStart: { value: timing.traceStart },
+    uTraceEnd: { value: timing.traceEnd },
+    uCityStart: { value: timing.cityStart },
+    uCityEnd: { value: timing.cityEnd },
+  }), [gl, mobile, timing]);
 
-    const handleScroll = () => {
-      // Scroll progress relative to hero height
-      scrollRef.current = Math.min(1.5, Math.max(0, window.scrollY / window.innerHeight));
-    };
-
-    window.addEventListener('pointermove', handlePointerMove, { passive: true });
-    window.addEventListener('scroll', handleScroll, { passive: true });
-
-    return () => {
-      window.removeEventListener('pointermove', handlePointerMove);
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, [viewport]);
-
-  useFrame((state, delta) => {
-    if (!pointsRef.current) return;
-
-    const geometry = pointsRef.current.geometry;
-    const posAttr = geometry.getAttribute('position') as THREE.BufferAttribute;
-    if (!posAttr) return;
-
-    if (!velocitiesRef.current || velocitiesRef.current.length !== count * 3) {
-      velocitiesRef.current = new Float32Array(count * 3);
+  useFrame(() => {
+    if (!materialRef.current || document.hidden) return;
+    if (startedRef.current === null) {
+      startedRef.current = performance.now();
+      onReady();
     }
-    const velocities = velocitiesRef.current;
-    const positions = posAttr.array as Float32Array;
-
-    const elapsed = state.clock.getElapsedTime();
-    // Initial dramatic 3.2s assemble curve
-    const assembleT = Math.min(1, elapsed / 3.2);
-    const easeAssemble = 1 - Math.pow(1 - assembleT, 3.8); // Ultra smooth elastic settle
-
-    const scrollDisperse = scrollRef.current; // 0 at top, > 0 on scroll
-    const mouse = mouseWorld.current;
-
-    for (let i = 0; i < count; i++) {
-      const idx = i * 3;
-      const tx = targets[idx];
-      const ty = targets[idx + 1];
-      const tz = targets[idx + 2];
-
-      const ix = initials[idx];
-      const iy = initials[idx + 1];
-      const iz = initials[idx + 2];
-
-      // Base target position during assembly
-      let destX = ix + (tx - ix) * easeAssemble;
-      let destY = iy + (ty - iy) * easeAssemble;
-      let destZ = iz + (tz - iz) * easeAssemble;
-
-      // ──────────────────────────────────────────
-      // SCROLL SHATTER / DISASSEMBLE EFFECT
-      // ──────────────────────────────────────────
-      if (scrollDisperse > 0) {
-        // Physical explosion upwards and outwards with vortex twist
-        const disperseFactor = Math.pow(scrollDisperse, 1.6) * 7.5;
-        const angle = Math.atan2(tz, tx) + scrollDisperse * 2.5;
-        const dist = Math.sqrt(tx * tx + tz * tz) + 0.2;
-
-        destX += Math.cos(angle) * dist * disperseFactor * 1.8;
-        destY += disperseFactor * (Math.abs(ty) + 2.0) * 1.2; // Shatters skyward
-        destZ += Math.sin(angle) * dist * disperseFactor * 1.4;
-      }
-
-      // ──────────────────────────────────────────
-      // MOUSE REPULSION PHYSICS
-      // ──────────────────────────────────────────
-      const dx = positions[idx] - mouse.x;
-      const dy = positions[idx + 1] - mouse.y;
-      const distSq = dx * dx + dy * dy;
-      const repulsionRadius = 2.0;
-
-      if (distSq < repulsionRadius * repulsionRadius && distSq > 0.0001) {
-        const d = Math.sqrt(distSq);
-        const force = (1 - d / repulsionRadius) * 2.8;
-        velocities[idx] += (dx / d) * force * delta * 8;
-        velocities[idx + 1] += (dy / d) * force * delta * 8;
-      }
-
-      // Velocity damping & spring return
-      velocities[idx] *= 0.88;
-      velocities[idx + 1] *= 0.88;
-      velocities[idx + 2] *= 0.88;
-
-      // Subtle atmospheric breathing float
-      const breath = Math.sin(elapsed * 1.2 + i * 0.08) * 0.015;
-
-      positions[idx] += (destX - positions[idx]) * 0.08 + velocities[idx];
-      positions[idx + 1] += (destY + breath - positions[idx + 1]) * 0.08 + velocities[idx + 1];
-      positions[idx + 2] += (destZ - positions[idx + 2]) * 0.08 + velocities[idx + 2];
+    elapsedRef.current = (performance.now() - startedRef.current) / 1000;
+    materialRef.current.uniforms.uTime.value = elapsedRef.current;
+    onProgress(elapsedRef.current, mobile);
+    if (!completeRef.current && elapsedRef.current >= timing.duration) {
+      completeRef.current = true;
+      onComplete();
     }
-
-    posAttr.needsUpdate = true;
-
-    // Slow majestic camera pan
-    pointsRef.current.rotation.y = Math.sin(elapsed * 0.15) * 0.04;
   });
 
   return (
-    <points ref={pointsRef}>
+    <points frustumCulled={false}>
       <bufferGeometry>
-        <bufferAttribute attach="attributes-position" args={[new Float32Array(initials), 3]} count={count} />
-        <bufferAttribute attach="attributes-color" args={[colors, 3]} count={count} />
+        <bufferAttribute attach="attributes-position" args={[data.positions, 3]} />
+        <bufferAttribute attach="attributes-aSource" args={[data.sources, 3]} />
+        <bufferAttribute attach="attributes-aTarget" args={[data.targets, 3]} />
+        <bufferAttribute attach="attributes-aCity" args={[data.city, 3]} />
+        <bufferAttribute attach="attributes-aColor" args={[data.colors, 3]} />
+        <bufferAttribute attach="attributes-aSeed" args={[data.seeds, 1]} />
+        <bufferAttribute attach="attributes-aSize" args={[data.sizes, 1]} />
+        <bufferAttribute attach="attributes-aStructure" args={[data.structure, 1]} />
       </bufferGeometry>
-      <pointsMaterial
-        size={0.048}
-        vertexColors
+      <shaderMaterial
+        ref={materialRef}
+        vertexShader={vertexShader}
+        fragmentShader={fragmentShader}
+        uniforms={uniforms}
         transparent
-        opacity={0.92}
-        sizeAttenuation
-        blending={THREE.AdditiveBlending}
         depthWrite={false}
+        blending={THREE.AdditiveBlending}
       />
     </points>
   );
 }
 
-export default function ParticleScene() {
-  const performanceTier = useDevicePerformance();
-  const reducedMotion = useReducedMotion();
+function particleBudget(tier: PerformanceTier) {
+  if (tier === 'high') return 6200;
+  if (tier === 'medium') return 4000;
+  return 2200;
+}
 
-  // Fine-tuned count for ultra-smooth 60fps
-  const particleCount = useMemo(() => {
-    if (performanceTier === 'high') return 4200;
-    if (performanceTier === 'medium') return 2200;
-    return 900;
-  }, [performanceTier]);
-
-  if (reducedMotion) {
-    return (
-      <div className="absolute inset-0 bg-gradient-to-b from-navy-800 via-navy-900 to-navy-900">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(201,166,107,0.12)_0%,transparent_70%)]" />
-      </div>
-    );
-  }
+export default function ParticleScene(props: ParticleSceneProps) {
+  const tier = useDevicePerformance();
+  const count = particleBudget(tier);
 
   return (
-    <div className="absolute inset-0">
-      <Canvas
-        camera={{ position: [0, 0.4, 7.8], fov: 52 }}
-        gl={{
-          antialias: false,
-          alpha: true,
-          powerPreference: 'high-performance',
-        }}
-        dpr={[1, 1.5]}
-        style={{ background: 'transparent' }}
-      >
-        <ambientLight intensity={0.5} />
-        <InteractiveParticleCloud count={particleCount} />
-      </Canvas>
-      {/* Cinematic Vignette & Ambient Radial Glows */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy-900 via-transparent to-navy-900/60" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(232,199,122,0.08)_0%,transparent_65%)]" />
-    </div>
+    <Canvas
+      aria-hidden="true"
+      camera={{ position: [0, 0.22, 8.4], fov: tier === 'low' ? 55 : 50 }}
+      dpr={tier === 'low' ? 1 : [1, 1.5]}
+      fallback={<div className="absolute inset-0" />}
+      gl={{
+        alpha: true,
+        antialias: false,
+        powerPreference: tier === 'low' ? 'default' : 'high-performance',
+      }}
+      onCreated={({ gl }) => {
+        gl.setClearColor('#07100f', 0);
+        const canvas = gl.domElement;
+        canvas.setAttribute('role', 'presentation');
+        canvas.setAttribute('tabindex', '-1');
+      }}
+      style={{ background: 'transparent', pointerEvents: 'none' }}
+    >
+      <ArchitecturalPoints count={count} {...props} />
+    </Canvas>
   );
 }

@@ -1,72 +1,41 @@
 'use client';
 
-import { useState } from 'react';
-import { MessageCircle, X, Send } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { MessageCircle, Send, X } from 'lucide-react';
+import { CONTACT } from '@/lib/constants';
 
 export default function WhatsAppButton() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [message, setMessage] = useState('Merhaba, Dubai VIP gezi ve concierge hizmetleri hakkında bilgi almak istiyorum.');
+  const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState('Merhaba, Dubai seyahatim için bilgi almak istiyorum.');
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const reduced = useReducedMotion();
 
-  const handleOpenWhatsApp = () => {
-    const encoded = encodeURIComponent(message);
-    window.open(`https://wa.me/905320000000?text=${encoded}`, '_blank');
-    setIsOpen(false);
+  useEffect(() => {
+    if (!open) return;
+    const trigger = triggerRef.current;
+    closeRef.current?.focus();
+    const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') setOpen(false); };
+    window.addEventListener('keydown', onKey);
+    return () => { window.removeEventListener('keydown', onKey); trigger?.focus(); };
+  }, [open]);
+
+  const send = () => {
+    window.open(`${CONTACT.whatsappUrl}?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
+    setOpen(false);
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
-      {/* Popover Window */}
-      {isOpen && (
-        <div className="absolute bottom-16 right-0 w-80 bg-[#0B0F1A] border border-[#C9A66B]/30 rounded-2xl p-4 shadow-[0_20px_50px_rgba(0,0,0,0.8)] backdrop-blur-xl mb-2 animate-in fade-in slide-in-from-bottom-5">
-          <div className="flex items-center justify-between pb-3 border-b border-[#C9A66B]/10">
-            <div className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-              <div>
-                <p className="text-xs font-semibold text-[#F5F1E8]">Travia VIP Concierge</p>
-                <p className="text-[10px] text-emerald-400 font-mono">Çevrimiçi · Anında Yanıt</p>
-              </div>
-            </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="text-[#F5F1E8]/30 hover:text-[#F5F1E8] transition-colors p-1"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-
-          <div className="my-3 text-xs bg-[#111827] p-3 rounded-xl border border-[#C9A66B]/10 text-[#F5F1E8]/80 leading-relaxed">
-            Dubai seyahatiniz için özel yat, helikopter, çöl safarisi veya otel rezervasyonunuzu anında WhatsApp üzerinden planlayalım.
-          </div>
-
-          <div className="space-y-2">
-            <textarea
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              rows={2}
-              className="w-full p-2.5 text-xs rounded-xl bg-[#111827] border border-[#C9A66B]/15 text-[#F5F1E8] focus:outline-none focus:border-[#C9A66B]/40 resize-none"
-            />
-            <button
-              onClick={handleOpenWhatsApp}
-              className="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-[#05070F] font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)]"
-            >
-              <Send className="w-3.5 h-3.5" />
-              <span>WhatsApp ile Başlat</span>
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Floating Action Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-14 h-14 rounded-full bg-gradient-to-tr from-emerald-600 to-emerald-400 border-2 border-[#E8C77A]/40 flex items-center justify-center text-[#05070F] shadow-[0_0_30px_rgba(16,185,129,0.4)] hover:scale-110 transition-transform relative group"
-        aria-label="WhatsApp VIP Concierge"
-      >
-        <MessageCircle className="w-7 h-7 text-[#05070F] fill-current" />
-        <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#C9A66B] text-[9px] font-bold text-[#05070F] flex items-center justify-center">
-          1
-        </span>
-      </button>
+    <div className="fixed bottom-4 right-4 z-40 sm:bottom-6 sm:right-6">
+      <AnimatePresence mode="wait">
+        {open ? <motion.div role="dialog" aria-modal="false" aria-labelledby="whatsapp-title" className="absolute bottom-16 right-0 mb-2 w-[min(21rem,calc(100vw-2rem))] border border-white/18 bg-[#0b1513] p-5 shadow-2xl" initial={{ opacity: 0, y: reduced ? 0 : 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: reduced ? 0 : 8 }} transition={{ duration: reduced ? .01 : .25 }}>
+          <div className="flex items-start justify-between gap-5 border-b border-white/15 pb-4"><div><p className="text-[.58rem] font-bold uppercase tracking-[.16em] text-sand">Direct line</p><h2 id="whatsapp-title" className="mt-1 font-serif text-2xl">Travia concierge</h2></div><button ref={closeRef} type="button" onClick={() => setOpen(false)} className="grid size-10 place-items-center" aria-label="WhatsApp penceresini kapat"><X className="size-4" /></button></div>
+          <label className="mt-5 block"><span className="sr-only">WhatsApp mesajınız</span><textarea value={message} onChange={e => setMessage(e.target.value)} rows={3} className="field min-h-24 resize-none text-sm" /></label>
+          <button type="button" onClick={send} className="btn-primary mt-4 w-full">WhatsApp’ta aç <Send className="size-4" /></button>
+        </motion.div> : null}
+      </AnimatePresence>
+      <button ref={triggerRef} type="button" onClick={() => setOpen(value => !value)} className="grid size-13 place-items-center border border-sand/60 bg-[#0b1513] text-sand shadow-xl transition-[background-color,color,transform] duration-200 hover:-translate-y-1 hover:bg-sand hover:text-ink" aria-label="WhatsApp concierge" aria-expanded={open}><MessageCircle className="size-5" /></button>
     </div>
   );
 }

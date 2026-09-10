@@ -1,385 +1,77 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import {
-  Sparkles, Check, ArrowRight, ArrowLeft,
-  Ship, Compass, Utensils, Car, Send, CheckCircle2
-} from 'lucide-react';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { ArrowLeft, ArrowRight, Check, Compass, Ship, Sparkles, Utensils, Car } from 'lucide-react';
 import { formatCurrency } from '@/lib/formatCurrency';
+import Reveal from '../ui/Reveal';
 
-interface PlannerData {
-  nights: number;
-  startDate: string;
-  pax: number;
-  hotel: string;
-  experiences: string[];
-  name: string;
-  phone: string;
-  email: string;
-  specialRequests: string;
-}
-
+type PlannerData = { nights: number; startDate: string; pax: number; hotel: string; experiences: string[]; name: string; phone: string; specialRequests: string };
 const HOTELS = [
-  { id: 'atlantis-royal', name: 'Atlantis The Royal', area: 'Palm Jumeirah', pricePerNight: 4200, badge: 'En Çok Tercih Edilen' },
-  { id: 'burj-al-arab', name: 'Burj Al Arab Jumeirah', area: 'Umm Suqeim', pricePerNight: 6500, badge: 'Ultra Lüks İkonik' },
-  { id: 'armani-hotel', name: 'Armani Hotel Dubai', area: 'Burj Khalifa / Downtown', pricePerNight: 3200, badge: 'Şehir & Alışveriş' },
-  { id: 'bulgari-resort', name: 'Bulgari Resort Dubai', area: 'Jumeira Bay Island', pricePerNight: 5500, badge: 'İzole Ada Lüksü' },
+  { id: 'atlantis-royal', name: 'Atlantis The Royal', area: 'Palm Jumeirah', pricePerNight: 4200 },
+  { id: 'burj-al-arab', name: 'Burj Al Arab Jumeirah', area: 'Umm Suqeim', pricePerNight: 6500 },
+  { id: 'armani-hotel', name: 'Armani Hotel Dubai', area: 'Downtown', pricePerNight: 3200 },
+  { id: 'bulgari-resort', name: 'Bulgari Resort Dubai', area: 'Jumeira Bay', pricePerNight: 5500 },
 ];
-
 const EXPERIENCES = [
-  { id: 'yacht', name: 'Özel Süperyat Gün Batımı Turu (Majesty 56ft)', price: 6800, icon: Ship },
-  { id: 'safari', name: 'VIP Kızıl Kum Çöl Safarisi & Royal Majlis Çadırı', price: 4200, icon: Compass },
-  { id: 'helicopter', name: '25 Dk Helikopter Şehir Turu (Atlantis Helipad)', price: 3600, icon: Sparkles },
-  { id: 'dining', name: 'Nobu Dubai / Zuma Terasta Gurme Masa Rezervasyonu', price: 2800, icon: Utensils },
-  { id: 'chauffeur', name: 'Seyahat Boyunca 24 Saat Tahsisli Mercedes V-Class / Maybach', price: 5000, icon: Car },
+  { id: 'yacht', name: 'Özel yat gün batımı turu', price: 6800, icon: Ship },
+  { id: 'safari', name: 'VIP kızıl kum çöl safarisi', price: 4200, icon: Compass },
+  { id: 'helicopter', name: '25 dk helikopter şehir turu', price: 3600, icon: Sparkles },
+  { id: 'dining', name: 'Fine-dining masa rezervasyonu', price: 2800, icon: Utensils },
+  { id: 'chauffeur', name: 'Seyahat boyunca özel şoför', price: 5000, icon: Car },
 ];
+const STEP_LABELS = ['Tarih', 'Konaklama', 'Deneyimler', 'İletişim'];
 
 export default function TripPlannerWizard() {
   const [step, setStep] = useState(1);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const reduced = useReducedMotion();
+  const [data, setData] = useState<PlannerData>({ nights: 5, startDate: '', pax: 2, hotel: HOTELS[0].id, experiences: ['yacht', 'safari'], name: '', phone: '', specialRequests: '' });
+  const hotel = HOTELS.find(item => item.id === data.hotel) ?? HOTELS[0];
+  const hotelTotal = hotel.pricePerNight * data.nights;
+  const extrasTotal = data.experiences.reduce((sum, id) => sum + (EXPERIENCES.find(item => item.id === id)?.price ?? 0), 0);
+  const total = hotelTotal + extrasTotal;
+  const toggle = (id: string) => setData(current => ({ ...current, experiences: current.experiences.includes(id) ? current.experiences.filter(item => item !== id) : [...current.experiences, id] }));
 
-  const [data, setData] = useState<PlannerData>({
-    nights: 5,
-    startDate: '2026-10-15',
-    pax: 2,
-    hotel: 'atlantis-royal',
-    experiences: ['yacht', 'safari'],
-    name: '',
-    phone: '',
-    email: '',
-    specialRequests: '',
-  });
-
-  const selectedHotel = HOTELS.find(h => h.id === data.hotel) || HOTELS[0];
-  const hotelTotal = selectedHotel.pricePerNight * data.nights;
-  const experiencesTotal = data.experiences.reduce((sum, expId) => {
-    const exp = EXPERIENCES.find(e => e.id === expId);
-    return sum + (exp?.price || 0);
-  }, 0);
-  const totalEstimate = hotelTotal + experiencesTotal;
-
-  const toggleExperience = (id: string) => {
-    setData(prev => ({
-      ...prev,
-      experiences: prev.experiences.includes(id)
-        ? prev.experiences.filter(e => e !== id)
-        : [...prev.experiences, id],
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!data.name || !data.phone) return;
-
-    setIsSubmitting(true);
+  const submit = async (event: React.FormEvent) => {
+    event.preventDefault(); setSubmitting(true); setError(null);
     try {
-      await fetch('/api/website/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: data.name,
-          phone: data.phone,
-          email: data.email,
-          date: data.startDate,
-          serviceType: `Bespoke Trip: ${selectedHotel.name} (${data.nights} Gece, ${data.pax} PAX)`,
-          message: `Otel: ${selectedHotel.name}. Seçilen Deneyimler: ${data.experiences.join(', ')}. Tahmini Bütçe: ${totalEstimate} AED. Özel Not: ${data.specialRequests}`,
-        }),
-      });
-      setIsSuccess(true);
-    } catch {
-      // Fallback success for client
-      setIsSuccess(true);
-    } finally {
-      setIsSubmitting(false);
-    }
+      const response = await fetch('/api/website/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: data.name, phone: data.phone, date: data.startDate, serviceType: `Özel seyahat: ${hotel.name}`, message: `${data.nights} gece, ${data.pax} misafir. Deneyimler: ${data.experiences.join(', ') || 'belirtilmedi'}. Tahmini toplam: ${total} AED. Not: ${data.specialRequests || 'yok'}` }) });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Talep iletilemedi.');
+      setSuccess(true);
+    } catch (cause) { setError(cause instanceof Error ? cause.message : 'Talep iletilemedi. Lütfen tekrar deneyin.'); }
+    finally { setSubmitting(false); }
   };
 
   return (
-    <section id="trip-planner" className="py-20 bg-[#05070F] border-t border-[#C9A66B]/15 relative overflow-hidden">
-      {/* Ambient background glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#C9A66B]/5 rounded-full blur-[140px] pointer-events-none" />
+    <section id="trip-planner" className="paper-section section-space border-t border-[#0b1513]/15" aria-labelledby="planner-title">
+      <div className="container-wide">
+        <div className="grid gap-12 lg:grid-cols-12">
+          <Reveal className="lg:col-span-4"><p className="eyebrow">04 · Bespoke planner</p><h2 id="planner-title" className="display title-md mt-7">Yolculuğunuzu<br /><em className="text-[#80673f]">tasarlayın.</em></h2><p className="mt-7 max-w-sm text-sm leading-7 text-[#0b1513]/62">Tercihlerinizi seçin, ilk bütçe çerçevesini görün. Son program concierge ekibimizle birlikte netleşir.</p><p className="mt-8 border-l border-[#80673f] pl-4 text-xs leading-6 text-[#0b1513]/50">Gösterilen tutarlar tahmini başlangıç bedelleridir; tarih ve müsaitliğe göre değişebilir.</p></Reveal>
 
-      <div className="max-w-4xl mx-auto px-4 relative z-10">
-        {/* Section Header */}
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#C9A66B]/10 border border-[#C9A66B]/20 text-[#E8C77A] text-xs font-mono mb-3">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>KİŞİYE ÖZEL DUBAİ SEYAHAT SİHİRBAZI</span>
-          </div>
-          <h2 className="text-2xl sm:text-4xl font-serif font-bold text-[#F5F1E8]">
-            Kendi VIP Dubai Seyahatinizi Tasarlayın
-          </h2>
-          <p className="text-xs sm:text-sm text-[#F5F1E8]/40 mt-2 max-w-xl mx-auto">
-            Tercihlerinizi belirleyin, tahmini bütçenizi anlık hesaplayın ve concierge ekibimiz size özel teklif hazırlasın.
-          </p>
-        </div>
+          <Reveal delay={.12} direction="right" className="lg:col-span-8">
+            <div className="border border-[#0b1513]/20 bg-[#ebe5d9] p-5 sm:p-9">
+              <ol className="grid grid-cols-4 border-b border-[#0b1513]/18 pb-6" aria-label={`Adım ${step} / 4`}>
+                {STEP_LABELS.map((label, index) => <li key={label} className={`${index + 1 <= step ? 'text-[#0b1513]' : 'text-[#0b1513]/30'} flex flex-col gap-2`}><span className="font-serif text-2xl">0{index + 1}</span><span className="hidden text-[.58rem] font-bold uppercase tracking-[.14em] sm:block">{label}</span></li>)}
+              </ol>
 
-        {/* Wizard Container */}
-        <div className="bg-[#0B0F1A] border border-[#C9A66B]/20 rounded-3xl p-6 sm:p-8 shadow-[0_20px_60px_rgba(0,0,0,0.6)] backdrop-blur-xl">
-          {/* Progress Steps */}
-          <div className="flex items-center justify-between mb-8 pb-4 border-b border-[#C9A66B]/10">
-            {[
-              { num: 1, label: 'Tarih & PAX' },
-              { num: 2, label: 'Konaklama' },
-              { num: 3, label: 'Deneyimler' },
-              { num: 4, label: 'Teklif & Onay' },
-            ].map(s => (
-              <div key={s.num} className="flex items-center gap-2">
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-                  step === s.num
-                    ? 'bg-gradient-to-r from-[#C9A66B] to-[#E8C77A] text-[#05070F] shadow-[0_0_15px_rgba(201,166,107,0.4)]'
-                    : step > s.num
-                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                    : 'bg-[#111827] text-[#F5F1E8]/30'
-                }`}>
-                  {step > s.num ? <Check className="w-3.5 h-3.5" /> : s.num}
-                </div>
-                <span className={`text-xs hidden sm:inline ${step === s.num ? 'text-[#F5F1E8] font-medium' : 'text-[#F5F1E8]/30'}`}>
-                  {s.label}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          {/* Success View */}
-          {isSuccess ? (
-            <div className="text-center py-12 space-y-4">
-              <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto text-emerald-400">
-                <CheckCircle2 className="w-8 h-8" />
-              </div>
-              <h3 className="text-xl font-semibold text-[#F5F1E8]">VIP Seyahat Talebiniz Alındı!</h3>
-              <p className="text-xs text-[#F5F1E8]/50 max-w-md mx-auto leading-relaxed">
-                Talebiniz doğrudan Travia Ultimate CRM sistemimize aktarıldı. Özel portföy yöneticiniz 15 dakika içinde WhatsApp üzerinden sizinle iletişime geçecektir.
-              </p>
-              <div className="bg-[#111827] p-4 rounded-xl max-w-sm mx-auto text-xs text-[#C9A66B] font-mono border border-[#C9A66B]/15">
-                Tahmini Paket Bedeli: {formatCurrency(totalEstimate)}
-              </div>
+              {success ? <div className="flex min-h-[30rem] flex-col items-center justify-center text-center"><span className="grid size-16 place-items-center border border-[#80673f] text-[#80673f]"><Check className="size-6" /></span><h3 className="display mt-7 text-5xl">Planınız bize ulaştı.</h3><p className="mt-4 max-w-md text-sm leading-7 text-[#0b1513]/60">Concierge ekibimiz seçiminizi inceleyerek sizinle iletişime geçecek.</p><p className="mt-6 font-serif text-2xl text-[#80673f]">{formatCurrency(total)}</p></div> :
+              <form onSubmit={submit} className="pt-8">
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div key={step} initial={{ opacity: 0, x: reduced ? 0 : 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: reduced ? 0 : -20 }} transition={{ duration: reduced ? .01 : .3 }} className="min-h-[23rem]">
+                    {step === 1 ? <div><h3 className="font-serif text-3xl">Ne zaman, kaç kişi?</h3><div className="mt-8 grid gap-7 sm:grid-cols-2"><label><span className="block text-[.62rem] font-bold uppercase tracking-[.14em] text-[#80673f]">Gece sayısı</span><select className="mt-3 w-full border-0 border-b border-[#0b1513]/25 bg-transparent py-3 outline-none" value={data.nights} onChange={e => setData({ ...data, nights: Number(e.target.value) })}>{[3,5,7,10].map(n => <option key={n} value={n}>{n} gece</option>)}</select></label><label><span className="block text-[.62rem] font-bold uppercase tracking-[.14em] text-[#80673f]">Misafir sayısı</span><select className="mt-3 w-full border-0 border-b border-[#0b1513]/25 bg-transparent py-3 outline-none" value={data.pax} onChange={e => setData({ ...data, pax: Number(e.target.value) })}>{[1,2,4,6].map(n => <option key={n} value={n}>{n}{n === 6 ? '+' : ''} kişi</option>)}</select></label><label className="sm:col-span-2"><span className="block text-[.62rem] font-bold uppercase tracking-[.14em] text-[#80673f]">Tahmini başlangıç tarihi</span><input type="date" className="mt-3 w-full border-0 border-b border-[#0b1513]/25 bg-transparent py-3 outline-none" value={data.startDate} onChange={e => setData({ ...data, startDate: e.target.value })} /></label></div></div> : null}
+                    {step === 2 ? <div><h3 className="font-serif text-3xl">Nasıl bir konaklama?</h3><div className="mt-7 divide-y divide-[#0b1513]/15 border-y border-[#0b1513]/15">{HOTELS.map(item => <label key={item.id} className="flex min-h-20 cursor-pointer items-center justify-between gap-4 py-4"><span><strong className="block font-serif text-xl font-medium">{item.name}</strong><small className="mt-1 block text-xs text-[#0b1513]/48">{item.area}</small></span><span className="flex items-center gap-4 text-right"><span className="text-xs text-[#80673f]">{formatCurrency(item.pricePerNight)} / gece</span><input type="radio" name="hotel" value={item.id} checked={data.hotel === item.id} onChange={() => setData({ ...data, hotel: item.id })} className="size-4 accent-[#80673f]" /></span></label>)}</div></div> : null}
+                    {step === 3 ? <div><h3 className="font-serif text-3xl">Hangi anları ekleyelim?</h3><div className="mt-7 grid gap-px bg-[#0b1513]/15 sm:grid-cols-2">{EXPERIENCES.map(item => { const Icon = item.icon; const active = data.experiences.includes(item.id); return <button key={item.id} type="button" aria-pressed={active} onClick={() => toggle(item.id)} className={`flex min-h-28 items-start justify-between gap-4 p-5 text-left transition-colors ${active ? 'bg-[#0b1513] text-[#f4f0e7]' : 'bg-[#ebe5d9] hover:bg-[#e3dccf]'}`}><span><Icon className={`size-4 ${active ? 'text-[#d2b98c]' : 'text-[#80673f]'}`} /><strong className="mt-4 block font-serif text-xl font-medium leading-tight">{item.name}</strong></span><span className="shrink-0 text-[.62rem]">+{formatCurrency(item.price)}</span></button>; })}</div></div> : null}
+                    {step === 4 ? <div><h3 className="font-serif text-3xl">Planı nereye gönderelim?</h3><div className="mt-8 grid gap-7 sm:grid-cols-2"><label><span className="block text-[.62rem] font-bold uppercase tracking-[.14em] text-[#80673f]">Adınız soyadınız *</span><input required autoComplete="name" className="mt-3 w-full border-0 border-b border-[#0b1513]/25 bg-transparent py-3 outline-none" value={data.name} onChange={e => setData({ ...data, name: e.target.value })} /></label><label><span className="block text-[.62rem] font-bold uppercase tracking-[.14em] text-[#80673f]">Telefon *</span><input required type="tel" autoComplete="tel" className="mt-3 w-full border-0 border-b border-[#0b1513]/25 bg-transparent py-3 outline-none" value={data.phone} onChange={e => setData({ ...data, phone: e.target.value })} /></label><label className="sm:col-span-2"><span className="block text-[.62rem] font-bold uppercase tracking-[.14em] text-[#80673f]">Özel notlar</span><textarea className="mt-3 min-h-24 w-full resize-y border-0 border-b border-[#0b1513]/25 bg-transparent py-3 outline-none" value={data.specialRequests} onChange={e => setData({ ...data, specialRequests: e.target.value })} /></label><div className="flex items-baseline justify-between border-t border-[#0b1513]/18 pt-5 sm:col-span-2"><span className="text-xs uppercase tracking-[.12em] text-[#0b1513]/50">Tahmini başlangıç</span><strong className="font-serif text-3xl text-[#80673f]">{formatCurrency(total)}</strong></div>{error ? <p role="alert" className="text-sm text-red-700 sm:col-span-2">{error}</p> : null}</div></div> : null}
+                  </motion.div>
+                </AnimatePresence>
+                <div className="mt-6 flex items-center justify-between border-t border-[#0b1513]/18 pt-6">{step > 1 ? <button type="button" className="inline-flex min-h-11 items-center gap-2 text-[.65rem] font-bold uppercase tracking-[.13em]" onClick={() => setStep(value => value - 1)}><ArrowLeft className="size-4" /> Geri</button> : <span />}{step < 4 ? <button type="button" className="inline-flex min-h-11 items-center gap-2 bg-[#0b1513] px-5 text-[.65rem] font-bold uppercase tracking-[.13em] text-[#f4f0e7]" onClick={() => setStep(value => value + 1)}>Devam <ArrowRight className="size-4" /></button> : <button type="submit" disabled={submitting} className="inline-flex min-h-11 items-center gap-2 bg-[#0b1513] px-5 text-[.65rem] font-bold uppercase tracking-[.13em] text-[#f4f0e7] disabled:opacity-50">{submitting ? 'İletiliyor…' : 'Planı gönder'} <ArrowRight className="size-4" /></button>}</div>
+              </form>}
             </div>
-          ) : (
-            <div>
-              {/* STEP 1: Dates & Pax */}
-              {step === 1 && (
-                <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
-                  <div>
-                    <label className="block text-xs font-mono uppercase tracking-wider text-[#C9A66B] mb-2">
-                      Konaklama Süresi (Gece Sayısı)
-                    </label>
-                    <div className="grid grid-cols-4 gap-3">
-                      {[3, 5, 7, 10].map(n => (
-                        <button
-                          key={n}
-                          type="button"
-                          onClick={() => setData({ ...data, nights: n })}
-                          className={`py-3 rounded-xl border text-sm font-semibold transition-all ${
-                            data.nights === n
-                              ? 'bg-[#C9A66B]/15 border-[#C9A66B] text-[#E8C77A]'
-                              : 'bg-[#111827] border-[#C9A66B]/10 text-[#F5F1E8]/50 hover:border-[#C9A66B]/30'
-                          }`}
-                        >
-                          {n} Gece
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-mono uppercase tracking-wider text-[#C9A66B] mb-2">
-                        Tahmini Başlangıç Tarihi
-                      </label>
-                      <input
-                        type="date"
-                        value={data.startDate}
-                        onChange={e => setData({ ...data, startDate: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl bg-[#111827] border border-[#C9A66B]/15 text-sm text-[#F5F1E8] focus:outline-none focus:border-[#C9A66B]/40"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-mono uppercase tracking-wider text-[#C9A66B] mb-2">
-                        Kişi Sayısı (Misafir)
-                      </label>
-                      <select
-                        value={data.pax}
-                        onChange={e => setData({ ...data, pax: parseInt(e.target.value) })}
-                        className="w-full px-4 py-3 rounded-xl bg-[#111827] border border-[#C9A66B]/15 text-sm text-[#F5F1E8] focus:outline-none focus:border-[#C9A66B]/40"
-                      >
-                        <option value={1}>1 Kişi (VIP Solo)</option>
-                        <option value={2}>2 Kişi (Çift / VIP Couple)</option>
-                        <option value={4}>4 Kişi (Aile / Küçük Grup)</option>
-                        <option value={6}>6+ Kişi (Grup / Heyet)</option>
-                      </select>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* STEP 2: Accommodation */}
-              {step === 2 && (
-                <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
-                  <label className="block text-xs font-mono uppercase tracking-wider text-[#C9A66B] mb-2">
-                    Lüks Resort / Otel Tercihiniz
-                  </label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {HOTELS.map(hotel => (
-                      <button
-                        key={hotel.id}
-                        type="button"
-                        onClick={() => setData({ ...data, hotel: hotel.id })}
-                        className={`p-4 rounded-2xl border text-left transition-all relative ${
-                          data.hotel === hotel.id
-                            ? 'bg-[#C9A66B]/15 border-[#C9A66B] shadow-[0_0_20px_rgba(201,166,107,0.2)]'
-                            : 'bg-[#111827] border-[#C9A66B]/10 hover:border-[#C9A66B]/30'
-                        }`}
-                      >
-                        <span className="text-[10px] bg-[#C9A66B]/20 text-[#E8C77A] px-2 py-0.5 rounded-full font-mono">
-                          {hotel.badge}
-                        </span>
-                        <h4 className="text-base font-semibold text-[#F5F1E8] mt-2">{hotel.name}</h4>
-                        <p className="text-xs text-[#F5F1E8]/40">{hotel.area}</p>
-                        <p className="text-xs font-mono text-[#C9A66B] font-semibold mt-3">
-                          ~{formatCurrency(hotel.pricePerNight)} / gece
-                        </p>
-                      </button>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-
-              {/* STEP 3: Experiences */}
-              {step === 3 && (
-                <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
-                  <label className="block text-xs font-mono uppercase tracking-wider text-[#C9A66B] mb-2">
-                    Pakete Eklenecek VIP Deneyimler (Çoklu Seçim)
-                  </label>
-                  <div className="space-y-2.5">
-                    {EXPERIENCES.map(exp => {
-                      const isSelected = data.experiences.includes(exp.id);
-                      const Icon = exp.icon;
-                      return (
-                        <button
-                          key={exp.id}
-                          type="button"
-                          onClick={() => toggleExperience(exp.id)}
-                          className={`w-full p-4 rounded-xl border flex items-center justify-between text-left transition-all ${
-                            isSelected
-                              ? 'bg-[#C9A66B]/15 border-[#C9A66B]'
-                              : 'bg-[#111827] border-[#C9A66B]/10 hover:border-[#C9A66B]/20'
-                          }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                              isSelected ? 'bg-[#C9A66B] text-[#05070F]' : 'bg-[#0B0F1A] text-[#C9A66B]/60'
-                            }`}>
-                              <Icon className="w-4 h-4" />
-                            </div>
-                            <div>
-                              <p className="text-sm font-medium text-[#F5F1E8]">{exp.name}</p>
-                            </div>
-                          </div>
-                          <span className="text-xs font-mono text-[#C9A66B] font-semibold shrink-0 ml-2">
-                            +{formatCurrency(exp.price)}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </motion.div>
-              )}
-
-              {/* STEP 4: Contact & Review */}
-              {step === 4 && (
-                <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
-                  {/* Summary Bar */}
-                  <div className="bg-[#111827] p-5 rounded-2xl border border-[#C9A66B]/20 space-y-2 text-xs">
-                    <div className="flex justify-between text-[#F5F1E8]/60">
-                      <span>Konaklama ({selectedHotel.name} · {data.nights} Gece):</span>
-                      <span className="font-mono text-[#F5F1E8]">{formatCurrency(hotelTotal)}</span>
-                    </div>
-                    <div className="flex justify-between text-[#F5F1E8]/60">
-                      <span>Seçilen Deneyimler ({data.experiences.length} Kalem):</span>
-                      <span className="font-mono text-[#F5F1E8]">{formatCurrency(experiencesTotal)}</span>
-                    </div>
-                    <div className="pt-2 border-t border-[#C9A66B]/10 flex justify-between text-sm font-semibold text-[#F5F1E8]">
-                      <span>Tahmini Toplam Paket:</span>
-                      <span className="text-base text-[#C9A66B] font-mono">{formatCurrency(totalEstimate)}</span>
-                    </div>
-                  </div>
-
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-[10px] font-mono uppercase text-[#C9A66B] mb-1">Adınız Soyadınız *</label>
-                        <input
-                          type="text"
-                          required
-                          value={data.name}
-                          onChange={e => setData({ ...data, name: e.target.value })}
-                          placeholder="Örn: Edip Mangtay"
-                          className="w-full px-4 py-3 rounded-xl bg-[#111827] border border-[#C9A66B]/15 text-sm text-[#F5F1E8] focus:outline-none focus:border-[#C9A66B]/40"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[10px] font-mono uppercase text-[#C9A66B] mb-1">WhatsApp / Telefon *</label>
-                        <input
-                          type="tel"
-                          required
-                          value={data.phone}
-                          onChange={e => setData({ ...data, phone: e.target.value })}
-                          placeholder="Örn: +90 532 000 0000"
-                          className="w-full px-4 py-3 rounded-xl bg-[#111827] border border-[#C9A66B]/15 text-sm text-[#F5F1E8] focus:outline-none focus:border-[#C9A66B]/40"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-[10px] font-mono uppercase text-[#C9A66B] mb-1">Özel İstek veya Notlar (Opsiyonel)</label>
-                      <input
-                        type="text"
-                        value={data.specialRequests}
-                        onChange={e => setData({ ...data, specialRequests: e.target.value })}
-                        placeholder="Örn: Helal yemek hassasiyeti, bebek koltuğu, yıldönümü kutlaması..."
-                        className="w-full px-4 py-3 rounded-xl bg-[#111827] border border-[#C9A66B]/15 text-sm text-[#F5F1E8] focus:outline-none focus:border-[#C9A66B]/40"
-                      />
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="w-full py-4 rounded-xl bg-gradient-to-r from-[#C9A66B] to-[#E8C77A] text-[#05070F] font-bold text-sm hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(201,166,107,0.3)] disabled:opacity-50"
-                    >
-                      <Send className="w-4 h-4" />
-                      <span>{isSubmitting ? 'İletiliyor...' : 'Teklifi Onayla & VIP Concierge’e Gönder'}</span>
-                    </button>
-                  </form>
-                </motion.div>
-              )}
-
-              {/* Navigation Buttons */}
-              <div className="flex items-center justify-between mt-8 pt-4 border-t border-[#C9A66B]/10">
-                {step > 1 ? (
-                  <button
-                    type="button"
-                    onClick={() => setStep(step - 1)}
-                    className="px-4 py-2 rounded-xl text-xs text-[#F5F1E8]/50 hover:text-[#F5F1E8] flex items-center gap-1.5 transition-colors"
-                  >
-                    <ArrowLeft className="w-3.5 h-3.5" /> Geri
-                  </button>
-                ) : <div />}
-
-                {step < 4 && (
-                  <button
-                    type="button"
-                    onClick={() => setStep(step + 1)}
-                    className="px-6 py-2.5 rounded-xl bg-[#C9A66B]/15 border border-[#C9A66B]/30 text-[#E8C77A] text-xs font-semibold hover:bg-[#C9A66B]/25 flex items-center gap-1.5 transition-all"
-                  >
-                    İleri <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
+          </Reveal>
         </div>
       </div>
     </section>

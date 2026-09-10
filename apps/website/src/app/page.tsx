@@ -1,40 +1,23 @@
-'use client';
-
-import { useSmoothScroll } from '@/hooks/useSmoothScroll';
-import {
-  Navbar,
-  HeroSection,
-  BrandStats,
-  About,
-  Services,
-  TripPlannerWizard,
-  Process,
-  FAQ,
-  Gallery,
-  Contact,
-  Footer,
-  CustomCursor,
-  AmbientGoldenDust,
-  WhatsAppButton,
-} from '@/components/website';
+import Navbar from '@/components/Navbar';
+import HeroSection from '@/components/Hero/HeroSection';
+import BrandStats from '@/components/BrandStats';
+import About from '@/components/About';
+import Services from '@/components/Services';
+import TripPlannerWizard from '@/components/planner/TripPlannerWizard';
+import Process from '@/components/Process';
+import FAQ from '@/components/FAQ';
+import Gallery from '@/components/Gallery';
+import Contact from '@/components/Contact';
+import Footer from '@/components/Footer';
+import WhatsAppButton from '@/components/ui/WhatsAppButton';
+import SmoothScroll from '@/components/ui/SmoothScroll';
 
 export default function Home() {
-  // Initialize cinematic smooth scrolling
-  useSmoothScroll();
-
   return (
-    <div className="relative min-h-screen bg-navy-900 text-cream selection:bg-gold-500/30 selection:text-gold-200">
-      {/* Luxury Interactive Gold Cursor */}
-      <CustomCursor />
-
-      {/* Global Ambient Golden Embers & Floating Dust Canvas */}
-      <AmbientGoldenDust />
-
-      {/* Glassmorphic Sticky Header */}
+    <div className="site-shell min-h-screen">
+      <SmoothScroll />
       <Navbar />
-
-      {/* Page Sections */}
-      <main className="relative z-10">
+      <main>
         <HeroSection />
         <BrandStats />
         <About />
@@ -46,10 +29,7 @@ export default function Home() {
         <Contact />
       </main>
 
-      {/* Floating Concierge WhatsApp Widget */}
       <WhatsAppButton />
-
-      {/* Footer */}
       <Footer />
     </div>
   );

@@ -75,22 +75,18 @@ export default function CustomCursor() {
           translateY: '-50%',
         }}
         animate={{
-          scale: isHovered ? 2.2 : 1,
-          borderColor: isHovered ? 'rgba(232, 199, 122, 0.9)' : 'rgba(201, 166, 107, 0.45)',
-          backgroundColor: isHovered ? 'rgba(201, 166, 107, 0.12)' : 'rgba(201, 166, 107, 0.02)',
+          scale: isHovered ? 1.45 : 1,
+          borderColor: isHovered ? 'rgba(232, 199, 122, 0.32)' : 'rgba(201, 166, 107, 0.16)',
+          backgroundColor: isHovered ? 'rgba(201, 166, 107, 0.04)' : 'rgba(201, 166, 107, 0)',
         }}
         transition={{ duration: 0.2 }}
-        className="fixed top-0 left-0 flex items-center justify-center rounded-full border border-gold-400/50 backdrop-blur-[1px] will-change-transform"
-        style-width="42px"
-        css-prop-fix=""
+        className="fixed top-0 left-0 flex h-5 w-5 items-center justify-center rounded-full border border-gold-400/20 will-change-transform"
       >
-        <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${isHovered ? 'w-16 h-16' : 'w-10 h-10'}`}>
-          {hoverText && (
-            <span className="text-[8px] font-sans font-semibold tracking-widest text-gold-300 uppercase select-none">
-              {hoverText}
-            </span>
-          )}
-        </div>
+        {hoverText && (
+          <span className="select-none text-[6px] font-sans font-semibold uppercase tracking-widest text-gold-300/70">
+            {hoverText}
+          </span>
+        )}
       </motion.div>
 
       {/* Center Precise Gold Dot */}
@@ -106,7 +102,7 @@ export default function CustomCursor() {
           opacity: isHovered ? 0.5 : 1,
         }}
         transition={{ duration: 0.1 }}
-        className="fixed top-0 left-0 w-2 h-2 rounded-full bg-gold-400 shadow-[0_0_8px_rgba(232,199,122,0.8)] will-change-transform"
+        className="fixed top-0 left-0 h-1.5 w-1.5 rounded-full bg-gold-400/70 shadow-[0_0_4px_rgba(232,199,122,0.35)] will-change-transform"
       />
     </div>
   );

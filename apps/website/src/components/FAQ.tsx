@@ -1,106 +1,20 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import { motion, AnimatePresence, useInView } from 'framer-motion';
-import { ChevronDown } from 'lucide-react';
+import { useState } from 'react';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { Plus } from 'lucide-react';
 import { FAQ_ITEMS } from '@/lib/constants';
-import GoldLine from './ui/GoldLine';
+import Reveal from './ui/Reveal';
 
 export default function FAQ() {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const ref = useRef<HTMLElement>(null);
-  const isInView = useInView(ref, { once: true, margin: '-100px' });
-
-  const toggle = (i: number) => {
-    setOpenIndex(openIndex === i ? null : i);
-  };
-
+  const [open, setOpen] = useState<number | null>(0);
+  const reduced = useReducedMotion();
   return (
-    <section
-      id="faq"
-      ref={ref}
-      className="section-padding relative"
-      aria-label="Sıkça sorulan sorular"
-    >
-      <div className="mx-auto max-w-3xl">
-        {/* Section heading */}
-        <div className="text-center mb-12 sm:mb-16">
-          <motion.p
-            className="heading-section mb-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6 }}
-          >
-            Sıkça Sorulan Sorular
-          </motion.p>
-          <motion.h2
-            className="heading-display text-3xl sm:text-4xl lg:text-5xl text-cream"
-            initial={{ opacity: 0, y: 30 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            Merak Ettikleriniz
-          </motion.h2>
-        </div>
-
-        {/* FAQ items */}
-        <div className="space-y-3">
-          {FAQ_ITEMS.map((item, i) => {
-            const isOpen = openIndex === i;
-            return (
-              <motion.div
-                key={i}
-                className={`glass-card rounded-xl overflow-hidden transition-all duration-300 ${
-                  isOpen ? 'border-gold-500/30' : ''
-                }`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.5, delay: 0.3 + i * 0.08 }}
-                style={{
-                  borderColor: isOpen ? 'rgba(201, 166, 107, 0.3)' : undefined,
-                }}
-              >
-                <button
-                  className="flex w-full items-center justify-between p-5 sm:p-6 text-left cursor-pointer"
-                  onClick={() => toggle(i)}
-                  aria-expanded={isOpen}
-                  aria-controls={`faq-answer-${i}`}
-                >
-                  <span className="text-cream text-sm sm:text-base font-medium pr-4 leading-snug">
-                    {item.question}
-                  </span>
-                  <motion.div
-                    animate={{ rotate: isOpen ? 180 : 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="shrink-0"
-                  >
-                    <ChevronDown className="h-5 w-5 text-gold-400" />
-                  </motion.div>
-                </button>
-
-                <AnimatePresence>
-                  {isOpen && (
-                    <motion.div
-                      id={`faq-answer-${i}`}
-                      role="region"
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                      className="overflow-hidden"
-                    >
-                      <div className="px-5 sm:px-6 pb-5 sm:pb-6">
-                        <GoldLine className="mb-4" />
-                        <p className="text-cream/50 text-sm leading-relaxed">
-                          {item.answer}
-                        </p>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            );
-          })}
+    <section id="faq" className="paper-section section-space" aria-labelledby="faq-title">
+      <div className="container-wide grid gap-12 lg:grid-cols-12">
+        <Reveal className="lg:col-span-4"><p className="eyebrow">06 · Merak edilenler</p><h2 id="faq-title" className="display title-md mt-7">Yola çıkmadan<br /><em className="text-[#80673f]">önce.</em></h2><p className="mt-7 max-w-sm text-sm leading-7 text-[#0b1513]/58">Vize, araçlar, süre ve deneyimler hakkında en sık aldığımız sorular.</p></Reveal>
+        <div className="lg:col-span-8">
+          {FAQ_ITEMS.map((item, index) => { const active = open === index; return <Reveal key={item.question} delay={index * .035}><div className="border-t border-[#0b1513]/18 last:border-b"><h3><button type="button" className="flex min-h-20 w-full items-center justify-between gap-6 py-5 text-left font-serif text-xl sm:text-2xl" onClick={() => setOpen(active ? null : index)} aria-expanded={active} aria-controls={`faq-${index}`}><span><span className="mr-5 font-sans text-[.58rem] font-bold text-[#80673f]">0{index + 1}</span>{item.question}</span><motion.span animate={{ rotate: active ? 45 : 0 }} transition={{ duration: reduced ? 0 : .25 }} className="grid size-10 shrink-0 place-items-center border border-[#0b1513]/20"><Plus className="size-4" /></motion.span></button></h3><AnimatePresence initial={false} mode="wait">{active ? <motion.div id={`faq-${index}`} role="region" initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: reduced ? .01 : .35, ease: [0.16,1,.3,1] }} className="overflow-hidden"><p className="max-w-2xl pb-8 pl-0 text-sm leading-7 text-[#0b1513]/62 sm:pl-12">{item.answer}</p></motion.div> : null}</AnimatePresence></div></Reveal>; })}
         </div>
       </div>
     </section>
